@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/add_item"
+        android:icon="@drawable/ic_compose"
+        android:showAsAction="ifRoom"
+        android:title="@string/add_item"
+        android:titleCondensed="@string/add_item">
+    </item>
+    <item
+        android:id="@+id/refresh"
+        android:icon="@drawable/ic_refresh"
+        android:showAsAction="ifRoom"
+        android:title="@string/refresh"
+        android:titleCondensed="@string/refresh">
+    </item>
+    <item
+        android:id="@+id/menu_settings"
+        android:showAsAction="never"
+        android:title="@string/menu_settings"/>
+    <item
+        android:id="@+id/menu_about"
+        android:showAsAction="never"
+        android:title="@string/about"
+        android:titleCondensed="@string/about">
+    </item>
+
+</menu>

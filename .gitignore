@@ -1,0 +1,8 @@
+android.keystore
+local.properties
+bin/
+gen/
+libs/
+obj/
+.DS_Store*
+Thumbs.db
