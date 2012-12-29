@@ -1,0 +1,25 @@
+Octodo contains the project source
+Octodo-ide contains eclipse IDE data and support libraries
+
+
+clone the Octodo repo
+create a neighbouring folder called Octodo-ide 
+in eclipse switch workspace to Octodo-ide
+File -> Import... -> from Git
+import the Octodo repo
+
+File -> New -> Other...
+Android Project From Existing Code
+browse to ActionBarSherlock/library directory
+tick Copy project into Workspace
+F2 and rename library to ActionBarSherlock
+
+File -> New -> Other...
+Android Project From Existing Code
+browse to ViewPagerIndicator/library directory
+tick Copy project into Workspace
+F2 and rename library to ViewPagerIndicator
+
+Right click Octodo
+select properties
+goto Android and ensure that libraries are pointing to ActionBarSherlock and ViewPagerIndicator
