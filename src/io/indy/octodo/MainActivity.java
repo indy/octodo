@@ -37,7 +37,14 @@ public class MainActivity extends SherlockFragmentActivity {
 
         mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
-
+        /*        
+        Log.d(TAG, "database constructor");
+        Database database = new Database(this);
+        Log.d(TAG, "getlistnames being called");
+        database.getListNames();
+        Log.d(TAG, "closeDatabase being called");
+        database.closeDatabase();
+        */
     }
 
     @Override
