@@ -1,5 +1,7 @@
 package io.indy.octodo;
 
+import java.util.List;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -21,6 +23,7 @@ public class MainActivity extends SherlockFragmentActivity {
     MainFragmentAdapter mAdapter;
     ViewPager mPager;
     PageIndicator mIndicator;
+    Database mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,21 +33,19 @@ public class MainActivity extends SherlockFragmentActivity {
         if (D)
             Log.d(TAG, "onCreate");
 
-        mAdapter = new MainFragmentAdapter(getSupportFragmentManager());
+
+        mDatabase = new Database(this);
+        List<String> lists = mDatabase.getListNames();
+
+        mAdapter = new MainFragmentAdapter(getSupportFragmentManager(), lists);
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
 
         mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
-        /*        
-        Log.d(TAG, "database constructor");
-        Database database = new Database(this);
-        Log.d(TAG, "getlistnames being called");
-        database.getListNames();
-        Log.d(TAG, "closeDatabase being called");
-        database.closeDatabase();
-        */
+                
+        // TODO: when to call mDatabase.close() ???
     }
 
     @Override
