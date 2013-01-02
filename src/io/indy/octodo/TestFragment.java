@@ -1,5 +1,7 @@
 package io.indy.octodo;
 
+import io.indy.octodo.model.TaskList;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -18,8 +20,9 @@ public final class TestFragment extends Fragment {
 
     private static final String KEY_CONTENT = "TestFragment:Content";
 
-    public static TestFragment newInstance(String content) {
+    public static TestFragment newInstance(TaskList taskList) {
         TestFragment fragment = new TestFragment();
+        String content = taskList.getName();
 
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 20; i++) {

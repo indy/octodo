@@ -1,5 +1,8 @@
 package io.indy.octodo;
 
+import io.indy.octodo.model.Database;
+import io.indy.octodo.model.TaskList;
+
 import java.util.List;
 
 import android.content.Intent;
@@ -35,9 +38,9 @@ public class MainActivity extends SherlockFragmentActivity {
 
 
         mDatabase = new Database(this);
-        List<String> lists = mDatabase.getListNames();
+        List<TaskList> taskLists = mDatabase.getTaskLists();
 
-        mAdapter = new MainFragmentAdapter(getSupportFragmentManager(), lists);
+        mAdapter = new MainFragmentAdapter(getSupportFragmentManager(), taskLists);
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
