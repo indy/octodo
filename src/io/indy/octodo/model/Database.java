@@ -64,7 +64,7 @@ public class Database {
     // return all the tasks associated with the list
     public List<Task> getTasks(int taskListId) {
 
-        Cursor cursor = getTasksCursor();
+        Cursor cursor = getTasksCursor(taskListId);
 
         int ID_INDEX = cursor.getColumnIndexOrThrow(KEY_ID);
         int STATE_INDEX = cursor.getColumnIndexOrThrow(STATE);
@@ -75,15 +75,15 @@ public class Database {
         List<Task> res = new ArrayList<Task>();
         Task task;
         while (cursor.moveToNext()) {
-            task = new Task(cursor.getInt(ID_INDEX), 
-                                    cursor.getString(NAME_INDEX));
-            res.add(taskList);
+            task = new Task(cursor.getInt(ID_INDEX),
+                            taskListId,
+                            cursor.getString(CONTENT_INDEX),
+                            cursor.getInt(STATE_INDEX));
+            res.add(task);
         }
         cursor.close();
 
         return res;
-
-
     }
 
     public List<TaskList> getTaskLists() {

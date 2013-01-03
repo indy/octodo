@@ -8,10 +8,10 @@ public class Task {
     private final String mContent;
     private final int mState;
 
-    public Task(int listId, String content) {
-        mId = 0;
-        mListId = listId;
+    public Task(int id, int taskListId, String content, int state) {
+        mId = id;
+        mListId = taskListId;
         mContent = content;
-        mState = 0;
+        mState = state;
     }
 }
