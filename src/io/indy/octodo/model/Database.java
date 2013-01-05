@@ -22,16 +22,16 @@ public class Database {
     // The name and column index of each column in your database.
     // These should be descriptive.
 
+    // list columns
+    public static final String LIST_NAME = "name";
+    public static final String CREATED_AT = "created_at";
+
     // task columns
     public static final String LIST_ID = "list_id";
     public static final String STATE = "state";
     public static final String STARTED_AT = "started_at";
     public static final String FINISHED_AT = "finished_at";
     public static final String CONTENT = "content";
-
-    // list columns
-    public static final String LIST_NAME = "name";
-    public static final String CREATED_AT = "created_at";
 
     // Database open/upgrade helper
     private ModelHelper modelHelper;
@@ -52,7 +52,16 @@ public class Database {
 
     // just uses the mContent field
     public void addTask(Task task) {
-       // return null;
+        SQLiteDatabase db = modelHelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+
+        cv.put(LIST_ID, task.getListId());
+        cv.put(CONTENT, task.getContent());
+        cv.put(STATE, 0);
+
+        Log.d(TAG, "inserting content: " + task.getContent());
+        db.insert(ModelHelper.TASK_TABLE, null, cv);
     }
 
     public void updateTask(Task task) {
@@ -81,6 +90,7 @@ public class Database {
                             cursor.getInt(STATE_INDEX));
             res.add(task);
         }
+        
         cursor.close();
 
         return res;

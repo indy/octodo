@@ -27,7 +27,7 @@ class MainFragmentAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         TaskList taskList = mLists.get(position);
-        return TestFragment.newInstance(taskList);
+        return TaskListFragment.newInstance(taskList);
     }
 
     @Override

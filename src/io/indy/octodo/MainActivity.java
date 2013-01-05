@@ -1,6 +1,7 @@
 package io.indy.octodo;
 
 import io.indy.octodo.model.Database;
+import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 
 import java.util.List;
@@ -18,7 +19,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-public class MainActivity extends SherlockFragmentActivity {
+public class MainActivity extends SherlockFragmentActivity
+    implements TaskListFragment.TaskModelInterface {
 
     private final String TAG = getClass().getSimpleName();
     private static final boolean D = true;
@@ -27,6 +29,14 @@ public class MainActivity extends SherlockFragmentActivity {
     ViewPager mPager;
     PageIndicator mIndicator;
     Database mDatabase;
+
+    public void onNewTaskAdded(Task newTask) {
+        mDatabase.addTask(newTask);        
+    }
+
+    public List<Task> getTasks(int taskListId) {
+        return mDatabase.getTasks(taskListId);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

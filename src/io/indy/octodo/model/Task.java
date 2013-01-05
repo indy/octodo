@@ -14,4 +14,13 @@ public class Task {
         mContent = content;
         mState = state;
     }
+
+    public int getListId() {
+        return mListId;
+    }
+
+    public String getContent() {
+        return mContent;
+    }
+
 }
