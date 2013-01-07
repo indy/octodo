@@ -4,6 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <ListView
+        android:id="@+id/listViewTasks"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1">
+    </ListView>
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -28,10 +35,5 @@
             android:text="@string/add_task" />
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/listViewTasks"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </ListView>
 
 </LinearLayout>
