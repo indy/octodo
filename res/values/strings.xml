@@ -9,4 +9,5 @@
     <string name="about">About</string>
     <string name="title_activity_about">AboutActivity</string>
     <string name="licence_sherlock">foo</string>
+    <string name="add_task">Add</string>
 </resources>

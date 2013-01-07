@@ -13,8 +13,10 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -34,6 +36,7 @@ public final class TaskListFragment extends Fragment {
     private TaskList mTaskList;
     private EditText mEditText;
     private ListView mListView;
+    private Button mButtonAddTask;
 
     // private static final String KEY_CONTENT = "TestFragment:Content";
 
@@ -90,6 +93,7 @@ public final class TaskListFragment extends Fragment {
         
         mEditText = (EditText) view.findViewById(R.id.editTextTask);
         mListView = (ListView) view.findViewById(R.id.listViewTasks);
+        mButtonAddTask = (Button) view.findViewById(R.id.buttonAddTask);
 
         // Create the Array List of to do items
         final ArrayList<String> todoItems = new ArrayList<String>();
@@ -105,9 +109,25 @@ public final class TaskListFragment extends Fragment {
         // Bind the Array Adapter to the List View
         mListView.setAdapter(aa);
 
+        mButtonAddTask.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {                
+                String content = mEditText.getText().toString();
+
+                Task task = new Task(0, mTaskList.getId(), content, 0);
+                mTaskModelInterface.onNewTaskAdded(task);
+
+                todoItems.add(0, content);
+                aa.notifyDataSetChanged();
+                mEditText.setText("");
+            }
+        });        
+        
+        Log.d(TAG, "registering on key listener");
         mEditText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN)
+                Log.d(TAG, "event is " + event.getAction());
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    Log.d(TAG, "keycode is " + keyCode);
                     if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER)
                             || (keyCode == KeyEvent.KEYCODE_ENTER)) {
 
@@ -122,6 +142,7 @@ public final class TaskListFragment extends Fragment {
 
                         return true;
                     }
+                }
                 return false;
             }
         });
