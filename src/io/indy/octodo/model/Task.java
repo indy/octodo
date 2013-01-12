@@ -15,11 +15,20 @@ public class Task {
         mState = state;
     }
 
+    public int getId() {
+        return mId;
+    }
+
     public int getListId() {
         return mListId;
     }
 
     public String getContent() {
+        return mContent;
+    }
+    
+    @Override
+    public String toString() {
         return mContent;
     }
 
