@@ -130,7 +130,7 @@ public final class TaskListFragment extends Fragment {
 
     private void addTask(Task task) {
         mTaskModelInterface.onTaskAdded(task);
-        mTasks.add(0, task);
+        mTasks.add(mTasks.size(), task);
         mTaskItemAdapter.notifyDataSetChanged();
     }
 }
