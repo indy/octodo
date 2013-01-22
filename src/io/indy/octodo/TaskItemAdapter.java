@@ -1,6 +1,7 @@
 package io.indy.octodo;
 
 import io.indy.octodo.model.Task;
+import io.indy.octodo.model.TaskModelInterface;
 
 import java.util.List;
 
@@ -15,66 +16,81 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-public class TaskItemAdapter extends ArrayAdapter<Task> {
+public class TaskItemAdapter extends ArrayAdapter<Task> implements OnClickListener {
 
     private final String TAG = getClass().getSimpleName();
     private static final boolean D = true;
 
-    public TaskItemAdapter(Context context, List<Task> items) {
-        super(context, android.R.layout.simple_list_item_1, items);
-    }
-    
-    private void addCheckBoxClickListener(CheckBox cb) {
-        cb.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CheckBox cb = (CheckBox) view;
-                int id = (Integer) view.getTag();
-                
-                View parent = (View) view.getParent();
-                TextView tv = (TextView) parent.findViewById(R.id.content);
-                
-                
-                String s = (String) tv.getText();
-                Log.d(TAG, s);
+    private TaskModelInterface mTaskModelInterface;
 
-                if(cb.isChecked()) {
-                    tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);                    
-                    Log.d(TAG, "true isChecked on id: " + id);
-                } else {
-                    tv.setPaintFlags(tv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                    Log.d(TAG, "false isChecked on id: " + id);
-                }
-                
-            }
-        });        
+    public TaskItemAdapter(Context context, List<Task> items, TaskModelInterface taskModelInterface) {
+        super(context, android.R.layout.simple_list_item_1, items);
+
+        mTaskModelInterface = taskModelInterface;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        Log.d(TAG, "getView position: " + position);
         
         Task item = getItem(position);
         
         if (convertView == null) {
             
+            Log.d(TAG, "convertView is null");
+
             String inflater = Context.LAYOUT_INFLATER_SERVICE;
             //LayoutInflater layoutInflater = getLayoutInflater();
             LayoutInflater layoutInflater = (LayoutInflater)getContext().getSystemService(inflater);
             convertView = layoutInflater.inflate(R.layout.row_task, 
                                                  parent, false);
             
-            CheckBox cb = (CheckBox) convertView.findViewById(R.id.isDone);            
-            addCheckBoxClickListener(cb);
+            CheckBox cb = (CheckBox) convertView.findViewById(R.id.isDone);
+            cb.setOnClickListener(this);
         } 
 
         String taskString = item.getContent();
-        TextView taskView = (TextView) convertView.findViewById(R.id.content);
-        taskView.setText(taskString);
+        int state = item.getState();
+
+        Log.d(TAG, taskString + " state:" + state);
+
+        TextView tv = (TextView) convertView.findViewById(R.id.content);
+        tv.setText(taskString);
+
+        if(state == Task.STATE_STRUCK) {
+            tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            tv.setPaintFlags(tv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+        }
 
         Integer taskId = Integer.valueOf(item.getId());
         CheckBox isDone = (CheckBox) convertView.findViewById(R.id.isDone);
         isDone.setTag(taskId);
+        isDone.setChecked(false);
+
+        Log.d(TAG, "---------------");
 
         return convertView;
     }
+
+    @Override
+    public void onClick(View view) {
+        CheckBox cb = (CheckBox) view;
+        int id = (Integer) view.getTag();
+                
+        View parent = (View) view.getParent();
+        TextView tv = (TextView) parent.findViewById(R.id.content);
+                                
+        if(cb.isChecked()) {
+            tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            mTaskModelInterface.onTaskUpdateState(id, Task.STATE_STRUCK);
+            Log.d(TAG, "true isChecked on id: " + id);
+        } else {
+            tv.setPaintFlags(tv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            mTaskModelInterface.onTaskUpdateState(id, Task.STATE_OPEN);
+            Log.d(TAG, "false isChecked on id: " + id);
+        }
+    }
+
 }

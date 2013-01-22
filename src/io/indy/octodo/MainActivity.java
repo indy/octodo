@@ -1,8 +1,10 @@
 package io.indy.octodo;
 
+import io.indy.octodo.event.RemoveCompletedTasksEvent;
 import io.indy.octodo.model.Database;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
+import io.indy.octodo.model.TaskModelInterface;
 
 import java.util.List;
 
@@ -19,22 +21,28 @@ import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
+import de.greenrobot.event.EventBus;
+
 public class MainActivity extends SherlockFragmentActivity
-    implements TaskListFragment.TaskModelInterface {
+    implements TaskModelInterface {
 
     private final String TAG = getClass().getSimpleName();
     private static final boolean D = true;
 
-    MainFragmentAdapter mAdapter;
+    TaskListPagerAdapter mAdapter;
     ViewPager mPager;
     PageIndicator mIndicator;
     Database mDatabase;
 
-    public void onNewTaskAdded(Task newTask) {
+    public void onTaskAdded(Task newTask) {
         mDatabase.addTask(newTask);        
     }
 
-    public List<Task> getTasks(int taskListId) {
+    public void onTaskUpdateState(int taskId, int state) {
+        mDatabase.updateTaskState(taskId, state);
+    }
+
+    public List<Task> onGetTasks(int taskListId) {
         return mDatabase.getTasks(taskListId);
     }
 
@@ -50,7 +58,7 @@ public class MainActivity extends SherlockFragmentActivity
         mDatabase = new Database(this);
         List<TaskList> taskLists = mDatabase.getTaskLists();
 
-        mAdapter = new MainFragmentAdapter(getSupportFragmentManager(), taskLists);
+        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), taskLists);
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
@@ -73,6 +81,23 @@ public class MainActivity extends SherlockFragmentActivity
         Log.d(TAG, "clicked " + item);
 
         switch (item.getItemId()) {
+        case R.id.menu_discard_tasks:
+            
+            Log.d(TAG, "removing completed items");
+            // remove the completed tasks from the current list
+            int i = mPager.getCurrentItem();
+            TaskList taskList = mAdapter.getTaskList(i);
+            int taskListId = taskList.getId();
+            
+            // Log.d(TAG, "getCurrentItem returned " + i + " with id: " + taskListId);
+            mDatabase.removeStruckTasks(taskListId);
+            // refresh the listviewfragment
+            // call notifyDataSetChanged() on adapter?
+
+            RemoveCompletedTasksEvent event = new RemoveCompletedTasksEvent(taskListId);
+            EventBus.getDefault().post(event);
+
+            break;
         case R.id.menu_settings:
             Toast.makeText(this, "menu settings", Toast.LENGTH_SHORT).show();
             break;

@@ -10,4 +10,5 @@
     <string name="title_activity_about">AboutActivity</string>
     <string name="licence_sherlock">foo</string>
     <string name="add_task">Add</string>
+    <string name="discard_items">Discard Items</string>
 </resources>

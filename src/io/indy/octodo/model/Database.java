@@ -34,11 +34,12 @@ public class Database {
     public static final String CONTENT = "content";
 
     // Database open/upgrade helper
-    private ModelHelper modelHelper;
+    private ModelHelper mModelHelper;
 
     public Database(Context context) {
-        modelHelper = new ModelHelper(context,
-                ModelHelper.DATABASE_NAME, null,
+        mModelHelper = new ModelHelper(context,
+                ModelHelper.DATABASE_NAME,
+                null,
                 ModelHelper.DATABASE_VERSION);
 
         if (D)
@@ -47,12 +48,12 @@ public class Database {
 
     // Called when you no longer need access to the database.
     public void closeDatabase() {
-        modelHelper.close();
+        mModelHelper.close();
     }
 
     // just uses the mContent field
     public void addTask(Task task) {
-        SQLiteDatabase db = modelHelper.getWritableDatabase();
+        SQLiteDatabase db = mModelHelper.getWritableDatabase();
 
         ContentValues cv = new ContentValues();
 
@@ -64,10 +65,40 @@ public class Database {
         db.insert(ModelHelper.TASK_TABLE, null, cv);
     }
 
+    public void updateTaskState(int id, int state) {
+        Log.d(TAG, "Database:updateTaskState called");
+
+        SQLiteDatabase db = mModelHelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(STATE, state);
+
+        String where = KEY_ID + "=" + id;
+        String whereArgs[] = null;
+
+        db.update(ModelHelper.TASK_TABLE, cv, where, whereArgs);
+    }
+
     public void updateTask(Task task) {
     }
 
     public void deleteTask(Task task) {
+    }
+
+    // mark all struck tasks in the tasklist as closed
+    public void removeStruckTasks(int taskListId) {
+        Log.d(TAG, "Database:removeStruckTasks called");
+
+        SQLiteDatabase db = mModelHelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(STATE, Task.STATE_CLOSED);
+
+        String where = LIST_ID + "=" + taskListId + " AND " + STATE + "="
+                + Task.STATE_STRUCK;
+        String whereArgs[] = null;
+
+        db.update(ModelHelper.TASK_TABLE, cv, where, whereArgs);
     }
 
     // return all the tasks associated with the list
@@ -84,13 +115,18 @@ public class Database {
         List<Task> res = new ArrayList<Task>();
         Task task;
         while (cursor.moveToNext()) {
-            task = new Task(cursor.getInt(ID_INDEX),
-                            taskListId,
-                            cursor.getString(CONTENT_INDEX),
-                            cursor.getInt(STATE_INDEX));
+
+            task = new Task.Builder().id(cursor.getInt(ID_INDEX))
+                    .listId(taskListId)
+                    .content(cursor.getString(CONTENT_INDEX))
+                    .state(cursor.getInt(STATE_INDEX)).build();
+            /*
+             * task = new Task(cursor.getInt(ID_INDEX), taskListId,
+             * cursor.getString(CONTENT_INDEX), cursor.getInt(STATE_INDEX));
+             */
             res.add(task);
         }
-        
+
         cursor.close();
 
         return res;
@@ -105,8 +141,8 @@ public class Database {
         List<TaskList> res = new ArrayList<TaskList>();
         TaskList taskList;
         while (cursor.moveToNext()) {
-            taskList = new TaskList(cursor.getInt(ID_INDEX), 
-                                    cursor.getString(NAME_INDEX));
+            taskList = new TaskList(cursor.getInt(ID_INDEX),
+                    cursor.getString(NAME_INDEX));
             res.add(taskList);
         }
         cursor.close();
@@ -127,10 +163,15 @@ public class Database {
         String having = null;
         String order = null;
 
-        SQLiteDatabase db = modelHelper.getReadableDatabase();
-        Cursor cursor = db.query(ModelHelper.LIST_TABLE, result_columns,
-                where, whereArgs, groupBy, having, order);
-        //
+        SQLiteDatabase db = mModelHelper.getReadableDatabase();
+        Cursor cursor = db.query(ModelHelper.LIST_TABLE,
+                result_columns,
+                where,
+                whereArgs,
+                groupBy,
+                having,
+                order);
+
         return cursor;
     }
 
@@ -141,17 +182,24 @@ public class Database {
                 STARTED_AT, FINISHED_AT, CONTENT };
 
         // Specify the where clause that will limit our results.
-        String where = LIST_ID + "=" + taskListId;
+        String where = LIST_ID + "=? and " + STATE + "<?";
 
         // Replace these with valid SQL statements as necessary.
-        String whereArgs[] = null;
+        String whereArgs[] = { Integer.toString(taskListId),
+                Integer.toString(Task.STATE_CLOSED) };
+
         String groupBy = null;
         String having = null;
         String order = null;
 
-        SQLiteDatabase db = modelHelper.getReadableDatabase();
-        Cursor cursor = db.query(ModelHelper.TASK_TABLE, result_columns,
-                where, whereArgs, groupBy, having, order);
+        SQLiteDatabase db = mModelHelper.getReadableDatabase();
+        Cursor cursor = db.query(ModelHelper.TASK_TABLE,
+                result_columns,
+                where,
+                whereArgs,
+                groupBy,
+                having,
+                order);
         //
         return cursor;
     }
@@ -182,8 +230,8 @@ public class Database {
                 + " text not null, " + CREATED_AT
                 + " timestamp default current_timestamp " + ");";
 
-        public ModelHelper(Context context, String name,
-                CursorFactory factory, int version) {
+        public ModelHelper(Context context, String name, CursorFactory factory,
+                int version) {
             super(context, name, factory, version);
         }
 

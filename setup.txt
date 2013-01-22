@@ -23,3 +23,11 @@ F2 and rename library to ViewPagerIndicator
 Right click Octodo
 select properties
 goto Android and ensure that libraries are pointing to ActionBarSherlock and ViewPagerIndicator
+
+
+
+--------------------------------------------------------------------------------
+
+
+
+downloaded EventBus from https://github.com/greenrobot/EventBus/downloads
