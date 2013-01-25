@@ -1,6 +1,9 @@
 package io.indy.octodo.model;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -73,10 +76,19 @@ public class Database {
         ContentValues cv = new ContentValues();
         cv.put(STATE, state);
 
+        if(state == Task.STATE_STRUCK) {
+            // task is effectively closed, so set the finished_at value
+            Date date = new Date();
+            String finishedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+            cv.put(FINISHED_AT, finishedDate);
+        }
+
+
         String where = KEY_ID + "=" + id;
         String whereArgs[] = null;
 
         db.update(ModelHelper.TASK_TABLE, cv, where, whereArgs);
+
     }
 
     public void updateTask(Task task) {
@@ -119,7 +131,9 @@ public class Database {
             task = new Task.Builder().id(cursor.getInt(ID_INDEX))
                     .listId(taskListId)
                     .content(cursor.getString(CONTENT_INDEX))
-                    .state(cursor.getInt(STATE_INDEX)).build();
+                    .state(cursor.getInt(STATE_INDEX))
+                    .startedAt(cursor.getString(STARTED_AT_INDEX))
+                    .finishedAt(cursor.getString(FINISHED_AT_INDEX)).build();
             /*
              * task = new Task(cursor.getInt(ID_INDEX), taskListId,
              * cursor.getString(CONTENT_INDEX), cursor.getInt(STATE_INDEX));

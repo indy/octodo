@@ -8,6 +8,9 @@ public class Task {
     private String mContent;
     private int mState;
 
+    private String mStartedAt;
+    private String mFinishedAt;
+
     public static final int STATE_OPEN = 0;
     public static final int STATE_STRUCK = 1;
     public static final int STATE_CLOSED = 2;
@@ -17,6 +20,8 @@ public class Task {
         mListId = builder.mListId;
         mContent = builder.mContent;
         mState = builder.mState;
+        mStartedAt = builder.mStartedAt;
+        mFinishedAt = builder.mFinishedAt;
     }
 
     public int getId() {
@@ -34,6 +39,15 @@ public class Task {
     public int getState() {
         return mState;
     }
+
+    public String getStartedAt() {
+        return mStartedAt;
+    }
+
+    public String getFinishedAt() {
+        return mFinishedAt;
+    }
+
     
     @Override
     public String toString() {
@@ -46,6 +60,8 @@ public class Task {
         private int mListId = 0;
         private String mContent = "";
         private int mState = 0;
+        private String mStartedAt = "";
+        private String mFinishedAt = "";
 
         public Builder() {
 
@@ -68,6 +84,16 @@ public class Task {
 
         public Builder state(int val) {
             mState = val;
+            return this;
+        }
+
+        public Builder startedAt(String val) {
+            mStartedAt = val;
+            return this;
+        }
+
+        public Builder finishedAt(String val) {
+            mFinishedAt = val;
             return this;
         }
 
