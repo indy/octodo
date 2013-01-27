@@ -1,17 +1,13 @@
 package io.indy.octodo;
 
+import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskModelInterface;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,7 +70,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
 
         String startedAtString = task.getStartedAt();
         TextView ageTv = (TextView) convertView.findViewById(R.id.age);
-        String timeSpan = formatTimeSpan(startedAtString);
+        String timeSpan = DateFormatHelper.formatTimeSpan(startedAtString);
         ageTv.setText(timeSpan);
 
 
@@ -95,28 +91,6 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
         }
 
         return convertView;
-    }
-
-    public String formatTimeSpan(String timeToFormat) {
-
-        String timeSpan = "";
-
-        SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        Date date = null;
-        if (timeToFormat != null) {
-            try {
-                date = iso8601Format.parse(timeToFormat);
-            } catch (ParseException e) {
-                date = null;
-            }
-            if (date != null) {
-                long time = date.getTime();
-                timeSpan = (String) DateUtils.getRelativeTimeSpanString(time);
-                // Log.d(TAG, "timeSpan is " + timeSpan);
-            }
-        }
-        return timeSpan;
     }
 
     @Override

@@ -1,9 +1,8 @@
 package io.indy.octodo.model;
 
-import java.text.SimpleDateFormat;
+import io.indy.octodo.helper.DateFormatHelper;
+
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -78,8 +77,7 @@ public class Database {
 
         if(state == Task.STATE_STRUCK) {
             // task is effectively closed, so set the finished_at value
-            Date date = new Date();
-            String finishedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+            String finishedDate = DateFormatHelper.today();
             cv.put(FINISHED_AT, finishedDate);
         }
 
