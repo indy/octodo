@@ -1,6 +1,7 @@
 package io.indy.octodo;
 
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
+import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
@@ -18,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import de.greenrobot.event.EventBus;
 
@@ -34,6 +36,8 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     private EditText mEditText;
     private ListView mListView;
     private Button mButtonAddTask;
+
+    private LinearLayout mSectionAddTask;
 
     public static TaskListFragment newInstance(TaskList taskList) {
         TaskListFragment fragment = new TaskListFragment();
@@ -82,7 +86,23 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
             mTaskItemAdapter.notifyDataSetChanged();
 
             Log.d(TAG, "notifyDataSetChanged");
+        }
+    }
 
+    public void onEvent(ToggleAddTaskFormEvent event) {
+        int taskListId = event.getTaskListId();
+        if (taskListId == mTaskList.getId()) {
+            // toggle visibility
+            if(mSectionAddTask.getVisibility() == View.GONE) {
+                Log.d(TAG, "ToggleAddTaskFormEvent VISIBLE");
+                mSectionAddTask.setVisibility(View.VISIBLE);
+            } else {
+                Log.d(TAG, "ToggleAddTaskFormEvent GONE");
+                mSectionAddTask.setVisibility(View.GONE);
+            }
+        } else {                // not the current task list
+            // set as invisible
+            mSectionAddTask.setVisibility(View.GONE);
         }
     }
 
@@ -104,6 +124,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         mEditText = (EditText) view.findViewById(R.id.editTextTask);
         mListView = (ListView) view.findViewById(R.id.listViewTasks);
         mButtonAddTask = (Button) view.findViewById(R.id.buttonAddTask);
+        mSectionAddTask = (LinearLayout) view.findViewById(R.id.sectionAddTask);
 
         mTasks = mTaskModelInterface.onGetTasks(mTaskList.getId());
 

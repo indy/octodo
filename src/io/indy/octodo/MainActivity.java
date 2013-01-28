@@ -1,6 +1,7 @@
 package io.indy.octodo;
 
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
+import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.model.Database;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
@@ -85,21 +86,33 @@ public class MainActivity extends SherlockFragmentActivity
             
             Log.d(TAG, "removing completed items");
             // remove the completed tasks from the current list
+            /*
             int i = mPager.getCurrentItem();
             TaskList taskList = mAdapter.getTaskList(i);
             int taskListId = taskList.getId();
+            */
+
+            int taskListId = getTaskListId();
             
             // Log.d(TAG, "getCurrentItem returned " + i + " with id: " + taskListId);
             mDatabase.removeStruckTasks(taskListId);
             // refresh the listviewfragment
             // call notifyDataSetChanged() on adapter?
 
-            RemoveCompletedTasksEvent event = new RemoveCompletedTasksEvent(taskListId);
-            EventBus.getDefault().post(event);
+            RemoveCompletedTasksEvent rctEvent = new RemoveCompletedTasksEvent(taskListId);
+            EventBus.getDefault().post(rctEvent);
 
             break;
         case R.id.menu_settings:
             Toast.makeText(this, "menu settings", Toast.LENGTH_SHORT).show();
+            break;
+
+        case R.id.menu_add_task:
+            // show the 'add task' ui element in the relevant task list fragment
+            int id = getTaskListId();
+            ToggleAddTaskFormEvent tatfEvent = new ToggleAddTaskFormEvent(id);
+            EventBus.getDefault().post(tatfEvent);
+
             break;
 
         case R.id.menu_about:
@@ -108,6 +121,13 @@ public class MainActivity extends SherlockFragmentActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private int getTaskListId() {
+        int i = mPager.getCurrentItem();
+        TaskList taskList = mAdapter.getTaskList(i);
+        int taskListId = taskList.getId();
+        return taskListId;
     }
     
     private void startAboutActivity() {
