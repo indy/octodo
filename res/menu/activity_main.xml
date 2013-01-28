@@ -15,13 +15,11 @@
         android:title="@string/discard_items"
         android:titleCondensed="@string/discard_items">
     </item>
+
     <item
-        android:id="@+id/menu_refresh"
-        android:icon="@drawable/ic_refresh"
-        android:showAsAction="always"
-        android:title="@string/refresh"
-        android:titleCondensed="@string/refresh">
-    </item>
+        android:id="@+id/menu_manage_lists"
+        android:showAsAction="never"
+        android:title="@string/menu_manage_lists"/>
     <item
         android:id="@+id/menu_settings"
         android:showAsAction="never"

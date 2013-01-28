@@ -11,4 +11,6 @@
     <string name="licence_sherlock">foo</string>
     <string name="add_task">Add</string>
     <string name="discard_items">Discard Items</string>
+    <string name="menu_manage_lists">Manage lists...</string>
+
 </resources>
