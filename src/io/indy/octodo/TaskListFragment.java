@@ -1,6 +1,7 @@
 package io.indy.octodo;
 
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
+import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 import io.indy.octodo.model.TaskModelInterface;
@@ -20,7 +21,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import de.greenrobot.event.EventBus;
 
-public final class TaskListFragment extends Fragment {
+public final class TaskListFragment extends Fragment implements OnClickListener {
 
     private final String TAG = getClass().getSimpleName();
     private static final boolean D = true;
@@ -72,9 +73,10 @@ public final class TaskListFragment extends Fragment {
 
     public void onEvent(RemoveCompletedTasksEvent event) {
         int taskListId = event.getTaskListId();
-        if(taskListId == mTaskList.getId()) {
+        if (taskListId == mTaskList.getId()) {
 
-            List<Task> tasks = mTaskModelInterface.onGetTasks(mTaskList.getId());
+            List<Task> tasks = mTaskModelInterface
+                    .onGetTasks(mTaskList.getId());
             mTasks.clear();
             mTasks.addAll(tasks);
             mTaskItemAdapter.notifyDataSetChanged();
@@ -105,30 +107,45 @@ public final class TaskListFragment extends Fragment {
 
         mTasks = mTaskModelInterface.onGetTasks(mTaskList.getId());
 
-        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTasks, mTaskModelInterface);
+        mTaskItemAdapter = new TaskItemAdapter(getActivity(),
+                mTasks,
+                mTaskModelInterface);
 
         // Bind the Array Adapter to the List View
         mListView.setAdapter(mTaskItemAdapter);
 
-        mButtonAddTask.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                String content = mEditText.getText().toString();
-
-                // Task task = new Task(0, mTaskList.getId(), content, 0);
-
-                Task task = new Task.Builder().id(0).listId(mTaskList.getId())
-                        .content(content).state(0).build();
-
-                addTask(task);
-
-                mEditText.setText("");
-            }
-        });
+        // invoke this object's onClick method when a task is added
+        mButtonAddTask.setOnClickListener(this);
 
         return view;
     }
 
+    public void onClick(View v) {
+        if(D) {
+            Log.d(TAG, "-------------");
+            Log.d(TAG, v.toString());
+        }
+
+        String content = mEditText.getText().toString();
+        String now = DateFormatHelper.today();
+
+        Task task = new Task.Builder().id(0).listId(mTaskList.getId())
+                .content(content).state(0).startedAt(now).build();
+
+        addTask(task);
+
+        mEditText.setText("");
+    }
+
     private void addTask(Task task) {
+
+        if (D) {
+            Log.d(TAG, "adding a task");
+            Log.d(TAG, "content: " + task.getContent());
+            Log.d(TAG, "state: " + task.getState());
+            Log.d(TAG, "startedAt: " + task.getStartedAt());
+            Log.d(TAG, "finishedAt: " + task.getFinishedAt());
+        }
         mTaskModelInterface.onTaskAdded(task);
         mTasks.add(mTasks.size(), task);
         mTaskItemAdapter.notifyDataSetChanged();
