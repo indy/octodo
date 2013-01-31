@@ -76,31 +76,22 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     public void onEvent(RemoveCompletedTasksEvent event) {
-        int taskListId = event.getTaskListId();
-        if (taskListId == mTaskList.getId()) {
-
-            List<Task> tasks = mTaskModelInterface
-                    .onGetTasks(mTaskList.getId());
-            mTasks.clear();
-            mTasks.addAll(tasks);
-            mTaskItemAdapter.notifyDataSetChanged();
-
-            Log.d(TAG, "notifyDataSetChanged");
+        if (event.getTaskListId() == mTaskList.getId()) {
+            refreshTasks();
         }
     }
 
     public void onEvent(ToggleAddTaskFormEvent event) {
-        int taskListId = event.getTaskListId();
-        if (taskListId == mTaskList.getId()) {
+        if (event.getTaskListId() == mTaskList.getId()) {
             // toggle visibility
-            if(mSectionAddTask.getVisibility() == View.GONE) {
+            if (mSectionAddTask.getVisibility() == View.GONE) {
                 Log.d(TAG, "ToggleAddTaskFormEvent VISIBLE");
                 mSectionAddTask.setVisibility(View.VISIBLE);
             } else {
                 Log.d(TAG, "ToggleAddTaskFormEvent GONE");
                 mSectionAddTask.setVisibility(View.GONE);
             }
-        } else {                // not the current task list
+        } else { // not the current task list
             // set as invisible
             mSectionAddTask.setVisibility(View.GONE);
         }
@@ -142,33 +133,35 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     public void onClick(View v) {
-        if(D) {
-            Log.d(TAG, "-------------");
-            Log.d(TAG, v.toString());
-        }
-
         String content = mEditText.getText().toString();
         String now = DateFormatHelper.today();
 
         Task task = new Task.Builder().id(0).listId(mTaskList.getId())
                 .content(content).state(0).startedAt(now).build();
 
-        addTask(task);
-
-        mEditText.setText("");
-    }
-
-    private void addTask(Task task) {
-
         if (D) {
             Log.d(TAG, "adding a task");
+            // this task has an id of 0, can't just add it to mTasks
+            Log.d(TAG, "id: " + task.getId());
             Log.d(TAG, "content: " + task.getContent());
             Log.d(TAG, "state: " + task.getState());
             Log.d(TAG, "startedAt: " + task.getStartedAt());
             Log.d(TAG, "finishedAt: " + task.getFinishedAt());
         }
+
+        // update db
         mTaskModelInterface.onTaskAdded(task);
-        mTasks.add(mTasks.size(), task);
+        // refresh ui
+        refreshTasks();
+
+        mEditText.setText("");
+    }
+
+    // get the list of tasks from the model and display them
+    private void refreshTasks() {
+        List<Task> tasks = mTaskModelInterface.onGetTasks(mTaskList.getId());
+        mTasks.clear();
+        mTasks.addAll(tasks);
         mTaskItemAdapter.notifyDataSetChanged();
     }
 }
