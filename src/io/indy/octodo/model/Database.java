@@ -27,13 +27,16 @@ public class Database {
     // list columns
     public static final String LIST_NAME = "name";
     public static final String CREATED_AT = "created_at";
+    public static final String DELETED_AT = "deleted_at";
 
     // task columns
     public static final String LIST_ID = "list_id";
-    public static final String STATE = "state";
     public static final String STARTED_AT = "started_at";
     public static final String FINISHED_AT = "finished_at";
     public static final String CONTENT = "content";
+
+    // shared columns
+    public static final String STATE = "state";
 
     // Database open/upgrade helper
     private ModelHelper mModelHelper;
@@ -51,6 +54,40 @@ public class Database {
     // Called when you no longer need access to the database.
     public void closeDatabase() {
         mModelHelper.close();
+    }
+
+    // TODO: pass in a proper 'task list' object?
+    // TODO: return values to indicate success?
+    public void addList(String name) {
+        if (name == "") {
+            Log.d(TAG, "attempting to add a tasklist with an empty name");
+            return;
+        }
+
+        SQLiteDatabase db = mModelHelper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(LIST_NAME, name);
+        cv.put(STATE, TaskList.STATE_ACTIVE);
+
+        db.insert(ModelHelper.LIST_TABLE, null, cv);
+    }
+
+    public void deleteList(int id) {
+
+        Log.d(TAG, "deleteList: " + id);
+
+        SQLiteDatabase db = mModelHelper.getWritableDatabase();
+        String finishedDate = DateFormatHelper.today();
+
+        ContentValues cv = new ContentValues();
+
+        cv.put(STATE, TaskList.STATE_INACTIVE);
+        cv.put(DELETED_AT, finishedDate);
+
+        String where = KEY_ID + "=" + id;
+        String whereArgs[] = null;
+
+        db.update(ModelHelper.LIST_TABLE, cv, where, whereArgs);
     }
 
     // just uses the mContent field
@@ -75,12 +112,11 @@ public class Database {
         ContentValues cv = new ContentValues();
         cv.put(STATE, state);
 
-        if(state == Task.STATE_STRUCK) {
+        if (state == Task.STATE_STRUCK) {
             // task is effectively closed, so set the finished_at value
             String finishedDate = DateFormatHelper.today();
             cv.put(FINISHED_AT, finishedDate);
         }
-
 
         String where = KEY_ID + "=" + id;
         String whereArgs[] = null;
@@ -145,7 +181,7 @@ public class Database {
     }
 
     public List<TaskList> getTaskLists() {
-        Cursor cursor = getTaskListsCursor();
+        Cursor cursor = getActiveTaskListsCursor();
 
         int ID_INDEX = cursor.getColumnIndexOrThrow(KEY_ID);
         int NAME_INDEX = cursor.getColumnIndexOrThrow(LIST_NAME);
@@ -162,15 +198,16 @@ public class Database {
         return res;
     }
 
-    private Cursor getTaskListsCursor() {
+    // returns cursor to all active taskLists
+    //
+    private Cursor getActiveTaskListsCursor() {
         // Specify the result column projection. Return the minimum set
         // of columns required to satisfy your requirements.
         String[] result_columns = new String[] { KEY_ID, LIST_NAME };
 
-        // Specify the where clause that will limit our results.
-        String where = null;
-        // Replace these with valid SQL statements as necessary.
-        String whereArgs[] = null;
+        String where = STATE + "=?";
+        String whereArgs[] = {Integer.toString(TaskList.STATE_ACTIVE)};
+
         String groupBy = null;
         String having = null;
         String order = null;
@@ -193,10 +230,7 @@ public class Database {
         String[] result_columns = new String[] { KEY_ID, LIST_ID, STATE,
                 STARTED_AT, FINISHED_AT, CONTENT };
 
-        // Specify the where clause that will limit our results.
         String where = LIST_ID + "=? and " + STATE + "<?";
-
-        // Replace these with valid SQL statements as necessary.
         String whereArgs[] = { Integer.toString(taskListId),
                 Integer.toString(Task.STATE_CLOSED) };
 
@@ -212,7 +246,7 @@ public class Database {
                 groupBy,
                 having,
                 order);
-        //
+
         return cursor;
     }
 
@@ -222,7 +256,7 @@ public class Database {
         private static final boolean D = true;
 
         private static final String DATABASE_NAME = "octodo.db";
-        private static final int DATABASE_VERSION = 2;
+        private static final int DATABASE_VERSION = 4;
 
         private static final String TASK_TABLE = "task";
         private static final String LIST_TABLE = "list";
@@ -232,15 +266,16 @@ public class Database {
                 + TASK_TABLE + " (" + KEY_ID
                 + " integer primary key autoincrement, " + CONTENT
                 + " text not null, " + LIST_ID + " integer, " + STATE
-                + " text not null, " + STARTED_AT
+                + " integer, " + STARTED_AT
                 + " timestamp default current_timestamp, " + FINISHED_AT
                 + " timestamp" + ");";
 
         private static final String CREATE_LIST_TABLE = "create table "
                 + LIST_TABLE + " (" + KEY_ID
                 + " integer primary key autoincrement, " + LIST_NAME
-                + " text not null, " + CREATED_AT
-                + " timestamp default current_timestamp " + ");";
+                + " text not null, " + STATE + " integer, " + CREATED_AT
+                + " timestamp default current_timestamp, " + DELETED_AT
+                + " timestamp" + ");";
 
         public ModelHelper(Context context, String name, CursorFactory factory,
                 int version) {
@@ -250,6 +285,7 @@ public class Database {
         private void createList(SQLiteDatabase db, String name) {
             ContentValues cv = new ContentValues();
             cv.put(LIST_NAME, name);
+            cv.put(STATE, TaskList.STATE_ACTIVE);
             db.insert(LIST_TABLE, null, cv);
         }
 

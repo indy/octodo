@@ -23,6 +23,8 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
     private final String TAG = getClass().getSimpleName();
     private static final boolean D = true;
 
+    private final LayoutInflater mInflater;
+
     private TaskModelInterface mTaskModelInterface;
 
     public TaskItemAdapter(Context context, List<Task> items,
@@ -30,6 +32,9 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
         super(context, android.R.layout.simple_list_item_1, items);
 
         mTaskModelInterface = taskModelInterface;
+
+        String inflater = Context.LAYOUT_INFLATER_SERVICE;
+        mInflater = (LayoutInflater) context.getSystemService(inflater);
     }
 
     @Override
@@ -39,25 +44,14 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
             Log.d(TAG, "getView position: " + position);
         }
 
-        Task task = getItem(position);
-
         if (convertView == null) {
-
-            if (D) {
-                Log.d(TAG, "convertView is null");
-            }
-
-            String inflater = Context.LAYOUT_INFLATER_SERVICE;
-            LayoutInflater layoutInflater = (LayoutInflater) getContext()
-                    .getSystemService(inflater);
-            convertView = layoutInflater.inflate(R.layout.row_task,
-                    parent,
-                    false);
+            convertView = mInflater.inflate(R.layout.row_task, parent, false);
 
             CheckBox cb = (CheckBox) convertView.findViewById(R.id.isDone);
             cb.setOnClickListener(this);
         }
 
+        Task task = getItem(position);
         String taskString = task.getContent();
         int state = task.getState();
 

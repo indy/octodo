@@ -7,10 +7,12 @@
     <string name="add_item">Add Item</string>
     <string name="refresh">Refresh</string>
     <string name="about">About</string>
-    <string name="title_activity_about">AboutActivity</string>
+    <string name="title_activity_about">About</string>
     <string name="licence_sherlock">foo</string>
     <string name="add_task">Add</string>
     <string name="discard_items">Discard Items</string>
     <string name="menu_manage_lists">Manage lists</string>
-
+    <string name="title_activity_manage_lists">Manage Lists</string>
+    <string name="add_list">Create List</string>
+    <string name="discard_lists">Discard Lists</string>
 </resources>
