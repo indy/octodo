@@ -15,7 +15,8 @@
         android:theme="@style/Theme.Sherlock" >
         <activity
             android:name="io.indy.octodo.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +29,8 @@
         </activity>
         <activity
             android:name="io.indy.octodo.ManageListsActivity"
-            android:label="@string/title_activity_manage_lists" >
+            android:label="@string/title_activity_manage_lists"
+            android:windowSoftInputMode="stateHidden" >
         </activity>
     </application>
 
