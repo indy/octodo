@@ -30,10 +30,10 @@ public class MainActivity extends SherlockFragmentActivity implements
     private final String TAG = getClass().getSimpleName();
     private static final boolean D = true;
 
-    TaskListPagerAdapter mAdapter;
-    ViewPager mPager;
-    PageIndicator mIndicator;
-    Database mDatabase;
+    private TaskListPagerAdapter mAdapter;
+    private ViewPager mPager;
+    private PageIndicator mIndicator;
+    private Database mDatabase;
 
     public void onTaskAdded(Task newTask) {
         mDatabase.addTask(newTask);
