@@ -1,5 +1,6 @@
 package io.indy.octodo;
 
+import io.indy.octodo.helper.AnimationHelper;
 import io.indy.octodo.model.Database;
 import io.indy.octodo.model.TaskList;
 
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -122,9 +124,15 @@ public class ManageListsActivity extends SherlockActivity implements
             Log.d(TAG, "toggleAddListView");
         }
 
+        Animation anim;
+
         if (mSectionAddList.getVisibility() == View.GONE) {
+            anim = AnimationHelper.slideDownAnimation();
+            mSectionAddList.startAnimation(anim);
             mSectionAddList.setVisibility(View.VISIBLE);
         } else {
+            anim = AnimationHelper.slideUpAnimation();
+            mSectionAddList.startAnimation(anim);
             mSectionAddList.setVisibility(View.GONE);
         }
     }

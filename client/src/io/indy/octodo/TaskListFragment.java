@@ -2,6 +2,7 @@ package io.indy.octodo;
 
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
+import io.indy.octodo.helper.AnimationHelper;
 import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -82,13 +84,17 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     public void onEvent(ToggleAddTaskFormEvent event) {
+
         if (event.getTaskListId() == mTaskList.getId()) {
+            Animation anim;
             // toggle visibility
             if (mSectionAddTask.getVisibility() == View.GONE) {
-                Log.d(TAG, "ToggleAddTaskFormEvent VISIBLE");
+                anim = AnimationHelper.slideDownAnimation();
+                mSectionAddTask.startAnimation(anim);
                 mSectionAddTask.setVisibility(View.VISIBLE);
             } else {
-                Log.d(TAG, "ToggleAddTaskFormEvent GONE");
+                anim = AnimationHelper.slideUpAnimation();
+                mSectionAddTask.startAnimation(anim);
                 mSectionAddTask.setVisibility(View.GONE);
             }
         } else { // not the current task list
