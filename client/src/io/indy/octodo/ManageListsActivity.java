@@ -44,7 +44,7 @@ public class ManageListsActivity extends SherlockActivity implements
         mListView = (ListView) findViewById(R.id.listViewTaskLists);
 
         mDatabase = new Database(this);
-        mTaskLists = mDatabase.getTaskLists();
+        mTaskLists = mDatabase.getDeleteableTaskLists();
 
         mAdapter = new ManageListsAdapter(this, mTaskLists);
 
@@ -111,7 +111,7 @@ public class ManageListsActivity extends SherlockActivity implements
     }
 
     private void refreshTaskLists() {
-        List<TaskList> taskLists = mDatabase.getTaskLists();
+        List<TaskList> taskLists = mDatabase.getDeleteableTaskLists();
         mTaskLists.clear();
         mTaskLists.addAll(taskLists);
         mAdapter.notifyDataSetChanged();

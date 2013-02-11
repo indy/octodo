@@ -25,11 +25,18 @@ public class Database {
     // These should be descriptive.
 
     // list columns
+    //
     public static final String LIST_NAME = "name";
     public static final String CREATED_AT = "created_at";
     public static final String DELETED_AT = "deleted_at";
+    // do the tasks in the list have an expected completion timespan?
+    public static final String HAS_TASK_LIFETIME = "has_task_lifetime";
+    // the number of hours a task is expected to take
+    public static final String TASK_LIFETIME = "task_lifetime";
+    public static final String IS_DELETEABLE = "is_deleteable";
 
     // task columns
+    //
     public static final String LIST_ID = "list_id";
     public static final String STARTED_AT = "started_at";
     public static final String FINISHED_AT = "finished_at";
@@ -68,6 +75,9 @@ public class Database {
         ContentValues cv = new ContentValues();
         cv.put(LIST_NAME, name);
         cv.put(STATE, TaskList.STATE_ACTIVE);
+        // user created lists don't have task lifetimes (yet)
+        cv.put(HAS_TASK_LIFETIME, 0);
+        cv.put(TASK_LIFETIME, 0);
 
         db.insert(ModelHelper.LIST_TABLE, null, cv);
     }
@@ -198,6 +208,52 @@ public class Database {
         return res;
     }
 
+    public List<TaskList> getDeleteableTaskLists() {
+        Cursor cursor = getDeleteableTaskListsCursor();
+
+        int ID_INDEX = cursor.getColumnIndexOrThrow(KEY_ID);
+        int NAME_INDEX = cursor.getColumnIndexOrThrow(LIST_NAME);
+
+        List<TaskList> res = new ArrayList<TaskList>();
+        TaskList taskList;
+        while (cursor.moveToNext()) {
+            taskList = new TaskList(cursor.getInt(ID_INDEX),
+                    cursor.getString(NAME_INDEX));
+            res.add(taskList);
+        }
+        cursor.close();
+
+        return res;
+    }
+
+    // returns cursor to all active taskLists
+    //
+    private Cursor getDeleteableTaskListsCursor() {
+        // Specify the result column projection. Return the minimum set
+        // of columns required to satisfy your requirements.
+        String[] result_columns = new String[] { KEY_ID, LIST_NAME };
+
+        String where = STATE + "=?" + " and " + IS_DELETEABLE + "=?";
+        // active and deletable task lists
+        String whereArgs[] = { Integer.toString(TaskList.STATE_ACTIVE),
+                               Integer.toString(1)};
+
+        String groupBy = null;
+        String having = null;
+        String order = null;
+
+        SQLiteDatabase db = mModelHelper.getReadableDatabase();
+        Cursor cursor = db.query(ModelHelper.LIST_TABLE,
+                result_columns,
+                where,
+                whereArgs,
+                groupBy,
+                having,
+                order);
+
+        return cursor;
+    }
+
     // returns cursor to all active taskLists
     //
     private Cursor getActiveTaskListsCursor() {
@@ -206,7 +262,7 @@ public class Database {
         String[] result_columns = new String[] { KEY_ID, LIST_NAME };
 
         String where = STATE + "=?";
-        String whereArgs[] = {Integer.toString(TaskList.STATE_ACTIVE)};
+        String whereArgs[] = { Integer.toString(TaskList.STATE_ACTIVE) };
 
         String groupBy = null;
         String having = null;
@@ -256,7 +312,7 @@ public class Database {
         private static final boolean D = true;
 
         private static final String DATABASE_NAME = "octodo.db";
-        private static final int DATABASE_VERSION = 4;
+        private static final int DATABASE_VERSION = 5;
 
         private static final String TASK_TABLE = "task";
         private static final String LIST_TABLE = "list";
@@ -273,7 +329,10 @@ public class Database {
         private static final String CREATE_LIST_TABLE = "create table "
                 + LIST_TABLE + " (" + KEY_ID
                 + " integer primary key autoincrement, " + LIST_NAME
-                + " text not null, " + STATE + " integer, " + CREATED_AT
+                + " text not null, " + STATE + " integer, " + HAS_TASK_LIFETIME
+                + " integer default 0, " + TASK_LIFETIME
+                + " integer default 0, " + IS_DELETEABLE
+                + " integer default 1, " + CREATED_AT
                 + " timestamp default current_timestamp, " + DELETED_AT
                 + " timestamp" + ");";
 
@@ -282,10 +341,20 @@ public class Database {
             super(context, name, factory, version);
         }
 
-        private void createList(SQLiteDatabase db, String name) {
+        private void createList(SQLiteDatabase db,
+                String name,
+                int hasLifetime,
+                int lifetimeHours,
+                int isDeleteable) {
             ContentValues cv = new ContentValues();
             cv.put(LIST_NAME, name);
             cv.put(STATE, TaskList.STATE_ACTIVE);
+            cv.put(HAS_TASK_LIFETIME, hasLifetime);
+            if (hasLifetime == 1) {
+                cv.put(TASK_LIFETIME, lifetimeHours);
+            }
+            cv.put(IS_DELETEABLE, isDeleteable);
+
             db.insert(LIST_TABLE, null, cv);
         }
 
@@ -297,8 +366,9 @@ public class Database {
             db.execSQL(CREATE_LIST_TABLE);
 
             // TODO: get the names of the lists from the res folder
-            createList(db, "todo");
-            createList(db, "done");
+            createList(db, "today", 1, 24, 0);
+            createList(db, "this week", 1, 24 * 7, 0);
+            createList(db, "later", 0, 0, 1);
         }
 
         // Called when there is a database version mismatch meaning that
