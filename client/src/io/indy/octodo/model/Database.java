@@ -355,17 +355,17 @@ public class Database {
         @Override
         public void onCreate(SQLiteDatabase db) {
             
-            String createTaskTable = new TableBuilder(TASK_TABLE)
+            String createTaskTable = new SQLTableStatement(TASK_TABLE)
                 .addInteger(KEY_ID, "primary key autoincrement")
                 .addText(CONTENT, "not null")
                 .addInteger(LIST_ID)
                 .addInteger(STATE)
                 .addTimestamp(STARTED_AT, "default current_timestamp")
                 .addTimestamp(FINISHED_AT)
-                .build();
+                .create();
             db.execSQL(createTaskTable);
 
-            String createListTable = new TableBuilder(LIST_TABLE)
+            String createListTable = new SQLTableStatement(LIST_TABLE)
                 .addInteger(KEY_ID, "primary key autoincrement")
                 .addText(LIST_NAME, "not null")
                 .addInteger(STATE)
@@ -374,7 +374,7 @@ public class Database {
                 .addInteger(IS_DELETEABLE, "default 1")
                 .addTimestamp(CREATED_AT, "default current_timestamp")
                 .addTimestamp(DELETED_AT)
-                .build();
+                .create();
             db.execSQL(createListTable);
 
             // TODO: get the names of the lists from the res folder
@@ -397,8 +397,12 @@ public class Database {
             // comparing oldVersion and newVersion values.
 
             // The simplest case is to drop the old table and create a new one.
-            db.execSQL("DROP TABLE IF EXISTS " + TASK_TABLE);
-            db.execSQL("DROP TABLE IF EXISTS " + LIST_TABLE);
+            String dropTaskTable = new SQLTableStatement(TASK_TABLE).drop();
+            db.execSQL(dropTaskTable);
+
+            String dropListTable = new SQLTableStatement(LIST_TABLE).drop();
+            db.execSQL(dropListTable);
+
             // Create a new one.
             onCreate(db);
         }
