@@ -317,25 +317,6 @@ public class Database {
         private static final String TASK_TABLE = "task";
         private static final String LIST_TABLE = "list";
 
-        // SQL Statement to create a new database.
-        private static final String CREATE_TASK_TABLE = "create table "
-                + TASK_TABLE + " (" + KEY_ID
-                + " integer primary key autoincrement, " + CONTENT
-                + " text not null, " + LIST_ID + " integer, " + STATE
-                + " integer, " + STARTED_AT
-                + " timestamp default current_timestamp, " + FINISHED_AT
-                + " timestamp" + ");";
-
-        private static final String CREATE_LIST_TABLE = "create table "
-                + LIST_TABLE + " (" + KEY_ID
-                + " integer primary key autoincrement, " + LIST_NAME
-                + " text not null, " + STATE + " integer, " + HAS_TASK_LIFETIME
-                + " integer default 0, " + TASK_LIFETIME
-                + " integer default 0, " + IS_DELETEABLE
-                + " integer default 1, " + CREATED_AT
-                + " timestamp default current_timestamp, " + DELETED_AT
-                + " timestamp" + ");";
-
         public ModelHelper(Context context, String name, CursorFactory factory,
                 int version) {
             super(context, name, factory, version);
@@ -343,17 +324,28 @@ public class Database {
 
         private void createList(SQLiteDatabase db,
                 String name,
-                int hasLifetime,
-                int lifetimeHours,
                 int isDeleteable) {
             ContentValues cv = new ContentValues();
             cv.put(LIST_NAME, name);
             cv.put(STATE, TaskList.STATE_ACTIVE);
-            cv.put(HAS_TASK_LIFETIME, hasLifetime);
-            if (hasLifetime == 1) {
-                cv.put(TASK_LIFETIME, lifetimeHours);
-            }
             cv.put(IS_DELETEABLE, isDeleteable);
+
+            cv.put(HAS_TASK_LIFETIME, 0);
+
+            db.insert(LIST_TABLE, null, cv);
+        }
+
+        private void createList(SQLiteDatabase db,
+                String name,
+                int isDeleteable,
+                int lifetimeHours) {
+            ContentValues cv = new ContentValues();
+            cv.put(LIST_NAME, name);
+            cv.put(STATE, TaskList.STATE_ACTIVE);
+            cv.put(IS_DELETEABLE, isDeleteable);
+
+            cv.put(HAS_TASK_LIFETIME, 1);
+            cv.put(TASK_LIFETIME, lifetimeHours);
 
             db.insert(LIST_TABLE, null, cv);
         }
@@ -362,13 +354,33 @@ public class Database {
         // to create a new one.
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL(CREATE_TASK_TABLE);
-            db.execSQL(CREATE_LIST_TABLE);
+            
+            String createTaskTable = new TableBuilder(TASK_TABLE)
+                .addInteger(KEY_ID, "primary key autoincrement")
+                .addText(CONTENT, "not null")
+                .addInteger(LIST_ID)
+                .addInteger(STATE)
+                .addTimestamp(STARTED_AT, "default current_timestamp")
+                .addTimestamp(FINISHED_AT)
+                .build();
+            db.execSQL(createTaskTable);
+
+            String createListTable = new TableBuilder(LIST_TABLE)
+                .addInteger(KEY_ID, "primary key autoincrement")
+                .addText(LIST_NAME, "not null")
+                .addInteger(STATE)
+                .addInteger(HAS_TASK_LIFETIME, "default 0")
+                .addInteger(TASK_LIFETIME, "default 0")
+                .addInteger(IS_DELETEABLE, "default 1")
+                .addTimestamp(CREATED_AT, "default current_timestamp")
+                .addTimestamp(DELETED_AT)
+                .build();
+            db.execSQL(createListTable);
 
             // TODO: get the names of the lists from the res folder
-            createList(db, "today", 1, 24, 0);
-            createList(db, "this week", 1, 24 * 7, 0);
-            createList(db, "later", 0, 0, 1);
+            createList(db, "today", 0, 24);
+            createList(db, "this week", 0, 24 * 7);
+            createList(db, "later", 1);
         }
 
         // Called when there is a database version mismatch meaning that
