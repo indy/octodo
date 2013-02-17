@@ -69,6 +69,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
 
 
         Integer taskId = Integer.valueOf(task.getId());
+
         CheckBox isDone = (CheckBox) convertView.findViewById(R.id.isDone);
         isDone.setTag(taskId);
 

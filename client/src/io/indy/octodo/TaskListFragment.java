@@ -23,6 +23,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
+import com.tjerkw.slideexpandable.library.SlideExpandableListAdapter;
+
 import de.greenrobot.event.EventBus;
 
 public final class TaskListFragment extends Fragment implements OnClickListener {
@@ -130,7 +133,11 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
                 mTaskModelInterface);
 
         // Bind the Array Adapter to the List View
-        mListView.setAdapter(mTaskItemAdapter);
+        // mListView.setAdapter(mTaskItemAdapter);
+        mListView.setAdapter(new SlideExpandableListAdapter(mTaskItemAdapter,
+                                                            R.id.expandable_toggle_button,
+                                                            R.id.expandable));
+
 
         // invoke this object's onClick method when a task is added
         mButtonAddTask.setOnClickListener(this);
