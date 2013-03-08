@@ -1,73 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical" >
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="48dp"
-        android:orientation="horizontal" >
+  <RelativeLayout
+      android:layout_width="fill_parent"
+      android:layout_height="48dp"
+      android:orientation="horizontal" >
 
-        <Button
-            android:id="@+id/expandable_toggle_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:text="More" />
+    <Button
+        android:id="@+id/expandable_toggle_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="More" />
 
-        <CheckBox
-            android:id="@+id/isDone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true" />
+    <CheckBox
+        android:id="@+id/isDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true" />
 
-            <TextView
-                android:id="@+id/content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/isDone"
-                android:layout_marginTop="6dp"
-                android:layout_marginLeft="16dp"
-                android:layout_toRightOf="@+id/isDone"
-                android:text="" />
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/isDone"
+        android:layout_toRightOf="@+id/isDone"
+        android:text="" />
 
-            <TextView
-                android:id="@+id/age"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/isDone"
-                android:layout_alignLeft="@+id/content"
-                android:layout_marginBottom="4dp"
-                android:text="age" />
+  </RelativeLayout>
 
-    </RelativeLayout>
+  <!-- this is the expandable view that is initially hidden and will slide out when the more button is pressed -->
 
-    <!-- this is the expandable view that is initially hidden and will slide out when the more button is pressed -->
+  <LinearLayout
+      android:id="@+id/expandable"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:background="#000000"
+      android:orientation="horizontal" >
 
-    <LinearLayout
-        android:id="@+id/expandable"
+    <!-- put whatever you want in the expandable view -->
+
+    <Button
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000"
-        android:orientation="horizontal" >
+        android:layout_weight="0.5"
+        android:text="Action A" />
 
-        <!-- put whatever you want in the expandable view -->
-
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="0.5"
-            android:text="Action A" />
-
-        <Button
-            android:id="@+id/details"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="0.5"
-            android:text="Action B" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/details"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.5"
+        android:text="Action B" />
+  </LinearLayout>
 
 </LinearLayout>

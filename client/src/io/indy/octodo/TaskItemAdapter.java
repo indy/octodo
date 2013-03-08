@@ -44,45 +44,32 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
             Log.d(TAG, "getView position: " + position);
         }
 
+        Task task = getItem(position);
+
+        boolean addClickListener = false;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.row_task, parent, false);
-
-            CheckBox cb = (CheckBox) convertView.findViewById(R.id.isDone);
-            cb.setOnClickListener(this);
+            addClickListener = true;
         }
-
-        Task task = getItem(position);
-        String taskString = task.getContent();
-        int state = task.getState();
-
-        if (D) {
-            Log.d(TAG, taskString + " state:" + state);
-        }
-
-        TextView tv = (TextView) convertView.findViewById(R.id.content);
-        tv.setText(taskString);
-
-        String startedAtString = task.getStartedAt();
-        TextView ageTv = (TextView) convertView.findViewById(R.id.age);
-        String timeSpan = DateFormatHelper.formatTimeSpan(startedAtString);
-        ageTv.setText(timeSpan);
-
-
-        Integer taskId = Integer.valueOf(task.getId());
 
         CheckBox isDone = (CheckBox) convertView.findViewById(R.id.isDone);
+        if (addClickListener) {
+            isDone.setOnClickListener(this);
+        }
+        Integer taskId = Integer.valueOf(task.getId());
         isDone.setTag(taskId);
 
+        TextView tv = (TextView) convertView.findViewById(R.id.content);
+        String taskString = task.getContent();
+        tv.setText(taskString);
+
+        int state = task.getState();
         if (state == Task.STATE_STRUCK) {
             tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             isDone.setChecked(true);
         } else {
             tv.setPaintFlags(tv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
             isDone.setChecked(false);
-        }
-
-        if (D) {
-            Log.d(TAG, "---------------");
         }
 
         return convertView;
