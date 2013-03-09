@@ -12,7 +12,7 @@ import android.util.Log;
 class TaskListPagerAdapter extends FragmentStatePagerAdapter {
 
     private final String TAG = getClass().getSimpleName();
-    private static final boolean D = true;
+    private static final boolean D = false;
 
     private List<TaskList> mTaskLists;
 
