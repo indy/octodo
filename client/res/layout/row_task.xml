@@ -1,62 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
-  <RelativeLayout
-      android:layout_width="fill_parent"
-      android:layout_height="48dp"
-      android:orientation="horizontal" >
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal" >
 
-    <Button
-        android:id="@+id/expandable_toggle_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="More" />
+        <ImageButton
+            android:id="@+id/expandable_toggle_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@null"
+            android:contentDescription="@string/content_desc_expandable_toggle"
+            android:src="@drawable/ic_search" />
 
-    <CheckBox
-        android:id="@+id/isDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true" />
+        <CheckBox
+            android:id="@+id/isDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true" />
 
-    <TextView
-        android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/isDone"
-        android:layout_toRightOf="@+id/isDone"
-        android:text="" />
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/isDone"
+            android:layout_toRightOf="@+id/isDone"
+            android:text="" />
+    </RelativeLayout>
 
-  </RelativeLayout>
+    <!-- this is the expandable view that is initially hidden and will slide out when the more button is pressed -->
 
-  <!-- this is the expandable view that is initially hidden and will slide out when the more button is pressed -->
-
-  <LinearLayout
-      android:id="@+id/expandable"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:background="#000000"
-      android:orientation="horizontal" >
-
-    <!-- put whatever you want in the expandable view -->
-
-    <Button
+    <LinearLayout
+        android:id="@+id/expandable"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="0.5"
-        android:text="Action A" />
+        android:background="#000000"
+        android:orientation="horizontal" >
 
-    <Button
-        android:id="@+id/details"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="0.5"
-        android:text="Action B" />
-  </LinearLayout>
+        <!-- put whatever you want in the expandable view -->
+
+        <ImageButton
+            android:id="@+id/edit_task"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.5"
+            android:background="@null"
+            android:src="@drawable/ic_action_edit" />
+
+        <ImageButton
+            android:id="@+id/delete_task"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.5"
+            android:background="@null"
+            android:src="@drawable/ic_action_delete" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -15,4 +15,6 @@
     <string name="title_activity_manage_lists">Manage Lists</string>
     <string name="add_list">Create List</string>
     <string name="discard_lists">Discard Lists</string>
+
+    <string name="content_desc_expandable_toggle">Toggle extra task commands</string>
 </resources>

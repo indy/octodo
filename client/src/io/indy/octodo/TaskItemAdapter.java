@@ -1,6 +1,5 @@
 package io.indy.octodo;
 
-import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskModelInterface;
 
@@ -15,6 +14,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class TaskItemAdapter extends ArrayAdapter<Task> implements
@@ -38,7 +38,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View v, ViewGroup parent) {
 
         if (D) {
             Log.d(TAG, "getView position: " + position);
@@ -46,20 +46,29 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
 
         Task task = getItem(position);
 
-        boolean addClickListener = false;
-        if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.row_task, parent, false);
-            addClickListener = true;
+        boolean addClickListeners = false;
+        if (v == null) {
+            v = mInflater.inflate(R.layout.row_task, parent, false);
+            addClickListeners = true;
         }
 
-        CheckBox isDone = (CheckBox) convertView.findViewById(R.id.isDone);
-        if (addClickListener) {
+        CheckBox isDone = (CheckBox) v.findViewById(R.id.isDone);
+        if (addClickListeners) {
             isDone.setOnClickListener(this);
+
+            ImageButton editTask;
+            editTask = (ImageButton) v.findViewById(R.id.edit_task);
+            editTask.setOnClickListener(createEditTaskListener(task));
+
+            ImageButton deleteTask;
+            deleteTask = (ImageButton) v.findViewById(R.id.delete_task);
+            deleteTask.setOnClickListener(createDeleteTaskListener(task));
+
         }
         Integer taskId = Integer.valueOf(task.getId());
         isDone.setTag(taskId);
 
-        TextView tv = (TextView) convertView.findViewById(R.id.content);
+        TextView tv = (TextView) v.findViewById(R.id.content);
         String taskString = task.getContent();
         tv.setText(taskString);
 
@@ -72,7 +81,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
             isDone.setChecked(false);
         }
 
-        return convertView;
+        return v;
     }
 
     @Override
@@ -92,6 +101,28 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
             mTaskModelInterface.onTaskUpdateState(id, Task.STATE_OPEN);
             Log.d(TAG, "false isChecked on id: " + id);
         }
+    }
+
+    private View.OnClickListener createEditTaskListener(Task task) {
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "clicked editTask button");
+            }
+        };
+
+        return listener;
+    }
+
+    private View.OnClickListener createDeleteTaskListener(Task task) {
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "clicked deleteTask button");
+            }
+        };
+
+        return listener;
     }
 
 }
