@@ -11,6 +11,7 @@ import io.indy.octodo.model.TaskModelInterface;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -43,6 +45,8 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     private Button mButtonAddTask;
 
     private LinearLayout mSectionAddTask;
+    
+    private Context mContext;
 
     public static TaskListFragment newInstance(TaskList taskList) {
         TaskListFragment fragment = new TaskListFragment();
@@ -57,6 +61,8 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         if (D)
             Log.d(TAG, "onAttach");
 
+        mContext = activity;
+        
         try {
             mTaskModelInterface = (TaskModelInterface) activity;
         } catch (ClassCastException e) {
@@ -95,6 +101,8 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
                 anim = AnimationHelper.slideDownAnimation();
                 mSectionAddTask.startAnimation(anim);
                 mSectionAddTask.setVisibility(View.VISIBLE);
+                mEditText.requestFocus();
+                
             } else {
                 anim = AnimationHelper.slideUpAnimation();
                 mSectionAddTask.startAnimation(anim);
@@ -115,6 +123,10 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
             ViewGroup container,
             Bundle savedInstanceState) {
 
+        if (D) {
+            Log.d(TAG, "onCreateView");
+        }
+
         // Create, or inflate the Fragment's UI, and return it.
         // If this Fragment has no UI then return null.
         View view = inflater.inflate(R.layout.fragment_tasklist,
@@ -125,6 +137,8 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         mListView = (ListView) view.findViewById(R.id.listViewTasks);
         mButtonAddTask = (Button) view.findViewById(R.id.buttonAddTask);
         mSectionAddTask = (LinearLayout) view.findViewById(R.id.sectionAddTask);
+
+        setKeyboardVisibility(mEditText);
 
         mTasks = mTaskModelInterface.onGetTasks(mTaskList.getId());
 
@@ -143,6 +157,22 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         mButtonAddTask.setOnClickListener(this);
 
         return view;
+    }
+
+    private void setKeyboardVisibility(EditText editText) {
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+
+                    InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                    if (hasFocus) {
+                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+                    } else {
+                        imm.hideSoftInputFromWindow(v.getWindowToken(),0); 
+                    }
+                }
+            });
     }
 
     public void onClick(View v) {

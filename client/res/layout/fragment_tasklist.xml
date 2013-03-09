@@ -19,8 +19,6 @@
             android:ems="10"
             android:inputType="text"
             android:maxLines="1" >
-
-            <requestFocus />
         </EditText>
 
         <Button
