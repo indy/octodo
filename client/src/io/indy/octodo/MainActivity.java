@@ -195,24 +195,16 @@ public class MainActivity extends SherlockFragmentActivity implements
         Log.d(TAG, "clicked " + item);
 
         switch (item.getItemId()) {
-        case R.id.menu_discard_tasks:
-
-            Log.d(TAG, "removing completed items");
-            // remove the completed tasks from the current list
-            /*
-             * int i = mPager.getCurrentItem(); TaskList taskList =
-             * mAdapter.getTaskList(i); int taskListId = taskList.getId();
-             */
+        case R.id.menu_remove_completed_tasks:
+            if (D) {
+                Log.d(TAG, "removing completed items");
+            }
 
             int taskListId = getTaskListId();
-
-            // Log.d(TAG, "getCurrentItem returned " + i + " with id: " +
-            // taskListId);
             mDatabase.removeStruckTasks(taskListId);
-            // refresh the listviewfragment
-            // call notifyDataSetChanged() on adapter?
 
-            RemoveCompletedTasksEvent rctEvent = new RemoveCompletedTasksEvent(taskListId);
+            RemoveCompletedTasksEvent rctEvent;
+            rctEvent = new RemoveCompletedTasksEvent(taskListId);
             EventBus.getDefault().post(rctEvent);
 
             break;

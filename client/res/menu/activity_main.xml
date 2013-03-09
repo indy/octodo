@@ -9,21 +9,21 @@
     </item>
     
     <item
-        android:id="@+id/menu_discard_tasks"
-        android:icon="@drawable/ic_discard"
-        android:showAsAction="always"
-        android:title="@string/discard_items"
-        android:titleCondensed="@string/discard_items">
+        android:id="@+id/menu_remove_completed_tasks"
+        android:showAsAction="never"
+        android:title="@string/remove_completed_tasks"
+        android:titleCondensed="@string/remove_completed_tasks">
     </item>
-
     <item
         android:id="@+id/menu_manage_lists"
         android:showAsAction="never"
-        android:title="@string/menu_manage_lists"/>
+        android:title="@string/menu_manage_lists"
+        android:titleCondensed="@string/menu_manage_lists"/>
     <item
         android:id="@+id/menu_settings"
         android:showAsAction="never"
-        android:title="@string/menu_settings"/>
+        android:title="@string/menu_settings"
+        android:titleCondensed="@string/menu_settings"/>
     <item
         android:id="@+id/menu_about"
         android:showAsAction="never"
