@@ -5,7 +5,9 @@ import io.indy.octodo.model.TaskModelInterface;
 
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +26,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
     private static final boolean D = true;
 
     private final LayoutInflater mInflater;
+    private final Context mContext;
 
     private TaskModelInterface mTaskModelInterface;
 
@@ -35,6 +38,8 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
 
         String inflater = Context.LAYOUT_INFLATER_SERVICE;
         mInflater = (LayoutInflater) context.getSystemService(inflater);
+
+        mContext = context;
     }
 
     @Override
@@ -114,11 +119,43 @@ public class TaskItemAdapter extends ArrayAdapter<Task> implements
         return listener;
     }
 
-    private View.OnClickListener createDeleteTaskListener(Task task) {
+    private View.OnClickListener createDeleteTaskListener(final Task task) {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "clicked deleteTask button");
+
+                String title = "Delete Task";
+                String message = "Permanently delete \"" + task.getContent() + "\"?";
+                String button1String = "Delete";
+                String button2String = "Cancel";
+
+                AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
+                ad.setTitle(title);
+                ad.setMessage(message);
+                ad.setPositiveButton(button1String,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int arg1) {
+                                Log.d(TAG, "eaten by grue");
+                            }
+                        });
+
+                ad.setNegativeButton(button2String,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int arg1) {
+                                Log.d(TAG, "pressed the cancel button");
+                            }
+                        });
+
+                ad.setCancelable(true);
+                ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    public void onCancel(DialogInterface dialog) {
+                        Log.d(TAG, "pressed cancel");
+                    }
+                });
+
+                ad.show();
+
             }
         };
 
