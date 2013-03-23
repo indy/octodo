@@ -1,5 +1,8 @@
-package io.indy.octodo;
+package io.indy.octodo.adapter;
 
+import io.indy.octodo.R;
+import io.indy.octodo.R.id;
+import io.indy.octodo.R.layout;
 import io.indy.octodo.model.TaskList;
 
 import java.util.List;

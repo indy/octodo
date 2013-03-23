@@ -1,5 +1,6 @@
 package io.indy.octodo;
 
+import io.indy.octodo.adapter.TaskItemAdapter;
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.helper.AnimationHelper;

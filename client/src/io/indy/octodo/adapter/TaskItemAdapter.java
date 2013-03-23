@@ -1,4 +1,4 @@
-package io.indy.octodo;
+package io.indy.octodo.adapter;
 
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskModelInterface;

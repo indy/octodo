@@ -1,5 +1,6 @@
 package io.indy.octodo;
 
+import io.indy.octodo.adapter.ManageListsAdapter;
 import io.indy.octodo.helper.AnimationHelper;
 import io.indy.octodo.model.Database;
 import io.indy.octodo.model.TaskList;

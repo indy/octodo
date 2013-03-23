@@ -1,5 +1,6 @@
-package io.indy.octodo;
+package io.indy.octodo.adapter;
 
+import io.indy.octodo.TaskListFragment;
 import io.indy.octodo.model.TaskList;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
-class TaskListPagerAdapter extends FragmentStatePagerAdapter {
+public class TaskListPagerAdapter extends FragmentStatePagerAdapter {
 
     private final String TAG = getClass().getSimpleName();
     private static final boolean D = false;
