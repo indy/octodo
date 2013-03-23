@@ -1,12 +1,12 @@
 package io.indy.octodo;
 
+import io.indy.octodo.adapter.TaskListPagerAdapter;
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.model.Database;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 import io.indy.octodo.model.TaskModelInterface;
-import io.indy.octodo.adapter.TaskListPagerAdapter;
 
 import java.util.List;
 
