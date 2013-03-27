@@ -19,4 +19,5 @@
     <string name="content_desc_expandable_toggle">Toggle extra task commands</string>
     <string name="content_desc_edit_task">Edit task</string>
     <string name="content_desc_delete_task">Delete task</string>
+    <string name="content_desc_move_task">Move task</string>
 </resources>
