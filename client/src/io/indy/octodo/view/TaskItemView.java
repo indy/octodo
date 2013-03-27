@@ -22,11 +22,12 @@ public class TaskItemView extends LinearLayout {
     private static final boolean D = true;
 
     private final Context mContext;
-    private TaskModelInterface mTaskModelInterface;
+    private TaskModelInterface mModelInterface;
 
     private CheckBox mIsDone;
     private ImageButton mEditTask;
     private ImageButton mDeleteTask;
+    private ImageButton mMoveTask;
     private TextView mContent;
 
     public TaskItemView(Context context) {
@@ -43,6 +44,7 @@ public class TaskItemView extends LinearLayout {
         mIsDone = (CheckBox) findViewById(R.id.isDone);
         mEditTask = (ImageButton) findViewById(R.id.edit_task);
         mDeleteTask = (ImageButton) findViewById(R.id.delete_task);
+        mMoveTask = (ImageButton) findViewById(R.id.move_task);
         mContent = (TextView) findViewById(R.id.content);
     }
 
@@ -60,108 +62,111 @@ public class TaskItemView extends LinearLayout {
 
         int state = task.getState();
         if (state == Task.STATE_STRUCK) {
-            mContent.setPaintFlags(mContent.getPaintFlags()
-                    | Paint.STRIKE_THRU_TEXT_FLAG);
+            setContentAsStruckThru();
             mIsDone.setChecked(true);
         } else {
-            mContent.setPaintFlags(mContent.getPaintFlags()
-                    & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            setContentAsNotStruckThru();
             mIsDone.setChecked(false);
         }
     }
 
     public void setTaskModelInterface(TaskModelInterface taskModelInterface) {
-        mTaskModelInterface = taskModelInterface;
+        mModelInterface = taskModelInterface;
     }
 
     public void addClickListeners() {
         mIsDone.setOnClickListener(createIsDoneTaskListener());
         mEditTask.setOnClickListener(createEditTaskListener());
         mDeleteTask.setOnClickListener(createDeleteTaskListener());
+        mMoveTask.setOnClickListener(createMoveTaskListener());
     }
 
     private View.OnClickListener createIsDoneTaskListener() {
-        View.OnClickListener listener = new View.OnClickListener() {
+        return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 CheckBox cb = (CheckBox) view;
                 int id = (Integer) view.getTag();
 
-                // View parent = (View) view.getParent();
-                // TextView tv = (TextView) parent.findViewById(R.id.content);
-
                 if (cb.isChecked()) {
-                    mContent.setPaintFlags(mContent.getPaintFlags()
-                            | Paint.STRIKE_THRU_TEXT_FLAG);
-                    mTaskModelInterface
-                            .onTaskUpdateState(id, Task.STATE_STRUCK);
-                    Log.d(TAG, "true isChecked on id: " + id);
+                    setContentAsStruckThru();
+                    mModelInterface.onTaskUpdateState(id, Task.STATE_STRUCK);
                 } else {
-                    mContent.setPaintFlags(mContent.getPaintFlags()
-                            & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                    mTaskModelInterface.onTaskUpdateState(id, Task.STATE_OPEN);
-                    Log.d(TAG, "false isChecked on id: " + id);
+                    setContentAsNotStruckThru();
+                    mModelInterface.onTaskUpdateState(id, Task.STATE_OPEN);
                 }
             }
         };
-
-        return listener;
     }
 
     private View.OnClickListener createEditTaskListener() {
-        View.OnClickListener listener = new View.OnClickListener() {
+        return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "clicked editTask button");
             }
         };
-
-        return listener;
     }
 
     private View.OnClickListener createDeleteTaskListener() {
-        View.OnClickListener listener = new View.OnClickListener() {
+        return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "clicked deleteTask button");
+                showDeleteDialog();
+            }
+        };
+    }
 
-                String title = "Delete Task";
-                // String message = "Permanently delete \"" + task.getContent()
-                // + "\"?";
-                String message = "Permanently delete task?";
-                String button1String = "Delete";
-                String button2String = "Cancel";
+    private View.OnClickListener createMoveTaskListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "clicked move task button");
+            }
+        };
+    }
 
-                AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
-                ad.setTitle(title);
-                ad.setMessage(message);
-                ad.setPositiveButton(button1String,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int arg1) {
-                                Log.d(TAG, "eaten by grue");
-                            }
-                        });
+    private void showDeleteDialog() {
+        String title = "Delete Task";
+        String message = "Permanently delete task?";
+        String positiveString = "Delete";
+        String negativeString = "Cancel";
 
-                ad.setNegativeButton(button2String,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int arg1) {
-                                Log.d(TAG, "pressed the cancel button");
-                            }
-                        });
-
-                ad.setCancelable(true);
-                ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    public void onCancel(DialogInterface dialog) {
-                        Log.d(TAG, "pressed cancel");
+        AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
+        ad.setTitle(title);
+        ad.setMessage(message);
+        ad.setPositiveButton(positiveString,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        Log.d(TAG, "eaten by grue");
                     }
                 });
 
-                ad.show();
+        ad.setNegativeButton(negativeString,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        Log.d(TAG, "pressed the cancel button");
+                    }
+                });
 
+        ad.setCancelable(true);
+        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                Log.d(TAG, "pressed cancel");
             }
-        };
+        });
 
-        return listener;
+        ad.show();
+
     }
 
+    private void setContentAsStruckThru() {
+        mContent.setPaintFlags(mContent.getPaintFlags()
+                | Paint.STRIKE_THRU_TEXT_FLAG);
+    }
+
+    private void setContentAsNotStruckThru() {
+        mContent.setPaintFlags(mContent.getPaintFlags()
+                & ~Paint.STRIKE_THRU_TEXT_FLAG);
+    }
 }
