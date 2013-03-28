@@ -215,7 +215,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     // get the list of tasks from the model and display them
     private void refreshTasks() {
 
-        mSlideAdapter.animateCollapse();
+        mSlideAdapter.collapseLastOpen();
 
         List<Task> tasks = mTaskModelInterface.onGetTasks(mTaskList.getId());
         mTasks.clear();
