@@ -135,15 +135,29 @@ public class Database {
 
     }
 
+    
     public void updateTask(Task task) {
     }
 
-    public void deleteTask(Task task) {
+    // DELETE the specified task
+    public void deleteTask(int taskId) {
+        if (D) {
+            Log.d(TAG, "deleteTask: taskId=" + taskId);
+        }
+
+        SQLiteDatabase db = mModelHelper.getWritableDatabase();
+
+        String where = KEY_ID + "=?";
+        String whereArgs[] = { Integer.toString(taskId) };
+
+        db.delete(ModelHelper.TASK_TABLE, where, whereArgs);
     }
 
     // mark all struck tasks in the tasklist as closed
     public void removeStruckTasks(int taskListId) {
-        Log.d(TAG, "Database:removeStruckTasks called");
+        if(D) {
+            Log.d(TAG, "removeStruckTasks: taskListId=" + taskListId);
+        }
 
         SQLiteDatabase db = mModelHelper.getWritableDatabase();
 
@@ -236,7 +250,7 @@ public class Database {
         String where = STATE + "=?" + " and " + IS_DELETEABLE + "=?";
         // active and deletable task lists
         String whereArgs[] = { Integer.toString(TaskList.STATE_ACTIVE),
-                               Integer.toString(1)};
+                Integer.toString(1) };
 
         String groupBy = null;
         String having = null;
@@ -322,9 +336,7 @@ public class Database {
             super(context, name, factory, version);
         }
 
-        private void createList(SQLiteDatabase db,
-                String name,
-                int isDeleteable) {
+        private void createList(SQLiteDatabase db, String name, int isDeleteable) {
             ContentValues cv = new ContentValues();
             cv.put(LIST_NAME, name);
             cv.put(STATE, TaskList.STATE_ACTIVE);
@@ -354,27 +366,23 @@ public class Database {
         // to create a new one.
         @Override
         public void onCreate(SQLiteDatabase db) {
-            
+
             String createTaskTable = new SQLTableStatement(TASK_TABLE)
-                .addInteger(KEY_ID, "primary key autoincrement")
-                .addText(CONTENT, "not null")
-                .addInteger(LIST_ID)
-                .addInteger(STATE)
-                .addTimestamp(STARTED_AT, "default current_timestamp")
-                .addTimestamp(FINISHED_AT)
-                .create();
+                    .addInteger(KEY_ID, "primary key autoincrement")
+                    .addText(CONTENT, "not null").addInteger(LIST_ID)
+                    .addInteger(STATE)
+                    .addTimestamp(STARTED_AT, "default current_timestamp")
+                    .addTimestamp(FINISHED_AT).create();
             db.execSQL(createTaskTable);
 
             String createListTable = new SQLTableStatement(LIST_TABLE)
-                .addInteger(KEY_ID, "primary key autoincrement")
-                .addText(LIST_NAME, "not null")
-                .addInteger(STATE)
-                .addInteger(HAS_TASK_LIFETIME, "default 0")
-                .addInteger(TASK_LIFETIME, "default 0")
-                .addInteger(IS_DELETEABLE, "default 1")
-                .addTimestamp(CREATED_AT, "default current_timestamp")
-                .addTimestamp(DELETED_AT)
-                .create();
+                    .addInteger(KEY_ID, "primary key autoincrement")
+                    .addText(LIST_NAME, "not null").addInteger(STATE)
+                    .addInteger(HAS_TASK_LIFETIME, "default 0")
+                    .addInteger(TASK_LIFETIME, "default 0")
+                    .addInteger(IS_DELETEABLE, "default 1")
+                    .addTimestamp(CREATED_AT, "default current_timestamp")
+                    .addTimestamp(DELETED_AT).create();
             db.execSQL(createListTable);
 
             // TODO: get the names of the lists from the res folder

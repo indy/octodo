@@ -1,6 +1,7 @@
 package io.indy.octodo;
 
 import io.indy.octodo.adapter.TaskItemAdapter;
+import io.indy.octodo.event.DeleteTaskEvent;
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.helper.AnimationHelper;
@@ -38,6 +39,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
     private List<Task> mTasks;
     private TaskItemAdapter mTaskItemAdapter;
+    private SlideExpandableListAdapter mSlideAdapter;
     private TaskModelInterface mTaskModelInterface;
 
     private TaskList mTaskList;
@@ -88,6 +90,12 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     public void onEvent(RemoveCompletedTasksEvent event) {
+        if (event.getTaskListId() == mTaskList.getId()) {
+            refreshTasks();
+        }
+    }
+
+    public void onEvent(DeleteTaskEvent event) {
         if (event.getTaskListId() == mTaskList.getId()) {
             refreshTasks();
         }
@@ -147,11 +155,14 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
                 mTasks,
                 mTaskModelInterface);
 
+
+        mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter,
+                                                       R.id.expandable_toggle_button,
+                                                       R.id.expandable);
+
         // Bind the Array Adapter to the List View
         // mListView.setAdapter(mTaskItemAdapter);
-        mListView.setAdapter(new SlideExpandableListAdapter(mTaskItemAdapter,
-                                                            R.id.expandable_toggle_button,
-                                                            R.id.expandable));
+        mListView.setAdapter(mSlideAdapter);
 
 
         // invoke this object's onClick method when a task is added
@@ -203,6 +214,9 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
     // get the list of tasks from the model and display them
     private void refreshTasks() {
+
+        mSlideAdapter.animateCollapse();
+
         List<Task> tasks = mTaskModelInterface.onGetTasks(mTaskList.getId());
         mTasks.clear();
         mTasks.addAll(tasks);

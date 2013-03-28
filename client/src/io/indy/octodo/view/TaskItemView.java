@@ -22,13 +22,15 @@ public class TaskItemView extends LinearLayout {
     private static final boolean D = true;
 
     private final Context mContext;
-    private TaskModelInterface mModelInterface;
+    private TaskModelInterface mModel;
 
     private CheckBox mIsDone;
     private ImageButton mEditTask;
     private ImageButton mDeleteTask;
     private ImageButton mMoveTask;
     private TextView mContent;
+
+    private Task mTask;
 
     public TaskItemView(Context context) {
         super(context);
@@ -54,8 +56,11 @@ public class TaskItemView extends LinearLayout {
     }
 
     public void setupWithTask(Task task) {
-        Integer taskId = Integer.valueOf(task.getId());
-        mIsDone.setTag(taskId);
+
+        mTask = task;
+
+        // Integer taskId = Integer.valueOf(mTaskId);
+        // mIsDone.setTag(taskId);
 
         String taskString = task.getContent();
         mContent.setText(taskString);
@@ -71,7 +76,7 @@ public class TaskItemView extends LinearLayout {
     }
 
     public void setTaskModelInterface(TaskModelInterface taskModelInterface) {
-        mModelInterface = taskModelInterface;
+        mModel = taskModelInterface;
     }
 
     public void addClickListeners() {
@@ -86,14 +91,15 @@ public class TaskItemView extends LinearLayout {
             @Override
             public void onClick(View view) {
                 CheckBox cb = (CheckBox) view;
-                int id = (Integer) view.getTag();
+                // int id = (Integer) view.getTag();
+                int id = mTask.getId();
 
                 if (cb.isChecked()) {
                     setContentAsStruckThru();
-                    mModelInterface.onTaskUpdateState(id, Task.STATE_STRUCK);
+                    mModel.onTaskUpdateState(id, Task.STATE_STRUCK);
                 } else {
                     setContentAsNotStruckThru();
-                    mModelInterface.onTaskUpdateState(id, Task.STATE_OPEN);
+                    mModel.onTaskUpdateState(id, Task.STATE_OPEN);
                 }
             }
         };
@@ -138,21 +144,29 @@ public class TaskItemView extends LinearLayout {
         ad.setPositiveButton(positiveString,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg1) {
-                        Log.d(TAG, "eaten by grue");
+                        if (D) {
+                            Log.d(TAG, "pressed the delete button");
+                        }
+                        // close the drawer
+                        mModel.onTaskDelete(mTask);
                     }
                 });
 
         ad.setNegativeButton(negativeString,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg1) {
-                        Log.d(TAG, "pressed the cancel button");
+                        if (D) {
+                            Log.d(TAG, "pressed the cancel button");
+                        }
                     }
                 });
 
         ad.setCancelable(true);
         ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onCancel(DialogInterface dialog) {
-                Log.d(TAG, "pressed cancel");
+                if (D) {
+                    Log.d(TAG, "pressed cancel");
+                }
             }
         });
 

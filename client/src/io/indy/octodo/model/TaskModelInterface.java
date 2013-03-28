@@ -9,4 +9,6 @@ public interface TaskModelInterface {
     public void onTaskUpdateState(int taskId, int state);
 
     public List<Task> onGetTasks(int taskListId);
+
+    public void onTaskDelete(Task task);
 }
