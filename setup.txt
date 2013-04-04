@@ -20,9 +20,15 @@ browse to ViewPagerIndicator/library directory
 tick Copy project into Workspace
 F2 and rename library to ViewPagerIndicator
 
+File -> New -> Other...
+Android Project From Existing Code
+browse to SlideExpandableListView/library directory
+tick Copy project into Workspace
+F2 and rename library to SlideExpandableListView
+
 Right click Octodo
 select properties
-goto Android and ensure that libraries are pointing to ActionBarSherlock and ViewPagerIndicator
+goto Android and ensure that libraries are pointing to ActionBarSherlock, ViewPagerIndicator and SlideExpandableListView
 
 
 
