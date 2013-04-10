@@ -40,7 +40,6 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
 
         if (taskItemView == null) {
             taskItemView = new TaskItemView(mContext);
-            taskItemView.addClickListeners();
             taskItemView.setTaskModelInterface(mTaskModelInterface);
         }
 

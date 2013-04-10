@@ -48,11 +48,8 @@ public class TaskItemView extends LinearLayout {
         mDeleteTask = (ImageButton) findViewById(R.id.delete_task);
         mMoveTask = (ImageButton) findViewById(R.id.move_task);
         mContent = (TextView) findViewById(R.id.content);
-    }
 
-    public TaskItemView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        mContext = context;
+        addClickListeners();
     }
 
     public void setupWithTask(Task task) {
@@ -79,60 +76,52 @@ public class TaskItemView extends LinearLayout {
         mModel = taskModelInterface;
     }
 
-    public void addClickListeners() {
-        mIsDone.setOnClickListener(createIsDoneTaskListener());
-        mEditTask.setOnClickListener(createEditTaskListener());
-        mDeleteTask.setOnClickListener(createDeleteTaskListener());
-        mMoveTask.setOnClickListener(createMoveTaskListener());
+    private void addClickListeners() {
+        mIsDone.setOnClickListener(mOnClickListener);
+        mEditTask.setOnClickListener(mOnClickListener);
+        mMoveTask.setOnClickListener(mOnClickListener);
+        mDeleteTask.setOnClickListener(mOnClickListener);
     }
 
-    private View.OnClickListener createIsDoneTaskListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CheckBox cb = (CheckBox) view;
-                // int id = (Integer) view.getTag();
-                int id = mTask.getId();
-
-                if (cb.isChecked()) {
-                    setContentAsStruckThru();
-                    mModel.onTaskUpdateState(id, Task.STATE_STRUCK);
-                } else {
-                    setContentAsNotStruckThru();
-                    mModel.onTaskUpdateState(id, Task.STATE_OPEN);
-                }
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+            case R.id.isDone:
+                clickedIsDone(v);
+                break;
+            case R.id.edit_task:
+                clickedEditTask(v);
+                break;
+            case R.id.delete_task:
+                clickedDeleteTask(v);
+                break;
+            case R.id.move_task:
+                clickedMoveTask(v);
+                break;
             }
-        };
+        }
+    };
+
+    private void clickedIsDone(View view) {
+        CheckBox cb = (CheckBox) view;
+        int id = mTask.getId();
+
+        if (cb.isChecked()) {
+            setContentAsStruckThru();
+            mModel.onTaskUpdateState(id, Task.STATE_STRUCK);
+        } else {
+            setContentAsNotStruckThru();
+            mModel.onTaskUpdateState(id, Task.STATE_OPEN);
+        }
+    };
+
+    private void clickedEditTask(View view) {
+        Log.d(TAG, "clicked editTask button");
     }
 
-    private View.OnClickListener createEditTaskListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "clicked editTask button");
-            }
-        };
-    }
+    private void clickedDeleteTask(View view) {
 
-    private View.OnClickListener createDeleteTaskListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDeleteDialog();
-            }
-        };
-    }
-
-    private View.OnClickListener createMoveTaskListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "clicked move task button");
-            }
-        };
-    }
-
-    private void showDeleteDialog() {
         String title = "Delete Task";
         String message = "Permanently delete task?";
         String positiveString = "Delete";
@@ -173,6 +162,11 @@ public class TaskItemView extends LinearLayout {
         ad.show();
 
     }
+
+    private void clickedMoveTask(View view) {
+        Log.d(TAG, "clicked moveTask button");
+    }
+
 
     private void setContentAsStruckThru() {
         mContent.setPaintFlags(mContent.getPaintFlags()
