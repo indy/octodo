@@ -109,15 +109,17 @@ public class TaskItemView extends LinearLayout {
 
     private void clickedIsDone(View view) {
         CheckBox cb = (CheckBox) view;
-        int id = mTask.getId();
+        int state;
 
         if (cb.isChecked()) {
             setContentAsStruckThru();
-            mModel.onTaskUpdateState(id, Task.STATE_STRUCK);
+            state = Task.STATE_STRUCK;
         } else {
             setContentAsNotStruckThru();
-            mModel.onTaskUpdateState(id, Task.STATE_OPEN);
+            state = Task.STATE_OPEN;
         }
+        
+        mModel.onTaskUpdateState(mTask, state);
     };
 
     private void clickedEditTask(View view) {

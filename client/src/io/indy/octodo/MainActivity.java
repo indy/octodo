@@ -5,6 +5,7 @@ import io.indy.octodo.event.DeleteTaskEvent;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
+import io.indy.octodo.event.UpdateTaskStateEvent;
 import io.indy.octodo.model.Database;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
@@ -38,12 +39,17 @@ public class MainActivity extends SherlockFragmentActivity implements
     private PageIndicator mIndicator;
     private Database mDatabase;
 
-    public void onTaskAdded(Task newTask) {
-        mDatabase.addTask(newTask);
+    public void onTaskAdded(Task task) {
+        mDatabase.addTask(task);
     }
 
-    public void onTaskUpdateState(int taskId, int state) {
+    public void onTaskUpdateState(Task task, int state) {
+        int taskId = task.getId();
         mDatabase.updateTaskState(taskId, state);
+
+        UpdateTaskStateEvent event;
+        event = new UpdateTaskStateEvent(task, state);
+        EventBus.getDefault().post(event);
     }
 
     public List<Task> onGetTasks(int taskListId) {

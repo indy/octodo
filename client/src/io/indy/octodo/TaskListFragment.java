@@ -5,6 +5,7 @@ import io.indy.octodo.event.DeleteTaskEvent;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
+import io.indy.octodo.event.UpdateTaskStateEvent;
 import io.indy.octodo.helper.AnimationHelper;
 import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
@@ -97,6 +98,12 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     public void onEvent(DeleteTaskEvent event) {
+        if (event.getTaskListId() == mTaskList.getId()) {
+            refreshTasks();
+        }
+    }
+
+    public void onEvent(UpdateTaskStateEvent event) {
         if (event.getTaskListId() == mTaskList.getId()) {
             refreshTasks();
         }
