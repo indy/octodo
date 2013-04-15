@@ -10,5 +10,9 @@ public interface TaskModelInterface {
 
     public List<Task> onGetTasks(int taskListId);
 
+    public List<TaskList> onGetTaskLists();
+
+    public void onTaskMove(Task task, int taskListId);
+
     public void onTaskDelete(Task task);
 }

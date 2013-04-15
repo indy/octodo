@@ -115,7 +115,9 @@ public class Database {
     }
 
     public void updateTaskState(int id, int state) {
-        Log.d(TAG, "Database:updateTaskState called");
+        if (D) {
+            Log.d(TAG, "updateTaskState id:" + id + " state: " + state);
+        }
 
         SQLiteDatabase db = mModelHelper.getWritableDatabase();
 
@@ -135,6 +137,22 @@ public class Database {
 
     }
 
+    // re-assign a task to a different tasklist
+    public void updateTaskParentList(int taskId, int taskListId) {
+        if (D) {
+            Log.d(TAG, "updateTaskParentList taskId: " + taskId + " taskListId: " + taskListId);
+        }
+
+        SQLiteDatabase db = mModelHelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(LIST_ID, taskListId);
+
+        String where = KEY_ID + "=" + taskId;
+        String whereArgs[] = null;
+
+        db.update(ModelHelper.TASK_TABLE, cv, where, whereArgs);
+    }
     
     public void updateTask(Task task) {
     }
