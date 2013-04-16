@@ -117,7 +117,7 @@ public class TaskItemView extends LinearLayout {
             setContentAsNotStruckThru();
             state = Task.STATE_OPEN;
         }
-        
+
         mModel.onTaskUpdateState(mTask, state);
     };
 
@@ -127,15 +127,10 @@ public class TaskItemView extends LinearLayout {
 
     private void clickedDeleteTask(View view) {
 
-        String title = "Delete Task";
-        String message = "Permanently delete task?";
-        String positiveString = "Delete";
-        String negativeString = "Cancel";
-
         AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
-        ad.setTitle(title);
-        ad.setMessage(message);
-        ad.setPositiveButton(positiveString,
+        ad.setTitle(mContext.getString(R.string.delete_task_title));
+        ad.setMessage(mContext.getString(R.string.delete_task_message));
+        ad.setPositiveButton(mContext.getString(R.string.delete_task_positive),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg1) {
                         if (D) {
@@ -146,7 +141,7 @@ public class TaskItemView extends LinearLayout {
                     }
                 });
 
-        ad.setNegativeButton(negativeString,
+        ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg1) {
                         if (D) {
@@ -165,15 +160,12 @@ public class TaskItemView extends LinearLayout {
         });
 
         ad.show();
-
     }
 
     private void clickedMoveTask(View view) {
-        Log.d(TAG, "clicked moveTask button");
-
-        String title = "Move to another list";
-        String positiveString = "Move task";
-        String negativeString = "Cancel";
+        if (D) {
+            Log.d(TAG, "clicked moveTask button");
+        }
 
         final List<TaskList> taskLists = mModel.onGetTaskLists();
         final int taskListSize = taskLists.size();
@@ -181,48 +173,47 @@ public class TaskItemView extends LinearLayout {
 
         TaskList taskList;
         int currentTaskIndex = 0;
-        
-        for(int i=0;i<taskListSize;i++) {
+
+        for (int i = 0; i < taskListSize; i++) {
             taskList = taskLists.get(i);
 
             listNames[i] = taskList.getName();
-            if(taskList.getId() == mTask.getListId()) {
+            if (taskList.getId() == mTask.getListId()) {
                 currentTaskIndex = i;
             }
         }
 
         AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
-        ad.setTitle(title);
-        ad.setSingleChoiceItems(listNames, currentTaskIndex, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if(D){
-                        Log.d(TAG, "made a selection " + which);
+        ad.setTitle(mContext.getString(R.string.move_task_title));
+        ad.setSingleChoiceItems(listNames,
+                currentTaskIndex,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (D) {
+                            Log.d(TAG, "made a selection " + which);
+                        }
                     }
-                }
-            });
-        ad.setPositiveButton(positiveString,
+                });
+        ad.setPositiveButton(mContext.getString(R.string.move_task_positive),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         int s = ((AlertDialog) dialog).getListView()
                                 .getCheckedItemPosition();
-                        if(D){
+                        if (D) {
                             Log.d(TAG, "checked " + s);
                             Log.d(TAG, "which is " + which);
+                            // get the listId of the selected item
+                            Log.d(TAG, "chosen " + taskLists.get(s).getName());
+                            Log.d(TAG, "chosen " + taskLists.get(s).getId());
                         }
 
-                        // get the listId of the selected item
-                        Log.d(TAG, "chosen " + taskLists.get(s).getName());
-                        Log.d(TAG, "chosen " + taskLists.get(s).getId());
-
                         moveTask(taskLists.get(s).getId());
-
                     }
                 });
 
-
-        ad.setNegativeButton(negativeString,
+        ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg1) {
                         if (D) {

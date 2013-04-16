@@ -20,4 +20,14 @@
     <string name="content_desc_edit_task">Edit task</string>
     <string name="content_desc_delete_task">Delete task</string>
     <string name="content_desc_move_task">Move task</string>
+
+    <string name="delete_task_title">Delete Task</string>
+    <string name="delete_task_message">Permanently delete task?</string>
+    <string name="delete_task_positive">Delete</string>
+
+    <string name="move_task_title">Move to another list</string>
+    <string name="move_task_positive">Move task</string>
+
+    <string name="dialog_generic_cancel">Cancel</string>
+
 </resources>
