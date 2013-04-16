@@ -17,7 +17,7 @@
             android:layout_alignParentRight="true"
             android:background="@null"
             android:contentDescription="@string/content_desc_expandable_toggle"
-            android:src="@drawable/ic_navigation_expand" />
+            android:src="@drawable/ic_action_overflow" />
 
         <CheckBox
             android:id="@+id/isDone"
