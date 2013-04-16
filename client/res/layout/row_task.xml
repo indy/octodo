@@ -47,6 +47,16 @@
         <!-- put whatever you want in the expandable view -->
 
         <ImageButton
+            android:id="@+id/time_task"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.5"
+            android:background="@null"
+            android:contentDescription="@string/content_desc_time_task"
+            android:padding="8dp"
+            android:src="@drawable/device_access_time" />
+
+        <ImageButton
             android:id="@+id/edit_task"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
