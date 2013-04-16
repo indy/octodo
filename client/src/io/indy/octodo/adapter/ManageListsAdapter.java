@@ -1,8 +1,6 @@
 package io.indy.octodo.adapter;
 
 import io.indy.octodo.R;
-import io.indy.octodo.R.id;
-import io.indy.octodo.R.layout;
 import io.indy.octodo.model.TaskList;
 
 import java.util.List;
@@ -24,11 +22,9 @@ public class ManageListsAdapter extends ArrayAdapter<TaskList> implements
     private static final boolean D = true;
 
     private final LayoutInflater mInflater;
-    private List<TaskList> mTaskLists;
 
     public ManageListsAdapter(Context context, List<TaskList> items) {
         super(context, android.R.layout.simple_list_item_1, items);
-        mTaskLists = items;
 
         String inflater = Context.LAYOUT_INFLATER_SERVICE;
         mInflater = (LayoutInflater) context.getSystemService(inflater);
@@ -36,6 +32,9 @@ public class ManageListsAdapter extends ArrayAdapter<TaskList> implements
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        if (D) {
+            Log.d(TAG, "getView position:" + position);
+        }
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.row_list, parent, false);
 

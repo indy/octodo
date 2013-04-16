@@ -5,7 +5,6 @@ import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 import io.indy.octodo.model.TaskModelInterface;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -173,7 +172,6 @@ public class TaskItemView extends LinearLayout {
         Log.d(TAG, "clicked moveTask button");
 
         String title = "Move to another list";
-        String message = "Permanently delete task?";
         String positiveString = "Move task";
         String negativeString = "Cancel";
 

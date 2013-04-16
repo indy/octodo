@@ -384,7 +384,10 @@ public class Database {
         // to create a new one.
         @Override
         public void onCreate(SQLiteDatabase db) {
-
+            if(D) {
+                Log.d(TAG, "onCreate");
+            }
+            
             String createTaskTable = new SQLTableStatement(TASK_TABLE)
                     .addInteger(KEY_ID, "primary key autoincrement")
                     .addText(CONTENT, "not null").addInteger(LIST_ID)
