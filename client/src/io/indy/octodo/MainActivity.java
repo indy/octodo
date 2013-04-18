@@ -27,6 +27,8 @@ import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import de.greenrobot.event.EventBus;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class MainActivity extends SherlockFragmentActivity implements
         TaskModelInterface {
@@ -60,15 +62,22 @@ public class MainActivity extends SherlockFragmentActivity implements
         return mDatabase.getTaskLists();
     }
 
-    public void onTaskMove(Task task, int newTaskListId) {
-
+    public void onTaskMove(Task task, TaskList destinationTaskList) {
+        int newTaskListId = destinationTaskList.getId();
         int oldTaskListId = task.getListId();
 
+        // update model
         mDatabase.updateTaskParentList(task.getId(), newTaskListId);
 
+        // update ui
         MoveTaskEvent moveEvent;
         moveEvent = new MoveTaskEvent(task, oldTaskListId, newTaskListId);
         EventBus.getDefault().post(moveEvent);
+
+        // show crouton
+        String messagePrefix = getString(R.string.notification_moved_task);
+        showCrouton(messagePrefix + " \"" + destinationTaskList.getName()
+                + "\"");
 
     }
 
@@ -233,12 +242,19 @@ public class MainActivity extends SherlockFragmentActivity implements
                 Log.d(TAG, "removing completed items");
             }
 
-            int taskListId = getTaskListId();
+            // update model
+            TaskList taskList = getTaskList();
+            int taskListId = taskList.getId();
             mDatabase.removeStruckTasks(taskListId);
 
+            // update UI (via TaskListFragment)
             RemoveCompletedTasksEvent rctEvent;
             rctEvent = new RemoveCompletedTasksEvent(taskListId);
             EventBus.getDefault().post(rctEvent);
+
+            // show Crouton
+            String messagePrefix = getString(R.string.notification_remove_completed_tasks);
+            showCrouton(messagePrefix + " \"" + taskList.getName() + "\"");
 
             break;
         case R.id.menu_settings:
@@ -264,11 +280,18 @@ public class MainActivity extends SherlockFragmentActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    private void showCrouton(String message) {
+        Crouton.makeText(this, message, Style.CONFIRM).show();
+    }
+
     private int getTaskListId() {
+        TaskList taskList = getTaskList();
+        return taskList.getId();
+    }
+
+    private TaskList getTaskList() {
         int i = mPager.getCurrentItem();
-        TaskList taskList = mAdapter.getTaskList(i);
-        int taskListId = taskList.getId();
-        return taskListId;
+        return mAdapter.getTaskList(i);
     }
 
     private void startManageListsActivity() {

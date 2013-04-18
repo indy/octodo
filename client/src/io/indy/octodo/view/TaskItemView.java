@@ -209,7 +209,7 @@ public class TaskItemView extends LinearLayout {
                             Log.d(TAG, "chosen " + taskLists.get(s).getId());
                         }
 
-                        moveTask(taskLists.get(s).getId());
+                        moveTask(taskLists.get(s));
                     }
                 });
 
@@ -236,8 +236,8 @@ public class TaskItemView extends LinearLayout {
     }
 
     // move mTask to the list with id: taskListId
-    private void moveTask(int taskListId) {
-        mModel.onTaskMove(mTask, taskListId);
+    private void moveTask(TaskList destinationTaskList) {
+        mModel.onTaskMove(mTask, destinationTaskList);
     }
 
     private void setContentAsStruckThru() {
