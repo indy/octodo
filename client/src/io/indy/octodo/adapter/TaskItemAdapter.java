@@ -1,7 +1,8 @@
 package io.indy.octodo.adapter;
 
+import io.indy.octodo.controller.MainController;
+
 import io.indy.octodo.model.Task;
-import io.indy.octodo.model.TaskModelInterface;
 import io.indy.octodo.view.TaskItemView;
 
 import java.util.List;
@@ -18,13 +19,13 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
     private static final boolean D = true;
 
     private final Context mContext;
-    private TaskModelInterface mTaskModelInterface;
+    private MainController mController;
 
     public TaskItemAdapter(Context context, List<Task> items,
-            TaskModelInterface taskModelInterface) {
+                           MainController controller) {
         super(context, android.R.layout.simple_list_item_1, items);
 
-        mTaskModelInterface = taskModelInterface;
+        mController = controller;
         mContext = context;
     }
 
@@ -40,7 +41,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
 
         if (taskItemView == null) {
             taskItemView = new TaskItemView(mContext);
-            taskItemView.setTaskModelInterface(mTaskModelInterface);
+            taskItemView.setController(mController);
         }
 
         taskItemView.setupWithTask(task);

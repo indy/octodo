@@ -1,17 +1,9 @@
 package io.indy.octodo;
 
 import io.indy.octodo.adapter.TaskListPagerAdapter;
-import io.indy.octodo.event.AddTaskEvent;
-import io.indy.octodo.event.DeleteTaskEvent;
-import io.indy.octodo.event.MoveTaskEvent;
-import io.indy.octodo.event.RemoveCompletedTasksEvent;
-import io.indy.octodo.event.ToggleAddTaskFormEvent;
-import io.indy.octodo.event.UpdateTaskStateEvent;
-import io.indy.octodo.helper.NotificationHelper;
+import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Database;
-import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
-import io.indy.octodo.model.TaskModelInterface;
 
 import java.util.List;
 
@@ -28,10 +20,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-import de.greenrobot.event.EventBus;
-
-public class MainActivity extends SherlockFragmentActivity implements
-        TaskModelInterface {
+public class MainActivity extends SherlockFragmentActivity {
 
     private final String TAG = getClass().getSimpleName();
     private static final boolean D = true;
@@ -39,59 +28,9 @@ public class MainActivity extends SherlockFragmentActivity implements
     private TaskListPagerAdapter mAdapter;
     private ViewPager mPager;
     private PageIndicator mIndicator;
+
+    private MainController mController;
     private Database mDatabase;
-
-    public void onTaskAdded(Task task) {
-        mDatabase.addTask(task);
-
-        AddTaskEvent event;
-        event = new AddTaskEvent(task);
-        EventBus.getDefault().post(event);
-    }
-
-    public void onTaskUpdateState(Task task, int state) {
-        int taskId = task.getId();
-        mDatabase.updateTaskState(taskId, state);
-
-        UpdateTaskStateEvent event;
-        event = new UpdateTaskStateEvent(task, state);
-        EventBus.getDefault().post(event);
-    }
-
-    public List<Task> onGetTasks(int taskListId) {
-        return mDatabase.getTasks(taskListId);
-    }
-
-    public List<TaskList> onGetTaskLists() {
-        return mDatabase.getTaskLists();
-    }
-
-    public void onTaskMove(Task task, TaskList destinationTaskList) {
-        int newTaskListId = destinationTaskList.getId();
-        int oldTaskListId = task.getListId();
-
-        // update model
-        mDatabase.updateTaskParentList(task.getId(), newTaskListId);
-
-        // update ui
-        MoveTaskEvent moveEvent;
-        moveEvent = new MoveTaskEvent(task, oldTaskListId, newTaskListId);
-        EventBus.getDefault().post(moveEvent);
-
-        // show crouton
-        String messagePrefix = getString(R.string.notification_moved_task);
-        notifyUser(messagePrefix + " \"" + destinationTaskList.getName()
-                + "\"");
-
-    }
-
-    public void onTaskDelete(Task task) {
-        mDatabase.deleteTask(task.getId());
-
-        DeleteTaskEvent dtEvent;
-        dtEvent = new DeleteTaskEvent(task);
-        EventBus.getDefault().post(dtEvent);
-    }
 
     public void refreshTaskListsUI() {
         if (D) {
@@ -103,6 +42,14 @@ public class MainActivity extends SherlockFragmentActivity implements
         mAdapter.notifyDataSetChanged();
     }
 
+    public MainController getController() {
+        if (D) {
+            Log.d(TAG, "getController");
+        }
+
+        return mController;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +58,13 @@ public class MainActivity extends SherlockFragmentActivity implements
         if (D)
             Log.d(TAG, "onCreate");
 
+        // database lifecycle and configuration is managed by MainActivity
         mDatabase = new Database(this);
+
+        if (D) {
+            Log.d(TAG, "creating MainController");
+        }
+        mController = new MainController(this, mDatabase);
         List<TaskList> taskLists = mDatabase.getTaskLists();
 
         if (D) {
@@ -242,34 +195,16 @@ public class MainActivity extends SherlockFragmentActivity implements
 
         switch (item.getItemId()) {
         case R.id.menu_remove_completed_tasks:
-            if (D) {
-                Log.d(TAG, "removing completed items");
-            }
-
-            // update model
-            TaskList taskList = getTaskList();
-            int taskListId = taskList.getId();
-            mDatabase.removeStruckTasks(taskListId);
-
-            // update UI (via TaskListFragment)
-            RemoveCompletedTasksEvent rctEvent;
-            rctEvent = new RemoveCompletedTasksEvent(taskListId);
-            EventBus.getDefault().post(rctEvent);
-
-            // show Crouton
-            String messagePrefix = getString(R.string.notification_remove_completed_tasks);
-            notifyUser(messagePrefix + " \"" + taskList.getName() + "\"");
-
+            mController.onRemoveCompletedTasks(getTaskList());
             break;
+
         case R.id.menu_settings:
             Toast.makeText(this, "menu settings", Toast.LENGTH_SHORT).show();
             break;
 
         case R.id.menu_add_task:
             // show the 'add task' ui element in the relevant task list fragment
-            int id = getTaskListId();
-            ToggleAddTaskFormEvent tatfEvent = new ToggleAddTaskFormEvent(id);
-            EventBus.getDefault().post(tatfEvent);
+            mController.onToggleAddTaskForm(getTaskListId());
             break;
 
         case R.id.menu_manage_lists:
@@ -282,11 +217,6 @@ public class MainActivity extends SherlockFragmentActivity implements
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void notifyUser(String message) {
-        NotificationHelper nh = new NotificationHelper(this);
-        nh.showConfirmation(message);
     }
 
     private int getTaskListId() {

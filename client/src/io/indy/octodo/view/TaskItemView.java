@@ -3,7 +3,7 @@ package io.indy.octodo.view;
 import io.indy.octodo.R;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
-import io.indy.octodo.model.TaskModelInterface;
+import io.indy.octodo.controller.MainController;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class TaskItemView extends LinearLayout {
     private static final boolean D = true;
 
     private final Context mContext;
-    private TaskModelInterface mModel;
+    private MainController mController;
 
     private CheckBox mIsDone;
     private ImageButton mEditTask;
@@ -75,8 +75,8 @@ public class TaskItemView extends LinearLayout {
         }
     }
 
-    public void setTaskModelInterface(TaskModelInterface taskModelInterface) {
-        mModel = taskModelInterface;
+    public void setController(MainController controller) {
+        mController = controller;
     }
 
     private void addClickListeners() {
@@ -118,7 +118,7 @@ public class TaskItemView extends LinearLayout {
             state = Task.STATE_OPEN;
         }
 
-        mModel.onTaskUpdateState(mTask, state);
+        mController.onTaskUpdateState(mTask, state);
     };
 
     private void clickedEditTask(View view) {
@@ -137,7 +137,7 @@ public class TaskItemView extends LinearLayout {
                             Log.d(TAG, "pressed the delete button");
                         }
                         // close the drawer
-                        mModel.onTaskDelete(mTask);
+                        mController.onTaskDelete(mTask);
                     }
                 });
 
@@ -167,7 +167,7 @@ public class TaskItemView extends LinearLayout {
             Log.d(TAG, "clicked moveTask button");
         }
 
-        final List<TaskList> taskLists = mModel.onGetTaskLists();
+        final List<TaskList> taskLists = mController.onGetTaskLists();
         final int taskListSize = taskLists.size();
         final CharSequence[] listNames = new CharSequence[taskListSize];
 
@@ -237,7 +237,7 @@ public class TaskItemView extends LinearLayout {
 
     // move mTask to the list with id: taskListId
     private void moveTask(TaskList destinationTaskList) {
-        mModel.onTaskMove(mTask, destinationTaskList);
+        mController.onTaskMove(mTask, destinationTaskList);
     }
 
     private void setContentAsStruckThru() {

@@ -11,7 +11,7 @@ import io.indy.octodo.helper.AnimationHelper;
 import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
-import io.indy.octodo.model.TaskModelInterface;
+import io.indy.octodo.controller.MainController;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     private List<Task> mTasks;
     private TaskItemAdapter mTaskItemAdapter;
     private SlideExpandableListAdapter mSlideAdapter;
-    private TaskModelInterface mTaskModelInterface;
+    private MainController mController;
 
     private TaskList mTaskList;
     private EditText mEditText;
@@ -64,18 +64,16 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        if (D)
+        if (D) {
             Log.d(TAG, "onAttach");
-
-        mContext = activity;
-        
-        try {
-            mTaskModelInterface = (TaskModelInterface) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + "must implement OnNewItemAddedListener");
         }
 
+        mContext = activity;
+
+        if (D) {
+            Log.d(TAG, "calling MainActivity::getController");
+        }
+        mController = ((MainActivity)activity).getController();
     }
 
     @Override
@@ -92,40 +90,45 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         EventBus.getDefault().unregister(this);
     }
 
-    public void onEvent(RemoveCompletedTasksEvent event) {
-        if (event.getTaskListId() == mTaskList.getId()) {
+    private boolean isEventRelevant(int taskListId) {
+        return mTaskList.getId() == taskListId;
+    }
+
+    private void refreshIfRelevant(int taskListId) {
+        if (isEventRelevant(taskListId)) {
             refreshTasks();
         }
     }
 
+    public void onEvent(RemoveCompletedTasksEvent event) {
+        refreshIfRelevant(event.getTaskListId());
+    }
+
     public void onEvent(AddTaskEvent event) {
-        if (event.getTaskListId() == mTaskList.getId()) {
+        if (isEventRelevant(event.getTaskListId())) {
             refreshTasks();
             mEditText.setText("");
         }
     }
 
     public void onEvent(DeleteTaskEvent event) {
-        if (event.getTaskListId() == mTaskList.getId()) {
-            refreshTasks();
-        }
+        refreshIfRelevant(event.getTaskListId());
     }
 
     public void onEvent(UpdateTaskStateEvent event) {
-        if (event.getTaskListId() == mTaskList.getId()) {
-            refreshTasks();
-        }
+        refreshIfRelevant(event.getTaskListId());
     }
 
     public void onEvent(MoveTaskEvent event) {
         int taskListId = mTaskList.getId();
-        if (event.getOldTaskListId() == taskListId || event.getNewTaskListId() == taskListId) {
+        if (isEventRelevant(event.getOldTaskListId()) || 
+            isEventRelevant(event.getNewTaskListId())) {
             refreshTasks();
         }
     }
 
     public void onEvent(ToggleAddTaskFormEvent event) {
-        if (event.getTaskListId() == mTaskList.getId()) {
+        if (isEventRelevant(event.getTaskListId())) {
             Animation anim;
             // toggle visibility
             if (mSectionAddTask.getVisibility() == View.GONE) {
@@ -171,11 +174,11 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         setKeyboardVisibility(mEditText);
 
-        mTasks = mTaskModelInterface.onGetTasks(mTaskList.getId());
+        mTasks = mController.onGetTasks(mTaskList.getId());
 
         mTaskItemAdapter = new TaskItemAdapter(getActivity(),
                 mTasks,
-                mTaskModelInterface);
+                mController);
 
 
         mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter,
@@ -227,7 +230,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         }
 
         // update db
-        mTaskModelInterface.onTaskAdded(task);
+        mController.onTaskAdded(task);
     }
 
     // get the list of tasks from the model and display them
@@ -235,7 +238,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         mSlideAdapter.collapseLastOpen();
 
-        List<Task> tasks = mTaskModelInterface.onGetTasks(mTaskList.getId());
+        List<Task> tasks = mController.onGetTasks(mTaskList.getId());
         mTasks.clear();
         mTasks.addAll(tasks);
         mTaskItemAdapter.notifyDataSetChanged();
