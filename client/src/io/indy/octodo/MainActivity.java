@@ -1,6 +1,7 @@
 package io.indy.octodo;
 
 import io.indy.octodo.adapter.TaskListPagerAdapter;
+import io.indy.octodo.event.AddTaskEvent;
 import io.indy.octodo.event.DeleteTaskEvent;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
@@ -42,6 +43,10 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     public void onTaskAdded(Task task) {
         mDatabase.addTask(task);
+
+        AddTaskEvent event;
+        event = new AddTaskEvent(task);
+        EventBus.getDefault().post(event);
     }
 
     public void onTaskUpdateState(Task task, int state) {

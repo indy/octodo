@@ -1,6 +1,7 @@
 package io.indy.octodo;
 
 import io.indy.octodo.adapter.TaskItemAdapter;
+import io.indy.octodo.event.AddTaskEvent;
 import io.indy.octodo.event.DeleteTaskEvent;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
@@ -94,6 +95,13 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     public void onEvent(RemoveCompletedTasksEvent event) {
         if (event.getTaskListId() == mTaskList.getId()) {
             refreshTasks();
+        }
+    }
+
+    public void onEvent(AddTaskEvent event) {
+        if (event.getTaskListId() == mTaskList.getId()) {
+            refreshTasks();
+            mEditText.setText("");
         }
     }
 
@@ -220,10 +228,6 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         // update db
         mTaskModelInterface.onTaskAdded(task);
-        // refresh ui
-        refreshTasks();
-
-        mEditText.setText("");
     }
 
     // get the list of tasks from the model and display them
