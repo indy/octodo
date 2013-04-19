@@ -6,6 +6,7 @@ import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.event.UpdateTaskStateEvent;
+import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.Database;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
@@ -27,8 +28,6 @@ import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import de.greenrobot.event.EventBus;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class MainActivity extends SherlockFragmentActivity implements
         TaskModelInterface {
@@ -76,7 +75,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
         // show crouton
         String messagePrefix = getString(R.string.notification_moved_task);
-        showCrouton(messagePrefix + " \"" + destinationTaskList.getName()
+        notifyUser(messagePrefix + " \"" + destinationTaskList.getName()
                 + "\"");
 
     }
@@ -254,7 +253,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
             // show Crouton
             String messagePrefix = getString(R.string.notification_remove_completed_tasks);
-            showCrouton(messagePrefix + " \"" + taskList.getName() + "\"");
+            notifyUser(messagePrefix + " \"" + taskList.getName() + "\"");
 
             break;
         case R.id.menu_settings:
@@ -280,8 +279,9 @@ public class MainActivity extends SherlockFragmentActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void showCrouton(String message) {
-        Crouton.makeText(this, message, Style.CONFIRM).show();
+    private void notifyUser(String message) {
+        NotificationHelper nh = new NotificationHelper(this);
+        nh.showConfirmation(message);
     }
 
     private int getTaskListId() {
