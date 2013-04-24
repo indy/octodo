@@ -5,7 +5,7 @@
     android:orientation="vertical" >
 
     <RelativeLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
         android:orientation="horizontal" >
 
@@ -39,8 +39,8 @@
 
     <LinearLayout
         android:id="@+id/expandable"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="#000000"
         android:orientation="horizontal" >
 
@@ -48,8 +48,8 @@
 
         <ImageButton
             android:id="@+id/time_task"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="0.5"
             android:background="@null"
             android:contentDescription="@string/content_desc_time_task"
@@ -58,8 +58,8 @@
 
         <ImageButton
             android:id="@+id/edit_task"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="0.5"
             android:background="@null"
             android:contentDescription="@string/content_desc_edit_task"
@@ -68,8 +68,8 @@
 
         <ImageButton
             android:id="@+id/move_task"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="0.5"
             android:background="@null"
             android:contentDescription="@string/content_desc_move_task"
@@ -78,8 +78,8 @@
 
         <ImageButton
             android:id="@+id/delete_task"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="0.5"
             android:background="@null"
             android:contentDescription="@string/content_desc_delete_task"
