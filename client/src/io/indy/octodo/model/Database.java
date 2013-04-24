@@ -114,44 +114,33 @@ public class Database {
         db.insert(ModelHelper.TASK_TABLE, null, cv);
     }
 
-    public void updateTaskContent(int id, String content) {
+    public void updateTaskContent(int taskId, String content) {
         if (D) {
-            Log.d(TAG, "updateTaskContent id: " + id + " content: " + content);
+            Log.d(TAG, "updateTaskContent id: " + taskId + " content: " + content);
         }
-
-        SQLiteDatabase db = mModelHelper.getWritableDatabase();
 
         ContentValues cv = new ContentValues();
         cv.put(CONTENT, content);
 
-        String where = KEY_ID + "=" + id;
-        String whereArgs[] = null;
-
-        db.update(ModelHelper.TASK_TABLE, cv, where, whereArgs);
+        updateTaskTable(taskId, cv);
 
     }
 
-    public void updateTaskState(int id, int state) {
+    public void updateTaskState(int taskId, int state) {
         if (D) {
-            Log.d(TAG, "updateTaskState id:" + id + " state: " + state);
+            Log.d(TAG, "updateTaskState id:" + taskId + " state: " + state);
         }
 
-        SQLiteDatabase db = mModelHelper.getWritableDatabase();
-
         ContentValues cv = new ContentValues();
-        cv.put(STATE, state);
 
+        cv.put(STATE, state);
         if (state == Task.STATE_STRUCK) {
             // task is effectively closed, so set the finished_at value
             String finishedDate = DateFormatHelper.today();
             cv.put(FINISHED_AT, finishedDate);
         }
 
-        String where = KEY_ID + "=" + id;
-        String whereArgs[] = null;
-
-        db.update(ModelHelper.TASK_TABLE, cv, where, whereArgs);
-
+        updateTaskTable(taskId, cv);
     }
 
     // re-assign a task to a different tasklist
@@ -160,13 +149,21 @@ public class Database {
             Log.d(TAG, "updateTaskParentList taskId: " + taskId + " taskListId: " + taskListId);
         }
 
-        SQLiteDatabase db = mModelHelper.getWritableDatabase();
-
         ContentValues cv = new ContentValues();
         cv.put(LIST_ID, taskListId);
 
-        String where = KEY_ID + "=" + taskId;
-        String whereArgs[] = null;
+        updateTaskTable(taskId, cv);
+    }
+
+    private void updateTaskTable(int taskId, ContentValues cv) {
+        if (D) {
+            Log.d(TAG, "updateTaskTable: taskId=" + taskId);
+        }
+
+        SQLiteDatabase db = mModelHelper.getWritableDatabase();
+
+        String where = KEY_ID + "=?";
+        String whereArgs[] = { Integer.toString(taskId) };
 
         db.update(ModelHelper.TASK_TABLE, cv, where, whereArgs);
     }
