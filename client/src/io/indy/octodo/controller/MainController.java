@@ -6,6 +6,7 @@ import io.indy.octodo.event.DeleteTaskEvent;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RemoveCompletedTasksEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
+import io.indy.octodo.event.UpdateTaskContentEvent;
 import io.indy.octodo.event.UpdateTaskStateEvent;
 import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.Database;
@@ -30,18 +31,21 @@ public class MainController {
     public void onTaskAdded(Task task) {
         mDatabase.addTask(task);
 
-        AddTaskEvent event;
-        event = new AddTaskEvent(task);
-        EventBus.getDefault().post(event);
+        post(new AddTaskEvent(task));
+    }
+
+    public void onTaskUpdateContent(Task task, String content) {
+        int taskId = task.getId();
+        mDatabase.updateTaskContent(taskId, content);
+
+        post(new UpdateTaskContentEvent(task));
     }
 
     public void onTaskUpdateState(Task task, int state) {
         int taskId = task.getId();
         mDatabase.updateTaskState(taskId, state);
 
-        UpdateTaskStateEvent event;
-        event = new UpdateTaskStateEvent(task, state);
-        EventBus.getDefault().post(event);
+        post(new UpdateTaskStateEvent(task, state));
     }
 
     public List<Task> onGetTasks(int taskListId) {
@@ -60,9 +64,7 @@ public class MainController {
         mDatabase.updateTaskParentList(task.getId(), newTaskListId);
 
         // update ui
-        MoveTaskEvent moveEvent;
-        moveEvent = new MoveTaskEvent(task, oldTaskListId, newTaskListId);
-        EventBus.getDefault().post(moveEvent);
+        post(new MoveTaskEvent(task, oldTaskListId, newTaskListId));
 
         // show crouton
         String messagePrefix = mActivity.getString(R.string.notification_moved_task);
@@ -74,18 +76,15 @@ public class MainController {
     public void onTaskDelete(Task task) {
         mDatabase.deleteTask(task.getId());
 
-        DeleteTaskEvent dtEvent;
-        dtEvent = new DeleteTaskEvent(task);
-        EventBus.getDefault().post(dtEvent);
+        post(new DeleteTaskEvent(task));
     }
 
     public void onRemoveCompletedTasks(TaskList taskList) {
         mDatabase.removeStruckTasks(taskList.getId());
 
         // update UI (via TaskListFragment)
-        RemoveCompletedTasksEvent rctEvent;
-        rctEvent = new RemoveCompletedTasksEvent(taskList.getId());
-        EventBus.getDefault().post(rctEvent);
+        int taskListId = taskList.getId();
+        post(new RemoveCompletedTasksEvent(taskListId));
 
         // show Crouton
         String messagePrefix = mActivity.getString(R.string.notification_remove_completed_tasks);
@@ -93,14 +92,16 @@ public class MainController {
     }
 
     public void onToggleAddTaskForm(int taskListId) {
-        ToggleAddTaskFormEvent tatfEvent;
-        tatfEvent = new ToggleAddTaskFormEvent(taskListId);
-        EventBus.getDefault().post(tatfEvent);
+        post(new ToggleAddTaskFormEvent(taskListId));
     }
 
     private void notifyUser(String message) {
         NotificationHelper nh = new NotificationHelper(mActivity);
         nh.showConfirmation(message);
+    }
+
+    private void post(Object event) {
+        EventBus.getDefault().post(event);
     }
 
 }

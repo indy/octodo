@@ -1,9 +1,9 @@
 package io.indy.octodo.view;
 
 import io.indy.octodo.R;
+import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
-import io.indy.octodo.controller.MainController;
 
 import java.util.List;
 
@@ -14,7 +14,9 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -122,7 +124,50 @@ public class TaskItemView extends LinearLayout {
     };
 
     private void clickedEditTask(View view) {
-        Log.d(TAG, "clicked editTask button");
+        if (D) {
+            Log.d(TAG, "clickedEditTask");
+        }
+
+        final String content = mTask.getContent();
+
+        AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
+        ad.setTitle(mContext.getString(R.string.edit_task_title));
+
+        final EditText input = new EditText(mContext);
+
+        input.setText(content);
+        input.selectAll();
+
+
+
+        ad.setView(input);
+        ad.setPositiveButton(mContext.getString(R.string.edit_task_positive),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        if (D) {
+                            Log.d(TAG, "pressed the positive button");
+                        }
+                        final String newContent = input.getText().toString().trim();
+                        hideSoftKeyboard(input);
+                        mController.onTaskUpdateContent(mTask, newContent);
+                    }
+                });
+        ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        if (D) {
+                            Log.d(TAG, "pressed the cancel button");
+                        }
+                    }
+                });
+
+        ad.show();
+        
+    }
+
+    private void hideSoftKeyboard(EditText editText) {
+        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(editText.getWindowToken(),0);
     }
 
     private void clickedDeleteTask(View view) {

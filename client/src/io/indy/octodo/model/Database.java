@@ -114,6 +114,23 @@ public class Database {
         db.insert(ModelHelper.TASK_TABLE, null, cv);
     }
 
+    public void updateTaskContent(int id, String content) {
+        if (D) {
+            Log.d(TAG, "updateTaskContent id: " + id + " content: " + content);
+        }
+
+        SQLiteDatabase db = mModelHelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(CONTENT, content);
+
+        String where = KEY_ID + "=" + id;
+        String whereArgs[] = null;
+
+        db.update(ModelHelper.TASK_TABLE, cv, where, whereArgs);
+
+    }
+
     public void updateTaskState(int id, int state) {
         if (D) {
             Log.d(TAG, "updateTaskState id:" + id + " state: " + state);

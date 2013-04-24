@@ -34,6 +34,9 @@
     <string name="move_task_title">Move to another list</string>
     <string name="move_task_positive">Move task</string>
 
+    <string name="edit_task_title">Edit Task</string>
+    <string name="edit_task_positive">OK</string>
+
     <string name="dialog_generic_cancel">Cancel</string>
 
 </resources>
