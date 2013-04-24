@@ -1,18 +1,14 @@
 package io.indy.octodo;
 
 import io.indy.octodo.adapter.TaskItemAdapter;
-import io.indy.octodo.event.AddTaskEvent;
-import io.indy.octodo.event.DeleteTaskEvent;
+import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.MoveTaskEvent;
-import io.indy.octodo.event.RemoveCompletedTasksEvent;
+import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
-import io.indy.octodo.event.UpdateTaskContentEvent;
-import io.indy.octodo.event.UpdateTaskStateEvent;
 import io.indy.octodo.helper.AnimationHelper;
 import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
-import io.indy.octodo.controller.MainController;
 
 import java.util.List;
 
@@ -95,35 +91,13 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         return mTaskList.getId() == taskListId;
     }
 
-    private void refreshIfRelevant(int taskListId) {
-        if (isEventRelevant(taskListId)) {
-            refreshTasks();
-        }
-    }
-
-    public void onEvent(RemoveCompletedTasksEvent event) {
-        refreshIfRelevant(event.getTaskListId());
-    }
-
-    public void onEvent(AddTaskEvent event) {
+    // common event fired whenever a task is modified and it's parent tasklist UI needs to be updated
+    public void onEvent(RefreshTaskListEvent event) {
         if (isEventRelevant(event.getTaskListId())) {
             refreshTasks();
             mEditText.setText("");
         }
     }
-
-    public void onEvent(DeleteTaskEvent event) {
-        refreshIfRelevant(event.getTaskListId());
-    }
-
-    public void onEvent(UpdateTaskContentEvent event) {
-        refreshIfRelevant(event.getTaskListId());
-    }
-
-    public void onEvent(UpdateTaskStateEvent event) {
-        refreshIfRelevant(event.getTaskListId());
-    }
-
     public void onEvent(MoveTaskEvent event) {
         int taskListId = mTaskList.getId();
         if (isEventRelevant(event.getOldTaskListId()) || 

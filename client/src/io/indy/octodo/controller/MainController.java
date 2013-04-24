@@ -1,13 +1,9 @@
 package io.indy.octodo.controller;
 
 import io.indy.octodo.R;
-import io.indy.octodo.event.AddTaskEvent;
-import io.indy.octodo.event.DeleteTaskEvent;
 import io.indy.octodo.event.MoveTaskEvent;
-import io.indy.octodo.event.RemoveCompletedTasksEvent;
+import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
-import io.indy.octodo.event.UpdateTaskContentEvent;
-import io.indy.octodo.event.UpdateTaskStateEvent;
 import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.Database;
 import io.indy.octodo.model.Task;
@@ -31,21 +27,21 @@ public class MainController {
     public void onTaskAdded(Task task) {
         mDatabase.addTask(task);
 
-        post(new AddTaskEvent(task));
+        postRefreshEvent(task.getListId());
     }
 
     public void onTaskUpdateContent(Task task, String content) {
         int taskId = task.getId();
         mDatabase.updateTaskContent(taskId, content);
 
-        post(new UpdateTaskContentEvent(task));
+        postRefreshEvent(task.getListId());
     }
 
     public void onTaskUpdateState(Task task, int state) {
         int taskId = task.getId();
         mDatabase.updateTaskState(taskId, state);
 
-        post(new UpdateTaskStateEvent(task, state));
+        postRefreshEvent(task.getListId());
     }
 
     public List<Task> onGetTasks(int taskListId) {
@@ -76,15 +72,14 @@ public class MainController {
     public void onTaskDelete(Task task) {
         mDatabase.deleteTask(task.getId());
 
-        post(new DeleteTaskEvent(task));
+        postRefreshEvent(task.getListId());
     }
 
     public void onRemoveCompletedTasks(TaskList taskList) {
         mDatabase.removeStruckTasks(taskList.getId());
 
         // update UI (via TaskListFragment)
-        int taskListId = taskList.getId();
-        post(new RemoveCompletedTasksEvent(taskListId));
+        postRefreshEvent(taskList.getId());
 
         // show Crouton
         String messagePrefix = mActivity.getString(R.string.notification_remove_completed_tasks);
@@ -102,6 +97,10 @@ public class MainController {
 
     private void post(Object event) {
         EventBus.getDefault().post(event);
+    }
+
+    private void postRefreshEvent(int taskListId) {
+        post(new RefreshTaskListEvent(taskListId));
     }
 
 }
