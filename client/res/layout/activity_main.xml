@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,7 +10,11 @@
         android:id="@+id/indicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dip" />
+        android:padding="10dip"
+        android:background="#FFCCCCCC"
+        android:textColor="#FFA0A0A0"
+        app:selectedColor="#FF555555"
+        app:footerColor="#FF4FB4E7"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
