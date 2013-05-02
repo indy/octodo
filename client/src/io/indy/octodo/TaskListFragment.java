@@ -48,7 +48,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     private Button mButtonAddTask;
 
     private LinearLayout mSectionAddTask;
-    
+
     private Context mContext;
 
     public static TaskListFragment newInstance(TaskList taskList) {
@@ -70,7 +70,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         if (D) {
             Log.d(TAG, "calling MainActivity::getController");
         }
-        mController = ((MainActivity)activity).getController();
+        mController = ((MainActivity) activity).getController();
     }
 
     @Override
@@ -91,17 +91,19 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         return mTaskList.getId() == taskListId;
     }
 
-    // common event fired whenever a task is modified and it's parent tasklist UI needs to be updated
+    // common event fired whenever a task is modified and it's parent tasklist
+    // UI needs to be updated
     public void onEvent(RefreshTaskListEvent event) {
         if (isEventRelevant(event.getTaskListId())) {
             refreshTasks();
             mEditText.setText("");
         }
     }
+
     public void onEvent(MoveTaskEvent event) {
         int taskListId = mTaskList.getId();
-        if (isEventRelevant(event.getOldTaskListId()) || 
-            isEventRelevant(event.getNewTaskListId())) {
+        if (isEventRelevant(event.getOldTaskListId())
+                || isEventRelevant(event.getNewTaskListId())) {
             refreshTasks();
         }
     }
@@ -115,7 +117,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
                 mSectionAddTask.startAnimation(anim);
                 mSectionAddTask.setVisibility(View.VISIBLE);
                 mEditText.requestFocus();
-                
+
             } else {
                 anim = AnimationHelper.slideUpAnimation();
                 mSectionAddTask.startAnimation(anim);
@@ -159,15 +161,13 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
                 mTasks,
                 mController);
 
-
         mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter,
-                                                       R.id.expandable_trigger,
-                                                       R.id.expandable);
+                R.id.expandable_trigger,
+                R.id.expandable);
 
         // Bind the Array Adapter to the List View
         // mListView.setAdapter(mTaskItemAdapter);
         mListView.setAdapter(mSlideAdapter);
-
 
         // invoke this object's onClick method when a task is added
         mButtonAddTask.setOnClickListener(this);
@@ -177,22 +177,28 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
     private void setKeyboardVisibility(EditText editText) {
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
 
-                    InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) mContext
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
 
-                    if (hasFocus) {
-                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-                    } else {
-                        imm.hideSoftInputFromWindow(v.getWindowToken(),0); 
-                    }
+                if (hasFocus) {
+                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                } else {
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 }
-            });
+            }
+        });
     }
 
     public void onClick(View v) {
-        String content = mEditText.getText().toString();
+        String content = mEditText.getText().toString().trim();
+        if (content.length() == 0) {
+            // don't add empty strings
+            return;
+        }
+
         String now = DateFormatHelper.today();
 
         Task task = new Task.Builder().id(0).listId(mTaskList.getId())
