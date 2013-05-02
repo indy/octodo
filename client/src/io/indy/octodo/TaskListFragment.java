@@ -161,7 +161,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
 
         mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter,
-                                                       R.id.expandable_toggle_button,
+                                                       R.id.expandable_trigger,
                                                        R.id.expandable);
 
         // Bind the Array Adapter to the List View
