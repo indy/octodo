@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -110,18 +111,60 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
     public void onEvent(ToggleAddTaskFormEvent event) {
         if (isEventRelevant(event.getTaskListId())) {
+
+            int h = mSectionAddTask.getMeasuredHeight();
+            float fakeheight = 96.0f;
+            float height = h == 0 ? fakeheight : (float)h;
+
             Animation anim;
-            // toggle visibility
             if (mSectionAddTask.getVisibility() == View.GONE) {
+                // show the 'add task' field
                 anim = AnimationHelper.slideDownAnimation();
                 mSectionAddTask.startAnimation(anim);
                 mSectionAddTask.setVisibility(View.VISIBLE);
-                mEditText.requestFocus();
+                anim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            mEditText.requestFocus();
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                        }
+                    });
+
+
+                Animation listAnim = AnimationHelper.slideDownAnimation(height);
+                mListView.startAnimation(listAnim);
 
             } else {
+
                 anim = AnimationHelper.slideUpAnimation();
                 mSectionAddTask.startAnimation(anim);
-                mSectionAddTask.setVisibility(View.GONE);
+                anim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            mSectionAddTask.setVisibility(View.GONE);
+                            // prevents flicker when mSectionAddTask is hidden
+                            mListView.clearAnimation();
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                        }
+                    });
+
+                Animation listAnim = AnimationHelper.slideUpAnimation(height);
+                mListView.startAnimation(listAnim);
             }
         } else { // not the current task list
             // set as invisible
@@ -166,7 +209,6 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
                 R.id.expandable);
 
         // Bind the Array Adapter to the List View
-        // mListView.setAdapter(mTaskItemAdapter);
         mListView.setAdapter(mSlideAdapter);
 
         // invoke this object's onClick method when a task is added
