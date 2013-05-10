@@ -1,13 +1,16 @@
+
 package io.indy.octodo.model;
 
 public class TaskList {
     private final int mId;
+
     private final String mName;
 
     // set by ManageListsAdapter
     private boolean mIsSelected;
 
     public static final int STATE_ACTIVE = 0;
+
     public static final int STATE_INACTIVE = 1;
 
     public TaskList(int id, String name) {
@@ -36,6 +39,5 @@ public class TaskList {
     public String toString() {
         return mName;
     }
-
 
 }

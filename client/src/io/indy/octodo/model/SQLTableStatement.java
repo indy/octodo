@@ -1,3 +1,4 @@
+
 package io.indy.octodo.model;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 public class SQLTableStatement {
 
     private String mTableName;
+
     private List<String> mCols;
 
     public SQLTableStatement(String tableName) {
@@ -19,22 +21,27 @@ public class SQLTableStatement {
         mCols.add(name + " text");
         return this;
     }
+
     public SQLTableStatement addText(String name, String params) {
         mCols.add(name + " text " + params);
         return this;
     }
+
     public SQLTableStatement addInteger(String name) {
         mCols.add(name + " integer");
         return this;
     }
+
     public SQLTableStatement addInteger(String name, String params) {
         mCols.add(name + " integer " + params);
         return this;
     }
+
     public SQLTableStatement addTimestamp(String name) {
         mCols.add(name + " timestamp");
         return this;
     }
+
     public SQLTableStatement addTimestamp(String name, String params) {
         mCols.add(name + " timestamp " + params);
         return this;
@@ -42,7 +49,7 @@ public class SQLTableStatement {
 
     public String create() {
         String comp = "";
-        for(String unit : mCols) {
+        for (String unit : mCols) {
             comp = comp + unit + ",";
         }
         comp = comp.substring(0, comp.length() - 1);

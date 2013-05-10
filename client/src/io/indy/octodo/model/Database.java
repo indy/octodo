@@ -1,3 +1,4 @@
+
 package io.indy.octodo.model;
 
 import io.indy.octodo.helper.DateFormatHelper;
@@ -16,6 +17,7 @@ import android.util.Log;
 public class Database {
 
     private final String TAG = getClass().getSimpleName();
+
     private static final boolean D = true;
 
     // The index (key) column name for use in where clauses.
@@ -27,19 +29,27 @@ public class Database {
     // list columns
     //
     public static final String LIST_NAME = "name";
+
     public static final String CREATED_AT = "created_at";
+
     public static final String DELETED_AT = "deleted_at";
+
     // do the tasks in the list have an expected completion timespan?
     public static final String HAS_TASK_LIFETIME = "has_task_lifetime";
+
     // the number of hours a task is expected to take
     public static final String TASK_LIFETIME = "task_lifetime";
+
     public static final String IS_DELETEABLE = "is_deleteable";
 
     // task columns
     //
     public static final String LIST_ID = "list_id";
+
     public static final String STARTED_AT = "started_at";
+
     public static final String FINISHED_AT = "finished_at";
+
     public static final String CONTENT = "content";
 
     // shared columns
@@ -49,9 +59,7 @@ public class Database {
     private ModelHelper mModelHelper;
 
     public Database(Context context) {
-        mModelHelper = new ModelHelper(context,
-                ModelHelper.DATABASE_NAME,
-                null,
+        mModelHelper = new ModelHelper(context, ModelHelper.DATABASE_NAME, null,
                 ModelHelper.DATABASE_VERSION);
 
         if (D)
@@ -163,11 +171,13 @@ public class Database {
         SQLiteDatabase db = mModelHelper.getWritableDatabase();
 
         String where = KEY_ID + "=?";
-        String whereArgs[] = { Integer.toString(taskId) };
+        String whereArgs[] = {
+            Integer.toString(taskId)
+        };
 
         db.update(ModelHelper.TASK_TABLE, cv, where, whereArgs);
     }
-    
+
     public void updateTask(Task task) {
     }
 
@@ -180,14 +190,16 @@ public class Database {
         SQLiteDatabase db = mModelHelper.getWritableDatabase();
 
         String where = KEY_ID + "=?";
-        String whereArgs[] = { Integer.toString(taskId) };
+        String whereArgs[] = {
+            Integer.toString(taskId)
+        };
 
         db.delete(ModelHelper.TASK_TABLE, where, whereArgs);
     }
 
     // mark all struck tasks in the tasklist as closed
     public void removeStruckTasks(int taskListId) {
-        if(D) {
+        if (D) {
             Log.d(TAG, "removeStruckTasks: taskListId=" + taskListId);
         }
 
@@ -196,8 +208,7 @@ public class Database {
         ContentValues cv = new ContentValues();
         cv.put(STATE, Task.STATE_CLOSED);
 
-        String where = LIST_ID + "=" + taskListId + " AND " + STATE + "="
-                + Task.STATE_STRUCK;
+        String where = LIST_ID + "=" + taskListId + " AND " + STATE + "=" + Task.STATE_STRUCK;
         String whereArgs[] = null;
 
         db.update(ModelHelper.TASK_TABLE, cv, where, whereArgs);
@@ -218,10 +229,8 @@ public class Database {
         Task task;
         while (cursor.moveToNext()) {
 
-            task = new Task.Builder().id(cursor.getInt(ID_INDEX))
-                    .listId(taskListId)
-                    .content(cursor.getString(CONTENT_INDEX))
-                    .state(cursor.getInt(STATE_INDEX))
+            task = new Task.Builder().id(cursor.getInt(ID_INDEX)).listId(taskListId)
+                    .content(cursor.getString(CONTENT_INDEX)).state(cursor.getInt(STATE_INDEX))
                     .startedAt(cursor.getString(STARTED_AT_INDEX))
                     .finishedAt(cursor.getString(FINISHED_AT_INDEX)).build();
             /*
@@ -245,8 +254,7 @@ public class Database {
         List<TaskList> res = new ArrayList<TaskList>();
         TaskList taskList;
         while (cursor.moveToNext()) {
-            taskList = new TaskList(cursor.getInt(ID_INDEX),
-                    cursor.getString(NAME_INDEX));
+            taskList = new TaskList(cursor.getInt(ID_INDEX), cursor.getString(NAME_INDEX));
             res.add(taskList);
         }
         cursor.close();
@@ -263,8 +271,7 @@ public class Database {
         List<TaskList> res = new ArrayList<TaskList>();
         TaskList taskList;
         while (cursor.moveToNext()) {
-            taskList = new TaskList(cursor.getInt(ID_INDEX),
-                    cursor.getString(NAME_INDEX));
+            taskList = new TaskList(cursor.getInt(ID_INDEX), cursor.getString(NAME_INDEX));
             res.add(taskList);
         }
         cursor.close();
@@ -277,25 +284,23 @@ public class Database {
     private Cursor getDeleteableTaskListsCursor() {
         // Specify the result column projection. Return the minimum set
         // of columns required to satisfy your requirements.
-        String[] result_columns = new String[] { KEY_ID, LIST_NAME };
+        String[] result_columns = new String[] {
+                KEY_ID, LIST_NAME
+        };
 
         String where = STATE + "=?" + " and " + IS_DELETEABLE + "=?";
         // active and deletable task lists
-        String whereArgs[] = { Integer.toString(TaskList.STATE_ACTIVE),
-                Integer.toString(1) };
+        String whereArgs[] = {
+                Integer.toString(TaskList.STATE_ACTIVE), Integer.toString(1)
+        };
 
         String groupBy = null;
         String having = null;
         String order = null;
 
         SQLiteDatabase db = mModelHelper.getReadableDatabase();
-        Cursor cursor = db.query(ModelHelper.LIST_TABLE,
-                result_columns,
-                where,
-                whereArgs,
-                groupBy,
-                having,
-                order);
+        Cursor cursor = db.query(ModelHelper.LIST_TABLE, result_columns, where, whereArgs, groupBy,
+                having, order);
 
         return cursor;
     }
@@ -305,23 +310,22 @@ public class Database {
     private Cursor getActiveTaskListsCursor() {
         // Specify the result column projection. Return the minimum set
         // of columns required to satisfy your requirements.
-        String[] result_columns = new String[] { KEY_ID, LIST_NAME };
+        String[] result_columns = new String[] {
+                KEY_ID, LIST_NAME
+        };
 
         String where = STATE + "=?";
-        String whereArgs[] = { Integer.toString(TaskList.STATE_ACTIVE) };
+        String whereArgs[] = {
+            Integer.toString(TaskList.STATE_ACTIVE)
+        };
 
         String groupBy = null;
         String having = null;
         String order = null;
 
         SQLiteDatabase db = mModelHelper.getReadableDatabase();
-        Cursor cursor = db.query(ModelHelper.LIST_TABLE,
-                result_columns,
-                where,
-                whereArgs,
-                groupBy,
-                having,
-                order);
+        Cursor cursor = db.query(ModelHelper.LIST_TABLE, result_columns, where, whereArgs, groupBy,
+                having, order);
 
         return cursor;
     }
@@ -329,25 +333,22 @@ public class Database {
     public Cursor getTasksCursor(int taskListId) {
         // Specify the result column projection. Return the minimum set
         // of columns required to satisfy your requirements.
-        String[] result_columns = new String[] { KEY_ID, LIST_ID, STATE,
-                STARTED_AT, FINISHED_AT, CONTENT };
+        String[] result_columns = new String[] {
+                KEY_ID, LIST_ID, STATE, STARTED_AT, FINISHED_AT, CONTENT
+        };
 
         String where = LIST_ID + "=? and " + STATE + "<?";
-        String whereArgs[] = { Integer.toString(taskListId),
-                Integer.toString(Task.STATE_CLOSED) };
+        String whereArgs[] = {
+                Integer.toString(taskListId), Integer.toString(Task.STATE_CLOSED)
+        };
 
         String groupBy = null;
         String having = null;
         String order = null;
 
         SQLiteDatabase db = mModelHelper.getReadableDatabase();
-        Cursor cursor = db.query(ModelHelper.TASK_TABLE,
-                result_columns,
-                where,
-                whereArgs,
-                groupBy,
-                having,
-                order);
+        Cursor cursor = db.query(ModelHelper.TASK_TABLE, result_columns, where, whereArgs, groupBy,
+                having, order);
 
         return cursor;
     }
@@ -355,16 +356,18 @@ public class Database {
     private static class ModelHelper extends SQLiteOpenHelper {
 
         private final String TAG = getClass().getSimpleName();
+
         private static final boolean D = true;
 
         private static final String DATABASE_NAME = "octodo.db";
+
         private static final int DATABASE_VERSION = 5;
 
         private static final String TASK_TABLE = "task";
+
         private static final String LIST_TABLE = "list";
 
-        public ModelHelper(Context context, String name, CursorFactory factory,
-                int version) {
+        public ModelHelper(Context context, String name, CursorFactory factory, int version) {
             super(context, name, factory, version);
         }
 
@@ -379,10 +382,7 @@ public class Database {
             db.insert(LIST_TABLE, null, cv);
         }
 
-        private void createList(SQLiteDatabase db,
-                String name,
-                int isDeleteable,
-                int lifetimeHours) {
+        private void createList(SQLiteDatabase db, String name, int isDeleteable, int lifetimeHours) {
             ContentValues cv = new ContentValues();
             cv.put(LIST_NAME, name);
             cv.put(STATE, TaskList.STATE_ACTIVE);
@@ -398,26 +398,23 @@ public class Database {
         // to create a new one.
         @Override
         public void onCreate(SQLiteDatabase db) {
-            if(D) {
+            if (D) {
                 Log.d(TAG, "onCreate");
             }
-            
+
             String createTaskTable = new SQLTableStatement(TASK_TABLE)
-                    .addInteger(KEY_ID, "primary key autoincrement")
-                    .addText(CONTENT, "not null").addInteger(LIST_ID)
-                    .addInteger(STATE)
+                    .addInteger(KEY_ID, "primary key autoincrement").addText(CONTENT, "not null")
+                    .addInteger(LIST_ID).addInteger(STATE)
                     .addTimestamp(STARTED_AT, "default current_timestamp")
                     .addTimestamp(FINISHED_AT).create();
             db.execSQL(createTaskTable);
 
             String createListTable = new SQLTableStatement(LIST_TABLE)
-                    .addInteger(KEY_ID, "primary key autoincrement")
-                    .addText(LIST_NAME, "not null").addInteger(STATE)
-                    .addInteger(HAS_TASK_LIFETIME, "default 0")
-                    .addInteger(TASK_LIFETIME, "default 0")
-                    .addInteger(IS_DELETEABLE, "default 1")
-                    .addTimestamp(CREATED_AT, "default current_timestamp")
-                    .addTimestamp(DELETED_AT).create();
+                    .addInteger(KEY_ID, "primary key autoincrement").addText(LIST_NAME, "not null")
+                    .addInteger(STATE).addInteger(HAS_TASK_LIFETIME, "default 0")
+                    .addInteger(TASK_LIFETIME, "default 0").addInteger(IS_DELETEABLE, "default 1")
+                    .addTimestamp(CREATED_AT, "default current_timestamp").addTimestamp(DELETED_AT)
+                    .create();
             db.execSQL(createListTable);
 
             // TODO: get the names of the lists from the res folder
@@ -432,8 +429,8 @@ public class Database {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             // Log the version upgrade.
-            Log.w("TaskDBAdapter", "Upgrading from version " + oldVersion
-                    + " to " + newVersion + ", which will destroy all old data");
+            Log.w("TaskDBAdapter", "Upgrading from version " + oldVersion + " to " + newVersion
+                    + ", which will destroy all old data");
 
             // Upgrade the existing database to conform to the new
             // version. Multiple previous versions can be handled by

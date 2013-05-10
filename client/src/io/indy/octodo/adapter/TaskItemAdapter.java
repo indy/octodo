@@ -1,7 +1,7 @@
+
 package io.indy.octodo.adapter;
 
 import io.indy.octodo.controller.MainController;
-
 import io.indy.octodo.model.Task;
 import io.indy.octodo.view.TaskItemView;
 
@@ -16,13 +16,14 @@ import android.widget.ArrayAdapter;
 public class TaskItemAdapter extends ArrayAdapter<Task> {
 
     private final String TAG = getClass().getSimpleName();
+
     private static final boolean D = true;
 
     private final Context mContext;
+
     private MainController mController;
 
-    public TaskItemAdapter(Context context, List<Task> items,
-                           MainController controller) {
+    public TaskItemAdapter(Context context, List<Task> items, MainController controller) {
         super(context, android.R.layout.simple_list_item_1, items);
 
         mController = controller;
@@ -37,7 +38,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
         }
 
         Task task = getItem(position);
-        TaskItemView taskItemView = (TaskItemView) v;
+        TaskItemView taskItemView = (TaskItemView)v;
 
         if (taskItemView == null) {
             taskItemView = new TaskItemView(mContext);

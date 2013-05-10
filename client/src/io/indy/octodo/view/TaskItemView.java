@@ -1,3 +1,4 @@
+
 package io.indy.octodo.view;
 
 import io.indy.octodo.R;
@@ -24,15 +25,21 @@ import android.widget.TextView;
 public class TaskItemView extends LinearLayout {
 
     private final String TAG = getClass().getSimpleName();
+
     private static final boolean D = true;
 
     private final Context mContext;
+
     private MainController mController;
 
     private CheckBox mIsDone;
+
     private ImageButton mEditTask;
+
     private ImageButton mDeleteTask;
+
     private ImageButton mMoveTask;
+
     private TextView mContent;
 
     private Task mTask;
@@ -44,15 +51,15 @@ public class TaskItemView extends LinearLayout {
 
         String infService = Context.LAYOUT_INFLATER_SERVICE;
         LayoutInflater li;
-        li = (LayoutInflater) getContext().getSystemService(infService);
+        li = (LayoutInflater)getContext().getSystemService(infService);
 
         li.inflate(R.layout.row_task, this, true);
 
-        mIsDone = (CheckBox) findViewById(R.id.isDone);
-        mEditTask = (ImageButton) findViewById(R.id.edit_task);
-        mDeleteTask = (ImageButton) findViewById(R.id.delete_task);
-        mMoveTask = (ImageButton) findViewById(R.id.move_task);
-        mContent = (TextView) findViewById(R.id.content);
+        mIsDone = (CheckBox)findViewById(R.id.isDone);
+        mEditTask = (ImageButton)findViewById(R.id.edit_task);
+        mDeleteTask = (ImageButton)findViewById(R.id.delete_task);
+        mMoveTask = (ImageButton)findViewById(R.id.move_task);
+        mContent = (TextView)findViewById(R.id.content);
 
         addClickListeners();
     }
@@ -92,24 +99,24 @@ public class TaskItemView extends LinearLayout {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-            case R.id.isDone:
-                clickedIsDone(v);
-                break;
-            case R.id.edit_task:
-                clickedEditTask(v);
-                break;
-            case R.id.delete_task:
-                clickedDeleteTask(v);
-                break;
-            case R.id.move_task:
-                clickedMoveTask(v);
-                break;
+                case R.id.isDone:
+                    clickedIsDone(v);
+                    break;
+                case R.id.edit_task:
+                    clickedEditTask(v);
+                    break;
+                case R.id.delete_task:
+                    clickedDeleteTask(v);
+                    break;
+                case R.id.move_task:
+                    clickedMoveTask(v);
+                    break;
             }
         }
     };
 
     private void clickedIsDone(View view) {
-        CheckBox cb = (CheckBox) view;
+        CheckBox cb = (CheckBox)view;
         int state;
 
         if (cb.isChecked()) {
@@ -138,11 +145,10 @@ public class TaskItemView extends LinearLayout {
         input.setText(content);
         input.selectAll();
 
-
-
         ad.setView(input);
         ad.setPositiveButton(mContext.getString(R.string.edit_task_positive),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int arg1) {
                         if (D) {
                             Log.d(TAG, "pressed the positive button");
@@ -154,6 +160,7 @@ public class TaskItemView extends LinearLayout {
                 });
         ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int arg1) {
                         if (D) {
                             Log.d(TAG, "pressed the cancel button");
@@ -162,12 +169,13 @@ public class TaskItemView extends LinearLayout {
                 });
 
         ad.show();
-        
+
     }
 
     private void hideSoftKeyboard(EditText editText) {
-        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(),0);
+        InputMethodManager imm = (InputMethodManager)mContext
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
     }
 
     private void clickedDeleteTask(View view) {
@@ -177,6 +185,7 @@ public class TaskItemView extends LinearLayout {
         ad.setMessage(mContext.getString(R.string.delete_task_message));
         ad.setPositiveButton(mContext.getString(R.string.delete_task_positive),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int arg1) {
                         if (D) {
                             Log.d(TAG, "pressed the delete button");
@@ -188,6 +197,7 @@ public class TaskItemView extends LinearLayout {
 
         ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int arg1) {
                         if (D) {
                             Log.d(TAG, "pressed the cancel button");
@@ -197,6 +207,7 @@ public class TaskItemView extends LinearLayout {
 
         ad.setCancelable(true);
         ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
             public void onCancel(DialogInterface dialog) {
                 if (D) {
                     Log.d(TAG, "pressed cancel");
@@ -230,22 +241,19 @@ public class TaskItemView extends LinearLayout {
 
         AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
         ad.setTitle(mContext.getString(R.string.move_task_title));
-        ad.setSingleChoiceItems(listNames,
-                currentTaskIndex,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (D) {
-                            Log.d(TAG, "made a selection " + which);
-                        }
-                    }
-                });
+        ad.setSingleChoiceItems(listNames, currentTaskIndex, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (D) {
+                    Log.d(TAG, "made a selection " + which);
+                }
+            }
+        });
         ad.setPositiveButton(mContext.getString(R.string.move_task_positive),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        int s = ((AlertDialog) dialog).getListView()
-                                .getCheckedItemPosition();
+                        int s = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
                         if (D) {
                             Log.d(TAG, "checked " + s);
                             Log.d(TAG, "which is " + which);
@@ -260,6 +268,7 @@ public class TaskItemView extends LinearLayout {
 
         ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int arg1) {
                         if (D) {
                             Log.d(TAG, "pressed the cancel button");
@@ -269,6 +278,7 @@ public class TaskItemView extends LinearLayout {
 
         ad.setCancelable(true);
         ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
             public void onCancel(DialogInterface dialog) {
                 if (D) {
                     Log.d(TAG, "pressed cancel");
@@ -286,12 +296,10 @@ public class TaskItemView extends LinearLayout {
     }
 
     private void setContentAsStruckThru() {
-        mContent.setPaintFlags(mContent.getPaintFlags()
-                | Paint.STRIKE_THRU_TEXT_FLAG);
+        mContent.setPaintFlags(mContent.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
     }
 
     private void setContentAsNotStruckThru() {
-        mContent.setPaintFlags(mContent.getPaintFlags()
-                & ~Paint.STRIKE_THRU_TEXT_FLAG);
+        mContent.setPaintFlags(mContent.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
     }
 }

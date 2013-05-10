@@ -1,3 +1,4 @@
+
 package io.indy.octodo.controller;
 
 import io.indy.octodo.R;
@@ -17,6 +18,7 @@ import de.greenrobot.event.EventBus;
 public class MainController {
 
     private Activity mActivity;
+
     private Database mDatabase;
 
     public MainController(Activity activity, Database database) {
@@ -64,8 +66,7 @@ public class MainController {
 
         // show crouton
         String messagePrefix = mActivity.getString(R.string.notification_moved_task);
-        notifyUser(messagePrefix + " \"" + destinationTaskList.getName()
-                + "\"");
+        notifyUser(messagePrefix + " \"" + destinationTaskList.getName() + "\"");
 
     }
 

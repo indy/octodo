@@ -1,6 +1,7 @@
+
 package io.indy.octodo.event;
 
-public class ToggleAddTaskFormEvent  {
+public class ToggleAddTaskFormEvent {
 
     private int mTaskListId;
 

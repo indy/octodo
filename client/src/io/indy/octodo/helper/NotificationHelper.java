@@ -1,3 +1,4 @@
+
 package io.indy.octodo.helper;
 
 import android.app.Activity;

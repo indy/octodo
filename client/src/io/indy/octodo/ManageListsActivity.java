@@ -1,3 +1,4 @@
+
 package io.indy.octodo;
 
 import io.indy.octodo.adapter.ManageListsAdapter;
@@ -22,20 +23,24 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-public class ManageListsActivity extends SherlockActivity implements
-        OnClickListener {
+public class ManageListsActivity extends SherlockActivity implements OnClickListener {
 
     private final String TAG = getClass().getSimpleName();
+
     private static final boolean D = true;
 
     private List<TaskList> mTaskLists;
 
     private ManageListsAdapter mAdapter;
+
     private Database mDatabase;
+
     private ListView mListView;
 
     private LinearLayout mSectionAddList;
+
     private Button mButtonAddList;
+
     private EditText mEditText;
 
     @Override
@@ -44,16 +49,16 @@ public class ManageListsActivity extends SherlockActivity implements
         setContentView(R.layout.activity_manage_lists);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mListView = (ListView) findViewById(R.id.listViewTaskLists);
+        mListView = (ListView)findViewById(R.id.listViewTaskLists);
 
         mDatabase = new Database(this);
         mTaskLists = mDatabase.getDeleteableTaskLists();
 
         mAdapter = new ManageListsAdapter(this, mTaskLists);
 
-        mSectionAddList = (LinearLayout) findViewById(R.id.sectionAddList);
-        mButtonAddList = (Button) findViewById(R.id.buttonAddList);
-        mEditText = (EditText) findViewById(R.id.editText);
+        mSectionAddList = (LinearLayout)findViewById(R.id.sectionAddList);
+        mButtonAddList = (Button)findViewById(R.id.buttonAddList);
+        mEditText = (EditText)findViewById(R.id.editText);
 
         // Bind the Adapter to the List View
         mListView.setAdapter(mAdapter);
@@ -62,14 +67,13 @@ public class ManageListsActivity extends SherlockActivity implements
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
-        if(D) {
+        if (D) {
             Log.d(TAG, "onDestroy");
         }
         mDatabase.closeDatabase();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -82,27 +86,28 @@ public class ManageListsActivity extends SherlockActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-        case R.id.menu_discard_lists:
-            for(TaskList tl : mTaskLists) {
-                if(tl.isSelected()) {
-                    mDatabase.deleteList(tl.getId());
+            case R.id.menu_discard_lists:
+                for (TaskList tl : mTaskLists) {
+                    if (tl.isSelected()) {
+                        mDatabase.deleteList(tl.getId());
+                    }
                 }
-            }
-            refreshTaskLists();
-            // send an event to MainActivity?
-            break;
-        case R.id.menu_add_list:
-            toggleAddListView();
-            break;
-        case android.R.id.home:
-            finish();
+                refreshTaskLists();
+                // send an event to MainActivity?
+                break;
+            case R.id.menu_add_list:
+                toggleAddListView();
+                break;
+            case android.R.id.home:
+                finish();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
     public void onClick(View v) {
-        if(D) {
+        if (D) {
             Log.d(TAG, "onClick");
         }
         String name = mEditText.getText().toString();
@@ -121,7 +126,7 @@ public class ManageListsActivity extends SherlockActivity implements
     }
 
     private void toggleAddListView() {
-        if(D) {
+        if (D) {
             Log.d(TAG, "toggleAddListView");
         }
 

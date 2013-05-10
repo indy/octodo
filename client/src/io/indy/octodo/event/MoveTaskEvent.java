@@ -1,11 +1,14 @@
+
 package io.indy.octodo.event;
 
 import io.indy.octodo.model.Task;
 
-public class MoveTaskEvent  {
+public class MoveTaskEvent {
 
     private Task mTask;
+
     private int mOldTaskListId;
+
     private int mNewTaskListId;
 
     public MoveTaskEvent(Task task, int oldTaskListId, int newTaskListId) {

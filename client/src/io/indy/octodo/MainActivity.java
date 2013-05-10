@@ -1,3 +1,4 @@
+
 package io.indy.octodo;
 
 import io.indy.octodo.adapter.TaskListPagerAdapter;
@@ -24,13 +25,17 @@ import com.viewpagerindicator.TitlePageIndicator;
 public class MainActivity extends SherlockFragmentActivity {
 
     private final String TAG = getClass().getSimpleName();
+
     private static final boolean D = true;
 
     private TaskListPagerAdapter mAdapter;
+
     private ViewPager mPager;
+
     private PageIndicator mIndicator;
 
     private MainController mController;
+
     private Database mDatabase;
 
     public void refreshTaskListsUI() {
@@ -60,11 +65,10 @@ public class MainActivity extends SherlockFragmentActivity {
             Log.d(TAG, "onCreate");
         }
 
-        // same as com.viewpagerindicator.TitlePageIndicator app:footerColor 
+        // same as com.viewpagerindicator.TitlePageIndicator app:footerColor
         // in activity_main.xml
         ColorDrawable cd = new ColorDrawable(0xff4fb4e7);
         getSupportActionBar().setBackgroundDrawable(cd);
-
 
         // database lifecycle and configuration is managed by MainActivity
         mDatabase = new Database(this);
@@ -82,13 +86,12 @@ public class MainActivity extends SherlockFragmentActivity {
             }
         }
 
-        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(),
-                taskLists);
+        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), taskLists);
 
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = (ViewPager)findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
 
-        mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
+        mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
     }
 
@@ -202,26 +205,27 @@ public class MainActivity extends SherlockFragmentActivity {
         Log.d(TAG, "clicked " + item);
 
         switch (item.getItemId()) {
-        case R.id.menu_remove_completed_tasks:
-            mController.onRemoveCompletedTasks(getTaskList());
-            break;
+            case R.id.menu_remove_completed_tasks:
+                mController.onRemoveCompletedTasks(getTaskList());
+                break;
 
-        case R.id.menu_settings:
-            Toast.makeText(this, "menu settings", Toast.LENGTH_SHORT).show();
-            break;
+            case R.id.menu_settings:
+                Toast.makeText(this, "menu settings", Toast.LENGTH_SHORT).show();
+                break;
 
-        case R.id.menu_add_task:
-            // show the 'add task' ui element in the relevant task list fragment
-            mController.onToggleAddTaskForm(getTaskListId());
-            break;
+            case R.id.menu_add_task:
+                // show the 'add task' ui element in the relevant task list
+                // fragment
+                mController.onToggleAddTaskForm(getTaskListId());
+                break;
 
-        case R.id.menu_manage_lists:
-            startManageListsActivity();
-            break;
+            case R.id.menu_manage_lists:
+                startManageListsActivity();
+                break;
 
-        case R.id.menu_about:
-            startAboutActivity();
-            break;
+            case R.id.menu_about:
+                startAboutActivity();
+                break;
         }
 
         return super.onOptionsItemSelected(item);

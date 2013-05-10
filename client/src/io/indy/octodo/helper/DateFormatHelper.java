@@ -1,3 +1,4 @@
+
 package io.indy.octodo.helper;
 
 import java.text.ParseException;
@@ -25,7 +26,7 @@ public class DateFormatHelper {
             }
             if (date != null) {
                 long time = date.getTime();
-                timeSpan = (String) DateUtils.getRelativeTimeSpanString(time);
+                timeSpan = (String)DateUtils.getRelativeTimeSpanString(time);
                 // Log.d(TAG, "timeSpan is " + timeSpan);
             }
         }

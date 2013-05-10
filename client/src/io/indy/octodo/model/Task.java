@@ -1,18 +1,25 @@
+
 package io.indy.octodo.model;
 
 // Task specific
 //
 public class Task {
     private int mId;
+
     private int mListId;
+
     private String mContent;
+
     private int mState;
 
     private String mStartedAt;
+
     private String mFinishedAt;
 
     public static final int STATE_OPEN = 0;
+
     public static final int STATE_STRUCK = 1;
+
     public static final int STATE_CLOSED = 2;
 
     private Task(Builder builder) {
@@ -48,19 +55,22 @@ public class Task {
         return mFinishedAt;
     }
 
-    
     @Override
     public String toString() {
         return mContent;
     }
 
-
     public static class Builder {
         private int mId = 0;
+
         private int mListId = 0;
+
         private String mContent = "";
+
         private int mState = 0;
+
         private String mStartedAt = "";
+
         private String mFinishedAt = "";
 
         public Builder() {

@@ -1,3 +1,4 @@
+
 package io.indy.octodo;
 
 import io.indy.octodo.adapter.TaskItemAdapter;
@@ -22,7 +23,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,16 +36,23 @@ import de.greenrobot.event.EventBus;
 public final class TaskListFragment extends Fragment implements OnClickListener {
 
     private final String TAG = getClass().getSimpleName();
+
     private static final boolean D = true;
 
     private List<Task> mTasks;
+
     private TaskItemAdapter mTaskItemAdapter;
+
     private SlideExpandableListAdapter mSlideAdapter;
+
     private MainController mController;
 
     private TaskList mTaskList;
+
     private EditText mEditText;
+
     private ListView mListView;
+
     private Button mButtonAddTask;
 
     private LinearLayout mSectionAddTask;
@@ -71,7 +78,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         if (D) {
             Log.d(TAG, "calling MainActivity::getController");
         }
-        mController = ((MainActivity) activity).getController();
+        mController = ((MainActivity)activity).getController();
     }
 
     @Override
@@ -102,9 +109,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     public void onEvent(MoveTaskEvent event) {
-        int taskListId = mTaskList.getId();
-        if (isEventRelevant(event.getOldTaskListId())
-                || isEventRelevant(event.getNewTaskListId())) {
+        if (isEventRelevant(event.getOldTaskListId()) || isEventRelevant(event.getNewTaskListId())) {
             refreshTasks();
         }
     }
@@ -123,21 +128,20 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
                 mSectionAddTask.startAnimation(anim);
                 mSectionAddTask.setVisibility(View.VISIBLE);
                 anim.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            mEditText.requestFocus();
-                        }
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        mEditText.requestFocus();
+                    }
 
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-                        }
-                    });
-
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+                });
 
                 Animation listAnim = AnimationHelper.slideDownAnimation(height);
                 mListView.startAnimation(listAnim);
@@ -147,21 +151,21 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
                 anim = AnimationHelper.slideUpAnimation();
                 mSectionAddTask.startAnimation(anim);
                 anim.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                        }
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                    }
 
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            mSectionAddTask.setVisibility(View.GONE);
-                            // prevents flicker when mSectionAddTask is hidden
-                            mListView.clearAnimation();
-                        }
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        mSectionAddTask.setVisibility(View.GONE);
+                        // prevents flicker when mSectionAddTask is hidden
+                        mListView.clearAnimation();
+                    }
 
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-                        }
-                    });
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+                });
 
                 Animation listAnim = AnimationHelper.slideUpAnimation(height);
                 mListView.startAnimation(listAnim);
@@ -177,9 +181,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         if (D) {
             Log.d(TAG, "onCreateView");
@@ -187,25 +189,20 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         // Create, or inflate the Fragment's UI, and return it.
         // If this Fragment has no UI then return null.
-        View view = inflater.inflate(R.layout.fragment_tasklist,
-                container,
-                false);
+        View view = inflater.inflate(R.layout.fragment_tasklist, container, false);
 
-        mEditText = (EditText) view.findViewById(R.id.editTextTask);
-        mListView = (ListView) view.findViewById(R.id.listViewTasks);
-        mButtonAddTask = (Button) view.findViewById(R.id.buttonAddTask);
-        mSectionAddTask = (LinearLayout) view.findViewById(R.id.sectionAddTask);
+        mEditText = (EditText)view.findViewById(R.id.editTextTask);
+        mListView = (ListView)view.findViewById(R.id.listViewTasks);
+        mButtonAddTask = (Button)view.findViewById(R.id.buttonAddTask);
+        mSectionAddTask = (LinearLayout)view.findViewById(R.id.sectionAddTask);
 
         setKeyboardVisibility(mEditText);
 
         mTasks = mController.onGetTasks(mTaskList.getId());
 
-        mTaskItemAdapter = new TaskItemAdapter(getActivity(),
-                mTasks,
-                mController);
+        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTasks, mController);
 
-        mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter,
-                R.id.expandable_trigger,
+        mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter, R.id.expandable_trigger,
                 R.id.expandable);
 
         // Bind the Array Adapter to the List View
@@ -222,7 +219,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
 
-                InputMethodManager imm = (InputMethodManager) mContext
+                InputMethodManager imm = (InputMethodManager)mContext
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
 
                 if (hasFocus) {
@@ -234,6 +231,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         });
     }
 
+    @Override
     public void onClick(View v) {
         String content = mEditText.getText().toString().trim();
         if (content.length() == 0) {
@@ -243,8 +241,8 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         String now = DateFormatHelper.today();
 
-        Task task = new Task.Builder().id(0).listId(mTaskList.getId())
-                .content(content).state(0).startedAt(now).build();
+        Task task = new Task.Builder().id(0).listId(mTaskList.getId()).content(content).state(0)
+                .startedAt(now).build();
 
         if (D) {
             Log.d(TAG, "adding a task");
