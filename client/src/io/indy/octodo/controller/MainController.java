@@ -104,4 +104,8 @@ public class MainController {
         post(new RefreshTaskListEvent(taskListId));
     }
 
+    public void cancelAllNotifications() {
+        NotificationHelper.cancelAllNotifications();
+    }
+
 }

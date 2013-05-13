@@ -191,6 +191,7 @@ public class MainActivity extends SherlockFragmentActivity {
             Log.d(TAG, "onDestroy");
         }
         mDatabase.closeDatabase();
+        mController.cancelAllNotifications();
     }
 
     @Override

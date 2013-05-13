@@ -5,6 +5,7 @@ import android.app.Activity;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
+
 // Show the user notifications
 public class NotificationHelper {
 
@@ -12,6 +13,10 @@ public class NotificationHelper {
 
     public NotificationHelper(Activity activity) {
         mActivity = activity;
+    }
+
+    public static void cancelAllNotifications() {
+        Crouton.cancelAllCroutons();
     }
 
     public void showConfirmation(String message) {
