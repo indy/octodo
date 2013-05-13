@@ -75,11 +75,27 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         mContext = activity;
 
-        if (D) {
-            Log.d(TAG, "calling MainActivity::getController");
-        }
-        mController = ((MainActivity)activity).getController();
+        //if (D) {
+        //Log.d(TAG, "calling MainActivity::getController");
+        //}
+        //mController = ((MainActivity)activity).getController();
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate and
+        // onRestoreInstanceState if the process is
+        // killed and restarted by the run time.
+        super.onSaveInstanceState(savedInstanceState);
+        if (D) {
+            Log.d(TAG, "onSaveInstanceState");
+        }
+
+        // save the taskList
+        savedInstanceState.putInt("taskListId", mTaskList.getId());
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,6 +127,68 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     public void onEvent(MoveTaskEvent event) {
         if (isEventRelevant(event.getOldTaskListId()) || isEventRelevant(event.getNewTaskListId())) {
             refreshTasks();
+        }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (D) {
+            Log.d(TAG, "onActivityCreated");
+        }
+    }
+    
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (D) {
+            Log.d(TAG, "onStart");
+        }
+        // Apply any required UI change now that the Activity is visible.
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (D) {
+            Log.d(TAG, "onResume");
+        }
+        // Resume any paused UI updates, threads, or processes required
+        // by the Activity but suspended when it was inactive.
+    }
+
+    @Override
+    public void onPause() {
+        // Suspend UI updates, threads, or CPU intensive processes
+        // that don't need to be updated when the Activity isn't
+        // the active foreground Activity.
+        super.onPause();
+        if (D) {
+            Log.d(TAG, "onPause");
+        }
+    }
+
+    // Called at the end of the visible lifetime.
+    @Override
+    public void onStop() {
+        // Suspend remaining UI updates, threads, or processing
+        // that aren't required when the Activity isn't visible.
+        // Persist all edits or state changes
+        // as after this call the process is likely to be killed.
+        super.onStop();
+        if (D) {
+            Log.d(TAG, "onStop");
+        }
+    }
+
+    // Sometimes called at the end of the full lifetime.
+    @Override
+    public void onDestroyView() {
+        // Clean up any resources including ending threads,
+        // closing database connections etc.
+        super.onDestroyView();
+        if (D) {
+            Log.d(TAG, "onDestroyView");
         }
     }
 
@@ -178,6 +256,9 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
     public void setTaskList(TaskList taskList) {
         mTaskList = taskList;
+        if (D) {
+            Log.d(TAG, "mTaskList set to " + taskList);
+        }
     }
 
     @Override
@@ -197,6 +278,14 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         mSectionAddTask = (LinearLayout)view.findViewById(R.id.sectionAddTask);
 
         setKeyboardVisibility(mEditText);
+
+
+        mController = ((MainActivity)mContext).getController();
+        if(mTaskList == null) {
+            int taskListId = savedInstanceState.getInt("taskListId");
+            // get TaskList with the given Id from the activity
+            mTaskList = ((MainActivity)mContext).getTaskList(taskListId);
+        }
 
         mTasks = mController.onGetTasks(mTaskList.getId());
 

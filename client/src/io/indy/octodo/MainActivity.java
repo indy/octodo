@@ -38,19 +38,29 @@ public class MainActivity extends SherlockFragmentActivity {
 
     private Database mDatabase;
 
+    private List<TaskList> mTaskLists;
+
     public void refreshTaskListsUI() {
         if (D) {
             Log.d(TAG, "refreshTaskListsUI");
         }
 
         List<TaskList> lists = mDatabase.getTaskLists();
-        mAdapter.updateTaskLists(lists);
+
+        mTaskLists.clear();
+        mTaskLists.addAll(lists);
+
         mAdapter.notifyDataSetChanged();
     }
 
     public MainController getController() {
         if (D) {
-            Log.d(TAG, "getController");
+            if(mController == null) {
+                Log.d(TAG, "getController null");
+            } else {
+                Log.d(TAG, "getController ok");
+            }
+
         }
 
         return mController;
@@ -77,16 +87,9 @@ public class MainActivity extends SherlockFragmentActivity {
             Log.d(TAG, "creating MainController");
         }
         mController = new MainController(this, mDatabase);
-        List<TaskList> taskLists = mDatabase.getTaskLists();
+        mTaskLists = mDatabase.getTaskLists();
 
-        if (D) {
-            Log.d(TAG, "all taskLists:");
-            for (TaskList tl : taskLists) {
-                Log.d(TAG, tl.getName());
-            }
-        }
-
-        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), taskLists);
+        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskLists);
 
         mPager = (ViewPager)findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
@@ -207,7 +210,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
         switch (item.getItemId()) {
             case R.id.menu_remove_completed_tasks:
-                mController.onRemoveCompletedTasks(getTaskList());
+                mController.onRemoveCompletedTasks(getCurrentTaskList());
                 break;
 
             case R.id.menu_settings:
@@ -217,7 +220,7 @@ public class MainActivity extends SherlockFragmentActivity {
             case R.id.menu_add_task:
                 // show the 'add task' ui element in the relevant task list
                 // fragment
-                mController.onToggleAddTaskForm(getTaskListId());
+                mController.onToggleAddTaskForm(getCurrentTaskListId());
                 break;
 
             case R.id.menu_manage_lists:
@@ -232,12 +235,21 @@ public class MainActivity extends SherlockFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private int getTaskListId() {
-        TaskList taskList = getTaskList();
+    public TaskList getTaskList(int id) {
+        for (TaskList taskList : mTaskLists) {
+            if(taskList.getId() == id) {
+                return taskList;
+            }
+        }
+        return null;
+    }
+
+    private int getCurrentTaskListId() {
+        TaskList taskList = getCurrentTaskList();
         return taskList.getId();
     }
 
-    private TaskList getTaskList() {
+    private TaskList getCurrentTaskList() {
         int i = mPager.getCurrentItem();
         return mAdapter.getTaskList(i);
     }
