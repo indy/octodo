@@ -74,28 +74,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         }
 
         mContext = activity;
-
-        //if (D) {
-        //Log.d(TAG, "calling MainActivity::getController");
-        //}
-        //mController = ((MainActivity)activity).getController();
     }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save UI state changes to the savedInstanceState.
-        // This bundle will be passed to onCreate and
-        // onRestoreInstanceState if the process is
-        // killed and restarted by the run time.
-        super.onSaveInstanceState(savedInstanceState);
-        if (D) {
-            Log.d(TAG, "onSaveInstanceState");
-        }
-
-        // save the taskList
-        savedInstanceState.putInt("taskListId", mTaskList.getId());
-    }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,28 +85,44 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-    private boolean isEventRelevant(int taskListId) {
-        return mTaskList.getId() == taskListId;
-    }
-
-    // common event fired whenever a task is modified and it's parent tasklist
-    // UI needs to be updated
-    public void onEvent(RefreshTaskListEvent event) {
-        if (isEventRelevant(event.getTaskListId())) {
-            refreshTasks();
-            mEditText.setText("");
+        if (D) {
+            Log.d(TAG, "onCreateView");
         }
-    }
 
-    public void onEvent(MoveTaskEvent event) {
-        if (isEventRelevant(event.getOldTaskListId()) || isEventRelevant(event.getNewTaskListId())) {
-            refreshTasks();
+        // Create, or inflate the Fragment's UI, and return it.
+        // If this Fragment has no UI then return null.
+        View view = inflater.inflate(R.layout.fragment_tasklist, container, false);
+
+        mEditText = (EditText)view.findViewById(R.id.editTextTask);
+        mListView = (ListView)view.findViewById(R.id.listViewTasks);
+        mButtonAddTask = (Button)view.findViewById(R.id.buttonAddTask);
+        mSectionAddTask = (LinearLayout)view.findViewById(R.id.sectionAddTask);
+
+        setKeyboardVisibility(mEditText);
+
+        mController = ((MainActivity)mContext).getController();
+        if (mTaskList == null) {
+            int taskListId = savedInstanceState.getInt("taskListId");
+            // get TaskList with the given Id from the activity
+            mTaskList = ((MainActivity)mContext).getTaskList(taskListId);
         }
+
+        mTasks = mController.onGetTasks(mTaskList.getId());
+
+        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTasks, mController);
+
+        mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter, R.id.expandable_trigger,
+                R.id.expandable);
+
+        // Bind the Array Adapter to the List View
+        mListView.setAdapter(mSlideAdapter);
+
+        // invoke this object's onClick method when a task is added
+        mButtonAddTask.setOnClickListener(this);
+
+        return view;
     }
 
     @Override
@@ -137,7 +132,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
             Log.d(TAG, "onActivityCreated");
         }
     }
-    
+
     @Override
     public void onStart() {
         super.onStart();
@@ -168,6 +163,21 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate and
+        // onRestoreInstanceState if the process is
+        // killed and restarted by the run time.
+        super.onSaveInstanceState(savedInstanceState);
+        if (D) {
+            Log.d(TAG, "onSaveInstanceState");
+        }
+
+        // save the taskList
+        savedInstanceState.putInt("taskListId", mTaskList.getId());
+    }
+
     // Called at the end of the visible lifetime.
     @Override
     public void onStop() {
@@ -189,6 +199,27 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         super.onDestroyView();
         if (D) {
             Log.d(TAG, "onDestroyView");
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    // common event fired whenever a task is modified and it's parent tasklist
+    // UI needs to be updated
+    public void onEvent(RefreshTaskListEvent event) {
+        if (isEventRelevant(event.getTaskListId())) {
+            refreshTasks();
+            mEditText.setText("");
+        }
+    }
+
+    public void onEvent(MoveTaskEvent event) {
+        if (isEventRelevant(event.getOldTaskListId()) || isEventRelevant(event.getNewTaskListId())) {
+            refreshTasks();
         }
     }
 
@@ -261,48 +292,6 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        if (D) {
-            Log.d(TAG, "onCreateView");
-        }
-
-        // Create, or inflate the Fragment's UI, and return it.
-        // If this Fragment has no UI then return null.
-        View view = inflater.inflate(R.layout.fragment_tasklist, container, false);
-
-        mEditText = (EditText)view.findViewById(R.id.editTextTask);
-        mListView = (ListView)view.findViewById(R.id.listViewTasks);
-        mButtonAddTask = (Button)view.findViewById(R.id.buttonAddTask);
-        mSectionAddTask = (LinearLayout)view.findViewById(R.id.sectionAddTask);
-
-        setKeyboardVisibility(mEditText);
-
-
-        mController = ((MainActivity)mContext).getController();
-        if(mTaskList == null) {
-            int taskListId = savedInstanceState.getInt("taskListId");
-            // get TaskList with the given Id from the activity
-            mTaskList = ((MainActivity)mContext).getTaskList(taskListId);
-        }
-
-        mTasks = mController.onGetTasks(mTaskList.getId());
-
-        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTasks, mController);
-
-        mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter, R.id.expandable_trigger,
-                R.id.expandable);
-
-        // Bind the Array Adapter to the List View
-        mListView.setAdapter(mSlideAdapter);
-
-        // invoke this object's onClick method when a task is added
-        mButtonAddTask.setOnClickListener(this);
-
-        return view;
-    }
-
     private void setKeyboardVisibility(EditText editText) {
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -356,5 +345,9 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         mTasks.clear();
         mTasks.addAll(tasks);
         mTaskItemAdapter.notifyDataSetChanged();
+    }
+
+    private boolean isEventRelevant(int taskListId) {
+        return mTaskList.getId() == taskListId;
     }
 }
