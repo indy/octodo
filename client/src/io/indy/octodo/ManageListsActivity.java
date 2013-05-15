@@ -8,6 +8,7 @@ import io.indy.octodo.model.TaskList;
 
 import java.util.List;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -48,6 +49,11 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_lists);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // same as com.viewpagerindicator.TitlePageIndicator app:footerColor
+        // in activity_main.xml
+        ColorDrawable cd = new ColorDrawable(0xff4fb4e7);
+        getSupportActionBar().setBackgroundDrawable(cd);
 
         mListView = (ListView)findViewById(R.id.listViewTaskLists);
 
