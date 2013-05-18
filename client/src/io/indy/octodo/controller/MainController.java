@@ -21,9 +21,12 @@ public class MainController {
 
     private Database mDatabase;
 
+    private NotificationHelper mNotification;
+
     public MainController(Activity activity, Database database) {
         mActivity = activity;
         mDatabase = database;
+        mNotification = new NotificationHelper(activity);
     }
 
     public void onTaskAdded(Task task) {
@@ -92,8 +95,7 @@ public class MainController {
     }
 
     private void notifyUser(String message) {
-        NotificationHelper nh = new NotificationHelper(mActivity);
-        nh.showConfirmation(message);
+        mNotification.showConfirmation(message);
     }
 
     private void post(Object event) {
@@ -105,7 +107,7 @@ public class MainController {
     }
 
     public void cancelAllNotifications() {
-        NotificationHelper.cancelAllNotifications();
+        mNotification.cancelAllNotifications();
     }
 
 }
