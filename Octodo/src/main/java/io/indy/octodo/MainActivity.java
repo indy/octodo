@@ -55,7 +55,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
     public MainController getController() {
         if (D) {
-            if(mController == null) {
+            if (mController == null) {
                 Log.d(TAG, "getController null");
             } else {
                 Log.d(TAG, "getController ok");
@@ -237,7 +237,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
     public TaskList getTaskList(int id) {
         for (TaskList taskList : mTaskLists) {
-            if(taskList.getId() == id) {
+            if (taskList.getId() == id) {
                 return taskList;
             }
         }
