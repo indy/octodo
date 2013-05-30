@@ -1,1 +1,5 @@
-include ':Octodo', ':libraries:ActionBarSherlock', ':libraries:ViewPagerIndicator', ':libraries:SlideExpandableListView'
+include ':libraries:support-v4'
+include ':libraries:ActionBarSherlock'
+include ':libraries:ViewPagerIndicator'
+include ':libraries:SlideExpandableListView'
+include ':Octodo'

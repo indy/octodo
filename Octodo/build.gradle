@@ -1,17 +1,8 @@
-buildscript {
-    repositories {
-        maven { url 'http://repo1.maven.org/maven2' }
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.4'
-    }
-}
 apply plugin: 'android'
 
 dependencies {
-    compile files('libs/android-support-v4.jar')
-    compile files('libs/EventBus-2.0.1.jar')
-    compile files('libs/crouton-1.7.jar')
+    compile fileTree(dir: 'libs', include: '*.jar')
+    compile project(':libraries:support-v4')
     compile project(':libraries:ActionBarSherlock')
     compile project(':libraries:SlideExpandableListView')
     compile project(':libraries:ViewPagerIndicator')
