@@ -2,7 +2,7 @@ apply plugin: 'android'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile project(':libraries:support-v4')
+    compile 'com.android.support:support-v4:13.0.0'
     compile project(':libraries:ActionBarSherlock')
     compile project(':libraries:SlideExpandableListView')
     compile project(':libraries:ViewPagerIndicator')
