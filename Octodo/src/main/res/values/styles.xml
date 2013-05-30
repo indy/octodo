@@ -17,4 +17,18 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="Theme.Octodo" parent="@style/Theme.Sherlock.Light.DarkActionBar">
+        <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
+        <item name="android:actionBarStyle">@style/Widget.Styled.ActionBar</item>
+    </style>
+
+    <!-- prevent flicker at startup by specifying colour in theme -->
+    <!-- see: http://cyrilmottier.com/2013/01/23/android-app-launching-made-gorgeous/ -->
+
+    <style name="Widget.Styled.ActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+        <item name="background">@color/blue</item>
+        <item name="android:background">@color/blue</item>
+    </style>    
+
+
 </resources>

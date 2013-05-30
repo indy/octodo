@@ -9,7 +9,6 @@ import io.indy.octodo.model.TaskList;
 import java.util.List;
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -74,11 +73,6 @@ public class MainActivity extends SherlockFragmentActivity {
         if (D) {
             Log.d(TAG, "onCreate");
         }
-
-        // same as com.viewpagerindicator.TitlePageIndicator app:footerColor
-        // in activity_main.xml
-        ColorDrawable cd = new ColorDrawable(0xff4fb4e7);
-        getSupportActionBar().setBackgroundDrawable(cd);
 
         // database lifecycle and configuration is managed by MainActivity
         mDatabase = new Database(this);
