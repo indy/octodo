@@ -8,6 +8,8 @@ import io.indy.octodo.model.TaskList;
 
 import java.util.List;
 
+import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -18,6 +20,10 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -65,6 +71,16 @@ public class MainActivity extends SherlockFragmentActivity {
         return mController;
     }
 
+    static final int REQUEST_ACCOUNT_PICKER = 1;
+
+    static final int REQUEST_AUTHORIZATION = 2;
+
+    static final int CAPTURE_IMAGE = 3;
+
+    private static Drive service;
+
+    private GoogleAccountCredential credential;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +106,77 @@ public class MainActivity extends SherlockFragmentActivity {
 
         mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
+
+        String scope = "https://www.googleapis.com/auth/drive.appdata";
+        credential = GoogleAccountCredential.usingOAuth2(this, scope);
+        Log.d(TAG, "credential is " + credential);
+        startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        switch (requestCode) {
+            case REQUEST_ACCOUNT_PICKER:
+                if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
+                    String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null) {
+                        credential.setSelectedAccountName(accountName);
+                        service = getDriveService(credential);
+                        Log.d(TAG, "request account picker returned " + service);
+                        startCameraIntent();
+                    }
+                }
+                break;
+            case REQUEST_AUTHORIZATION:
+                if (resultCode == Activity.RESULT_OK) {
+                    saveFileToDrive();
+                } else {
+                    startActivityForResult(credential.newChooseAccountIntent(),
+                            REQUEST_ACCOUNT_PICKER);
+                }
+                break;
+            case CAPTURE_IMAGE:
+                if (resultCode == Activity.RESULT_OK) {
+                    saveFileToDrive();
+                }
+        }
+    }
+
+    private void saveFileToDrive() {
+        Log.d(TAG, "saveFileToDrive");
+        /*
+         * Thread t = new Thread(new Runnable() {
+         * @Override public void run() { try { // File's binary content
+         * java.io.File fileContent = new java.io.File(fileUri.getPath());
+         * FileContent mediaContent = new FileContent("image/jpeg",
+         * fileContent); // File's metadata. File body = new File();
+         * body.setTitle(fileContent.getName()); body.setMimeType("image/jpeg");
+         * File file = service.files().insert(body, mediaContent).execute(); if
+         * (file != null) { showToast("Photo uploaded: " + file.getTitle());
+         * startCameraIntent(); } } catch (UserRecoverableAuthIOException e) {
+         * startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION); } catch
+         * (IOException e) { e.printStackTrace(); } } }); t.start();
+         */
+    }
+
+    private void startCameraIntent() {
+        Log.d(TAG, "startCameraIntent");
+        /*
+         * String mediaStorageDir =
+         * Environment.getExternalStoragePublicDirectory(
+         * Environment.DIRECTORY_PICTURES).getPath(); String timeStamp = new
+         * SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+         * fileUri = Uri.fromFile(new java.io.File(mediaStorageDir +
+         * java.io.File.separator + "IMG_" + timeStamp + ".jpg")); Intent
+         * cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+         * cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+         * startActivityForResult(cameraIntent, CAPTURE_IMAGE);
+         */
+    }
+
+    private Drive getDriveService(GoogleAccountCredential credential) {
+        return new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(),
+                credential).build();
     }
 
     // Called after onCreate has finished, use to restore UI state
