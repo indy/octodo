@@ -3,7 +3,7 @@ android.keystore
 Thumbs.db
 
 obj/
-libraries/
+#libraries/
 
 build/
 .gradle/
