@@ -11,6 +11,7 @@ import java.util.List;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -77,9 +78,10 @@ public class MainActivity extends SherlockFragmentActivity {
 
     static final int CAPTURE_IMAGE = 3;
 
-    private static Drive service;
-
-    private GoogleAccountCredential credential;
+    private static Drive sService;
+    private GoogleAccountCredential mCredential;
+    public static final String PREFS_FILENAME = "MyPrefsFile";
+    public static final String ACCOUNT_NAME = "account_name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,10 +109,34 @@ public class MainActivity extends SherlockFragmentActivity {
         mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
 
+
+
         String scope = "https://www.googleapis.com/auth/drive.appdata";
-        credential = GoogleAccountCredential.usingOAuth2(this, scope);
-        Log.d(TAG, "credential is " + credential);
-        startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+        mCredential = GoogleAccountCredential.usingOAuth2(this, scope);
+        Log.d(TAG, "mCredential is " + mCredential);
+
+        String accountName = getAccountNamePreference();
+        if(accountName.isEmpty()) {
+            startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+        } else {
+            Log.d(TAG, "accountName is " + accountName);
+            mCredential.setSelectedAccountName(accountName);
+            sService = getDriveService(mCredential);
+            startCameraIntent();
+        }
+
+    }
+
+    private String getAccountNamePreference() {
+        SharedPreferences settings = getSharedPreferences(PREFS_FILENAME, 0);
+        return settings.getString(ACCOUNT_NAME, "");
+    }
+
+    private void saveAccountNamePreference(String accountName){
+        SharedPreferences settings = getSharedPreferences(PREFS_FILENAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(ACCOUNT_NAME, accountName);
+        editor.commit();
     }
 
     @Override
@@ -120,9 +146,10 @@ public class MainActivity extends SherlockFragmentActivity {
                 if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
-                        credential.setSelectedAccountName(accountName);
-                        service = getDriveService(credential);
-                        Log.d(TAG, "request account picker returned " + service);
+                        Log.d(TAG, "account name is " + accountName);
+                        saveAccountNamePreference(accountName);
+                        mCredential.setSelectedAccountName(accountName);
+                        sService = getDriveService(mCredential);
                         startCameraIntent();
                     }
                 }
@@ -131,7 +158,7 @@ public class MainActivity extends SherlockFragmentActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     saveFileToDrive();
                 } else {
-                    startActivityForResult(credential.newChooseAccountIntent(),
+                    startActivityForResult(mCredential.newChooseAccountIntent(),
                             REQUEST_ACCOUNT_PICKER);
                 }
                 break;
@@ -151,7 +178,7 @@ public class MainActivity extends SherlockFragmentActivity {
          * FileContent mediaContent = new FileContent("image/jpeg",
          * fileContent); // File's metadata. File body = new File();
          * body.setTitle(fileContent.getName()); body.setMimeType("image/jpeg");
-         * File file = service.files().insert(body, mediaContent).execute(); if
+         * File file = sService.files().insert(body, mediaContent).execute(); if
          * (file != null) { showToast("Photo uploaded: " + file.getTitle());
          * startCameraIntent(); } } catch (UserRecoverableAuthIOException e) {
          * startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION); } catch
