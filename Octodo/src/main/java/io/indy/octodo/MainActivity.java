@@ -1,13 +1,6 @@
 
 package io.indy.octodo;
 
-import io.indy.octodo.adapter.TaskListPagerAdapter;
-import io.indy.octodo.controller.MainController;
-import io.indy.octodo.model.Database;
-import io.indy.octodo.model.TaskList;
-
-import java.util.List;
-
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
@@ -16,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.widget.Toast;
+import android.net.Uri;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -23,10 +17,28 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+
+import io.indy.octodo.adapter.TaskListPagerAdapter;
+import io.indy.octodo.controller.MainController;
+import io.indy.octodo.model.Database;
+import io.indy.octodo.model.TaskList;
 
 public class MainActivity extends SherlockFragmentActivity {
 
@@ -73,13 +85,14 @@ public class MainActivity extends SherlockFragmentActivity {
     }
 
     static final int REQUEST_ACCOUNT_PICKER = 1;
-
     static final int REQUEST_AUTHORIZATION = 2;
-
     static final int CAPTURE_IMAGE = 3;
 
+    private static Uri fileUri;
     private static Drive sService;
+
     private GoogleAccountCredential mCredential;
+
     public static final String PREFS_FILENAME = "MyPrefsFile";
     public static final String ACCOUNT_NAME = "account_name";
 
@@ -122,7 +135,8 @@ public class MainActivity extends SherlockFragmentActivity {
             Log.d(TAG, "accountName is " + accountName);
             mCredential.setSelectedAccountName(accountName);
             sService = getDriveService(mCredential);
-            startCameraIntent();
+            // startCameraIntent();
+            saveFileToDrive();
         }
 
     }
@@ -156,7 +170,7 @@ public class MainActivity extends SherlockFragmentActivity {
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == Activity.RESULT_OK) {
-                    saveFileToDrive();
+                    //saveFileToDrive();
                 } else {
                     startActivityForResult(mCredential.newChooseAccountIntent(),
                             REQUEST_ACCOUNT_PICKER);
@@ -164,26 +178,115 @@ public class MainActivity extends SherlockFragmentActivity {
                 break;
             case CAPTURE_IMAGE:
                 if (resultCode == Activity.RESULT_OK) {
-                    saveFileToDrive();
+                    //saveFileToDrive();
                 }
         }
     }
 
     private void saveFileToDrive() {
         Log.d(TAG, "saveFileToDrive");
-        /*
-         * Thread t = new Thread(new Runnable() {
-         * @Override public void run() { try { // File's binary content
-         * java.io.File fileContent = new java.io.File(fileUri.getPath());
-         * FileContent mediaContent = new FileContent("image/jpeg",
-         * fileContent); // File's metadata. File body = new File();
-         * body.setTitle(fileContent.getName()); body.setMimeType("image/jpeg");
-         * File file = sService.files().insert(body, mediaContent).execute(); if
-         * (file != null) { showToast("Photo uploaded: " + file.getTitle());
-         * startCameraIntent(); } } catch (UserRecoverableAuthIOException e) {
-         * startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION); } catch
-         * (IOException e) { e.printStackTrace(); } } }); t.start();
-         */
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try { // File's binary content
+
+
+/*
+                    // File's metadata.
+                    File body = new File();
+                    body.setTitle("temp01.json");
+                    body.setMimeType("application/json");
+
+                    Log.d(TAG, "created temp01.json");
+
+                    String json = "{\"array\": [1,2,3],\"boolean\": true,\"null\": null,\"number\": 123,\"object\": {\"a\": \"b\", \"c\": \"d\",\"e\": \"f\"},\"string\": \"Hello World\"}";
+
+                    Log.d(TAG, "about to call sService.files().insert");
+                    File file = sService.files().insert(body, ByteArrayContent.fromString("application/json", json)).execute();
+                    Log.d(TAG, "called sService.files().insert");
+*/
+
+
+
+
+
+                    java.io.File tempFile = java.io.File.createTempFile("supertime", "txt");
+Log.d(TAG, "createTempFile");
+                    String tempPath = tempFile.getAbsolutePath();
+Log.d(TAG, "absolute path = " + tempPath);
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(tempPath));
+                    bw.write("Hello");
+                    bw.close();
+Log.d(TAG, "wrote hello");
+
+
+                    // try to open the tempPath file
+                    BufferedReader br = new BufferedReader(new FileReader(tempPath));
+                    try {
+                        StringBuilder sb = new StringBuilder();
+                        String line = br.readLine();
+
+                        while (line != null) {
+                            sb.append(line);
+                            sb.append("\n");
+                            line = br.readLine();
+                        }
+                        String everything = sb.toString();
+                        Log.d(TAG, "reading from the file, its contents are: ");
+                        Log.d(TAG, everything);
+                    } finally {
+                        br.close();
+                    }
+
+
+
+
+                    FileContent mediaContent = new FileContent("text/plain", tempFile);
+                    Log.i("Drive", tempPath);
+
+                    //FileInputStream fis = new FileInputStream(tempPath);
+                    //StringBuilder sb = inputStreamToStringBuilder(fis);
+                    //showText(sb);
+
+                    Log.i("Drive", "done input stream");
+                    // File's metadata.
+                    File body = new File();
+                    body.setTitle("Kapleck");
+                    body.setMimeType("text/plain");
+
+                    Log.d(TAG, "before calling sService.files().insert");
+                    File file = sService.files().insert(body, mediaContent).execute();
+                    Log.d(TAG, "called sService.files().insert");
+
+
+                    if (file != null) {
+                        showToast("Photo uploaded: " + file.getTitle());
+                        startCameraIntent();
+                    }
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "null pointer exception");
+                    e.printStackTrace();
+                } catch (UserRecoverableAuthIOException e) {
+                    Log.d(TAG, "userrecoverableauthioexception");
+                    startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+                } catch (IOException e) {
+                    Log.d(TAG, "IOException");
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+
+    }
+
+    public void showToast(final String toast) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), toast, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void startCameraIntent() {
