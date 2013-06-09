@@ -1,9 +1,18 @@
 
 package io.indy.octodo.model;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 // Task specific
 //
 public class Task {
+
+    private final String TAG = getClass().getSimpleName();
+    private static final boolean D = true;
+
     private int mId;
 
     private int mListId;
@@ -22,6 +31,14 @@ public class Task {
 
     public static final int STATE_CLOSED = 2;
 
+
+
+    public static final String ID = "id";
+    public static final String LIST_ID = "list_id";
+    public static final String CONTENT = "content";
+    public static final String STARTED_AT = "started_at";
+    public static final String FINISHED_AT = "finished_at";
+
     private Task(Builder builder) {
         mId = builder.mId;
         mListId = builder.mListId;
@@ -29,6 +46,54 @@ public class Task {
         mState = builder.mState;
         mStartedAt = builder.mStartedAt;
         mFinishedAt = builder.mFinishedAt;
+    }
+
+    public static Task fromJson(String json) {
+
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+
+            int id = jsonObject.getInt(ID);
+            int listId = jsonObject.getInt(LIST_ID);
+            String content = jsonObject.getString(CONTENT);
+            String startedAt = jsonObject.getString(STARTED_AT);
+
+            Builder builder = new Builder()
+                    .id(id)
+                    .listId(listId)
+                    .content(content)
+                    .state(0)
+                    .startedAt(startedAt);
+
+            if(jsonObject.get(FINISHED_AT) != JSONObject.NULL) {
+                String finishedAt = jsonObject.getString(FINISHED_AT);
+                builder.finishedAt(finishedAt);
+            }
+
+            Task task = builder.build();
+            return task;
+
+        } catch (JSONException e) {
+
+        }
+
+        return null;
+    }
+
+    public String toJson() {
+        JSONObject res = new JSONObject();
+
+        try {
+            res.put(ID, mId);
+            res.put(LIST_ID, mListId);
+            res.put(CONTENT, mContent);
+            res.put(STARTED_AT, mStartedAt);
+            res.put(FINISHED_AT, mFinishedAt);
+        } catch (JSONException e) {
+            Log.d(TAG, "JSONException: " + e);
+        }
+
+        return res.toString();
     }
 
     public int getId() {
