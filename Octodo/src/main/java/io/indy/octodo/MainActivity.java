@@ -5,11 +5,11 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.widget.Toast;
-import android.net.Uri;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -19,25 +19,28 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.ByteArrayContent;
-import com.google.api.client.http.FileContent;
-import com.google.api.client.http.InputStreamContent;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.Drive.Files;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.ParentReference;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.indy.octodo.adapter.TaskListPagerAdapter;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Database;
+import io.indy.octodo.model.DriveStorage;
 import io.indy.octodo.model.TaskList;
 
 public class MainActivity extends SherlockFragmentActivity {
@@ -183,6 +186,27 @@ public class MainActivity extends SherlockFragmentActivity {
         }
     }
 
+
+
+    private static InputStream downloadFile(Drive service, File file) {
+        if (file.getDownloadUrl() != null && file.getDownloadUrl().length() > 0) {
+            try {
+                HttpResponse resp =
+                        service.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl()))
+                                .execute();
+                return resp.getContent();
+            } catch (IOException e) {
+                // An error occurred.
+                Log.d("MainActivity", "exception: " + e);
+                return null;
+            }
+        } else {
+            // The file doesn't have any content stored on Drive.
+            return null;
+        }
+    }
+
+
     private void saveFileToDrive() {
         Log.d(TAG, "saveFileToDrive");
 
@@ -192,78 +216,81 @@ public class MainActivity extends SherlockFragmentActivity {
                 try { // File's binary content
 
 
-/*
-                    // File's metadata.
-                    File body = new File();
-                    body.setTitle("temp01.json");
-                    body.setMimeType("application/json");
+                    // LIST FILES
+                    List<File> files = DriveStorage.listAppDataFiles(sService);
 
-                    Log.d(TAG, "created temp01.json");
+                    Log.d(TAG, "files list length is " + files.size());
+                    for(File f : files) {
+                        Log.d(TAG, "title: " + f.getTitle());
+                        Log.d(TAG, "id:" + f.getId());
+                    }
+                    Log.d(TAG, "finished retrieving files");
+
+
+
+
+                    // READ A FILE
+                    String fileId = "1dHUJZx-sMkPSVG6Lcg-59JlV0lw";
+                    File ff = DriveStorage.getFileMetadata(sService, fileId);
+                    String jsonContent = DriveStorage.downloadFileAsString(sService, ff);
+                    Log.d(TAG, "content of file is " + jsonContent);
+
+
+
+
+
+                    // CREATE A FILE
+                    String filename = "temp03.json";
+                    String json = "{\"array\": [1,2,3],\"boolean\": true,\"null\": null,\"number\": 123,\"object\": {\"a\": \"b\", \"c\": \"d\",\"e\": \"f\"},\"string\": \"Hello World\"}";
+                    File file = DriveStorage.createAppDataJsonFile(sService, filename, json);
+
+                    /*
+                    // File's metadata.
+                    File config = new File();
+                    String filename = "temp03.json";
 
                     String json = "{\"array\": [1,2,3],\"boolean\": true,\"null\": null,\"number\": 123,\"object\": {\"a\": \"b\", \"c\": \"d\",\"e\": \"f\"},\"string\": \"Hello World\"}";
+                    ByteArrayContent content = ByteArrayContent.fromString("application/json", json);
+
+                    List<ParentReference> parents = new ArrayList<ParentReference>();
+                    parents.add(new ParentReference().setId("appdata"));
+
+                    config.setTitle(filename);
+                    config.setParents(parents);
 
                     Log.d(TAG, "about to call sService.files().insert");
-                    File file = sService.files().insert(body, ByteArrayContent.fromString("application/json", json)).execute();
+                    File file = sService.files().insert(config, content).execute();
                     Log.d(TAG, "called sService.files().insert");
 */
 
-
-
-
-
-                    java.io.File tempFile = java.io.File.createTempFile("supertime", "txt");
-Log.d(TAG, "createTempFile");
-                    String tempPath = tempFile.getAbsolutePath();
-Log.d(TAG, "absolute path = " + tempPath);
-                    BufferedWriter bw = new BufferedWriter(new FileWriter(tempPath));
-                    bw.write("Hello");
-                    bw.close();
-Log.d(TAG, "wrote hello");
-
-
-                    // try to open the tempPath file
-                    BufferedReader br = new BufferedReader(new FileReader(tempPath));
-                    try {
-                        StringBuilder sb = new StringBuilder();
-                        String line = br.readLine();
-
-                        while (line != null) {
-                            sb.append(line);
-                            sb.append("\n");
-                            line = br.readLine();
-                        }
-                        String everything = sb.toString();
-                        Log.d(TAG, "reading from the file, its contents are: ");
-                        Log.d(TAG, everything);
-                    } finally {
-                        br.close();
-                    }
-
-
-
-
-                    FileContent mediaContent = new FileContent("text/plain", tempFile);
-                    Log.i("Drive", tempPath);
-
-                    //FileInputStream fis = new FileInputStream(tempPath);
-                    //StringBuilder sb = inputStreamToStringBuilder(fis);
-                    //showText(sb);
-
-                    Log.i("Drive", "done input stream");
-                    // File's metadata.
-                    File body = new File();
-                    body.setTitle("Kapleck");
-                    body.setMimeType("text/plain");
-
-                    Log.d(TAG, "before calling sService.files().insert");
-                    File file = sService.files().insert(body, mediaContent).execute();
-                    Log.d(TAG, "called sService.files().insert");
-
-
                     if (file != null) {
-                        showToast("Photo uploaded: " + file.getTitle());
+                        showToast("file uploaded: " + file.getTitle());
+
+                        Log.d(TAG, "id: " + file.getId()); // 1dHUJZx-sMkPSVG6Lcg-59JlV0lw
+                        Log.d(TAG, "mimetype: " + file.getMimeType()); // application/json
+                        Log.d(TAG, "title: " + file.getTitle()); // temp03.json
+                        List<ParentReference> par = file.getParents();
+                        Log.d(TAG, "size of parentReferences is:" + par.size()); // 1
+                        for(ParentReference pr : par) {
+                            Log.d(TAG, "parent id is " + pr.getId()); // 1J54mT3DZPd2UgdO-rewnesDNCadn
+                        }
+
                         startCameraIntent();
                     }
+
+
+
+                    // UPDATE file
+                    /*
+                    Log.d(TAG, "about to update file");
+                    String json = "{\"array\": [71,72,73],\"boolean\": false,\"null\": null,\"number\": 42,\"object\": {\"z\": \"y\", \"x\": \"w\",\"v\": \"u\"},\"string\": \"Goodbye World\"}";
+                    ByteArrayContent content2 = new ByteArrayContent("application/json", json.getBytes());
+                    File config = sService.files().update(ff.getId(), ff, content2).execute();
+                    Log.d(TAG, "updated file");
+                    logFileMetadata(config, "config");
+                    */
+
+
                 } catch (NullPointerException e) {
                     Log.d(TAG, "null pointer exception");
                     e.printStackTrace();
@@ -278,6 +305,13 @@ Log.d(TAG, "wrote hello");
         });
         t.start();
 
+    }
+
+    private void logFileMetadata(File file, String label) {
+        Log.d(TAG, "logging metadata for: " + label);
+        Log.d(TAG, "id: " + file.getId());
+        Log.d(TAG, "mimetype: " + file.getMimeType());
+        Log.d(TAG, "title: " + file.getTitle());
     }
 
     public void showToast(final String toast) {
