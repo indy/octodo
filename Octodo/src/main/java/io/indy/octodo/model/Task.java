@@ -10,7 +10,7 @@ import org.json.JSONObject;
 //
 public class Task {
 
-    private final String TAG = getClass().getSimpleName();
+    private static final String TAG = "Task";
     private static final boolean D = true;
 
     private int mId;
@@ -31,13 +31,11 @@ public class Task {
 
     public static final int STATE_CLOSED = 2;
 
-
-
-    public static final String ID = "id";
-    public static final String LIST_ID = "list_id";
-    public static final String CONTENT = "content";
-    public static final String STARTED_AT = "started_at";
-    public static final String FINISHED_AT = "finished_at";
+    private static final String ID = "id";
+    private static final String LIST_ID = "list_id";
+    private static final String CONTENT = "content";
+    private static final String STARTED_AT = "started_at";
+    private static final String FINISHED_AT = "finished_at";
 
     private Task(Builder builder) {
         mId = builder.mId;
@@ -48,39 +46,29 @@ public class Task {
         mFinishedAt = builder.mFinishedAt;
     }
 
-    public static Task fromJson(String json) {
+    public static Task fromJson(JSONObject jsonObject) {
 
         try {
-            JSONObject jsonObject = new JSONObject(json);
-
-            int id = jsonObject.getInt(ID);
-            int listId = jsonObject.getInt(LIST_ID);
-            String content = jsonObject.getString(CONTENT);
-            String startedAt = jsonObject.getString(STARTED_AT);
-
             Builder builder = new Builder()
-                    .id(id)
-                    .listId(listId)
-                    .content(content)
-                    .state(0)
-                    .startedAt(startedAt);
+                    .id(jsonObject.getInt(ID))
+                    .listId(jsonObject.getInt(LIST_ID))
+                    .content(jsonObject.getString(CONTENT))
+                    .startedAt(jsonObject.getString(STARTED_AT));
 
             if(jsonObject.get(FINISHED_AT) != JSONObject.NULL) {
-                String finishedAt = jsonObject.getString(FINISHED_AT);
-                builder.finishedAt(finishedAt);
+                builder.finishedAt(jsonObject.getString(FINISHED_AT));
             }
 
-            Task task = builder.build();
-            return task;
+            return builder.build();
 
         } catch (JSONException e) {
-
+            Log.d(TAG, "JSONException: " + e);
         }
 
         return null;
     }
 
-    public String toJson() {
+    public JSONObject toJson() {
         JSONObject res = new JSONObject();
 
         try {
@@ -93,7 +81,7 @@ public class Task {
             Log.d(TAG, "JSONException: " + e);
         }
 
-        return res.toString();
+        return res;
     }
 
     public int getId() {
