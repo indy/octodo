@@ -99,6 +99,12 @@ public class MainActivity extends SherlockFragmentActivity {
     public static final String PREFS_FILENAME = "MyPrefsFile";
     public static final String ACCOUNT_NAME = "account_name";
 
+
+    // the suffix used on json file ids saved as shared preferences
+    private final String ID_SUFFIX = ".drive.id";
+    private final String CURRENT_JSON = "current.json";
+    private final String HISTORIC_JSON = "historic.json";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,7 +139,9 @@ public class MainActivity extends SherlockFragmentActivity {
 
         String accountName = getAccountNamePreference();
         if(accountName.isEmpty()) {
+            // get the preferred google account
             startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+
         } else {
             Log.d(TAG, "accountName is " + accountName);
             mCredential.setSelectedAccountName(accountName);
@@ -156,6 +164,19 @@ public class MainActivity extends SherlockFragmentActivity {
         editor.commit();
     }
 
+    private String getJsonFileIdPreference(String jsonFilename) {
+        SharedPreferences settings = getSharedPreferences(PREFS_FILENAME, 0);
+        return settings.getString(jsonFilename + ID_SUFFIX, "");
+    }
+
+    // saves the given json file's drive id as a shared preference
+    private void saveJsonFileIdPreference(String jsonFilename, String id) {
+        SharedPreferences settings = getSharedPreferences(PREFS_FILENAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(jsonFilename + ID_SUFFIX, id);
+        editor.commit();
+    }
+
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         switch (requestCode) {
@@ -163,17 +184,21 @@ public class MainActivity extends SherlockFragmentActivity {
                 if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
+                        // chosen a google account, does it contain the json files?
+
                         Log.d(TAG, "account name is " + accountName);
                         saveAccountNamePreference(accountName);
                         mCredential.setSelectedAccountName(accountName);
                         sService = getDriveService(mCredential);
-                        startCameraIntent();
+
+                        ensureJsonFilesExist();
                     }
                 }
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == Activity.RESULT_OK) {
-                    //saveFileToDrive();
+                    // return to ensureJsonFilesExist
+                    ensureJsonFilesExist();
                 } else {
                     startActivityForResult(mCredential.newChooseAccountIntent(),
                             REQUEST_ACCOUNT_PICKER);
@@ -186,26 +211,106 @@ public class MainActivity extends SherlockFragmentActivity {
         }
     }
 
-
-
-    private static InputStream downloadFile(Drive service, File file) {
-        if (file.getDownloadUrl() != null && file.getDownloadUrl().length() > 0) {
-            try {
-                HttpResponse resp =
-                        service.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl()))
-                                .execute();
-                return resp.getContent();
-            } catch (IOException e) {
-                // An error occurred.
-                Log.d("MainActivity", "exception: " + e);
-                return null;
-            }
-        } else {
-            // The file doesn't have any content stored on Drive.
-            return null;
+    private void ensureJsonFilesExist() {
+        if (D) {
+            Log.d(TAG, "ensureJsonFilesExist");
         }
-    }
 
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // LIST FILES
+                    List<File> files = DriveStorage.listAppDataFiles(sService);
+
+                    Log.d(TAG, "files list length is " + files.size());
+
+                    boolean foundCurrent = false;
+                    boolean foundHistoric = false;
+
+                    for(File f : files) {
+
+
+                        if(f.getTitle().equals(CURRENT_JSON)) {
+
+                            // check that the found json file's id matches the one in shared preferences
+                            String id = getJsonFileIdPreference(CURRENT_JSON);
+                            if(!id.equals(f.getId())) {
+                                /*
+                                Scenarios to get here:
+
+                                1. user started using app on machine A
+                                2. user started using app on machine B <- we hit this code path
+
+                                _or_
+
+                                1. user started using app on machine A
+                                2. delete app data using web interface to Google Drive
+                                3. then used app on machine B <- new ids will be made for current and historic
+                                4. then went back to machine A <- we hit this code path - machine A will have the old ids stored in it's shared preferences
+
+                                treat the drive version as the canonical truth, overwrite the id stored in shared preferences with the one on drive
+
+                                 */
+                                saveJsonFileIdPreference(CURRENT_JSON, f.getId());
+                            }
+
+                            foundCurrent = true;
+                        }
+                        if(f.getTitle().equals(HISTORIC_JSON)) {
+                            String id = getJsonFileIdPreference(HISTORIC_JSON);
+                            if(!id.equals(f.getId())) {
+                                saveJsonFileIdPreference(HISTORIC_JSON, f.getId());
+                            }
+
+                            foundHistoric = true;
+                        }
+                    }
+
+                    if(!foundCurrent) {
+                        String json = "{\"array\": [1,2,3]}";
+                        File file = DriveStorage.createAppDataJsonFile(sService, CURRENT_JSON, json);
+                        if (file != null) {
+                            // save the file's id in local storage
+                            saveJsonFileIdPreference(CURRENT_JSON, file.getId());
+                            foundCurrent = true;
+                        } else {
+                            Log.d(TAG, "unable to create AppDataJsonFile: " + CURRENT_JSON);
+                        }
+                    }
+                    if(!foundHistoric) {
+                        String json = "{\"array\": [1,2,3]}";
+                        File file = DriveStorage.createAppDataJsonFile(sService, HISTORIC_JSON, json);
+                        if (file != null) {
+                            saveJsonFileIdPreference(HISTORIC_JSON, file.getId());
+                            foundHistoric = true;
+                        } else {
+                            Log.d(TAG, "unable to create AppDataJsonFile: " + HISTORIC_JSON);
+                        }
+                    }
+
+                    if(!foundCurrent || !foundHistoric) {
+                        Log.d(TAG, "cannot create required json files");
+                        // return an error, ask user to check permissions or launch account picker activity?
+                        // exit the application
+
+                    }
+
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "null pointer exception");
+                    e.printStackTrace();
+                } catch (UserRecoverableAuthIOException e) {
+                    Log.d(TAG, "userrecoverableauthioexception");
+                    startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+                } catch (IOException e) {
+                    Log.d(TAG, "IOException");
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+
+    }
 
     private void saveFileToDrive() {
         Log.d(TAG, "saveFileToDrive");
@@ -238,11 +343,12 @@ public class MainActivity extends SherlockFragmentActivity {
 
 
 
-
+                    /*
                     // CREATE A FILE
                     String filename = "temp03.json";
                     String json = "{\"array\": [1,2,3],\"boolean\": true,\"null\": null,\"number\": 123,\"object\": {\"a\": \"b\", \"c\": \"d\",\"e\": \"f\"},\"string\": \"Hello World\"}";
                     File file = DriveStorage.createAppDataJsonFile(sService, filename, json);
+                    */
 
                     /*
                     // File's metadata.
@@ -263,6 +369,8 @@ public class MainActivity extends SherlockFragmentActivity {
                     Log.d(TAG, "called sService.files().insert");
 */
 
+
+                    /*
                     if (file != null) {
                         showToast("file uploaded: " + file.getTitle());
 
@@ -277,6 +385,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
                         startCameraIntent();
                     }
+                    */
 
 
 
