@@ -31,21 +31,13 @@ public class DriveStorage {
 
         List<File> result = new ArrayList<File>();
         Drive.Files.List request = service.files().list();
-        Log.d(TAG, "b");
         request.setQ("'appdata' in parents");
 
         do {
             try {
-                Log.d(TAG, "c");
                 FileList files = request.execute();
-                Log.d(TAG, "d");
-
                 result.addAll(files.getItems());
-                Log.d(TAG, "e");
-
                 request.setPageToken(files.getNextPageToken());
-                Log.d(TAG, "f");
-
             } catch (IOException e) {
                 Log.d("MainActivity", "An error occurred: " + e);
                 request.setPageToken(null);
@@ -58,7 +50,7 @@ public class DriveStorage {
     }
 
     // in practice the appdata folder will always contain json files
-    public static File createAppDataJsonFile(Drive service, String title, String json) {
+    public static File createAppDataJsonFile(Drive service, String title, String json) throws IOException {
 
         ByteArrayContent content = ByteArrayContent.fromString(JSON_MIMETYPE, json);
 
@@ -74,12 +66,12 @@ public class DriveStorage {
             file = service.files().insert(config, content).execute();
         } catch (IOException e) {
             Log.d(TAG, "createAppDataJsonFile exception: " + e);
-            file = null;
+            throw e;
         }
         return file;
     }
 
-    public static File updateAppDataJsonFile(Drive service, File metadata, String json) {
+    public static File updateAppDataJsonFile(Drive service, File metadata, String json) throws IOException {
         ByteArrayContent content = ByteArrayContent.fromString(JSON_MIMETYPE, json);
 
         File file;
@@ -87,23 +79,23 @@ public class DriveStorage {
             file = service.files().update(metadata.getId(), metadata, content).execute();
         } catch (IOException e) {
             Log.d(TAG, "updateAppDataJsonFile exception: " + e);
-            file = null;
+            throw e;
         }
         return file;
     }
 
-    public static File getFileMetadata(Drive service, String fileId) {
+    public static File getFileMetadata(Drive service, String fileId) throws IOException {
         File f;
         try {
             f = service.files().get(fileId).execute();
         } catch (IOException e) {
             Log.d(TAG, "getFileMetadata exception: " + e);
-            f = null;
+            throw e;
         }
         return f;
     }
 
-    public static InputStream downloadFile(Drive service, File file) {
+    public static InputStream downloadFile(Drive service, File file) throws IOException {
         if (file.getDownloadUrl() != null && file.getDownloadUrl().length() > 0) {
             try {
                 HttpResponse resp =
@@ -113,7 +105,7 @@ public class DriveStorage {
             } catch (IOException e) {
                 // An error occurred.
                 Log.d(TAG, "downloadFile exception: " + e);
-                return null;
+                throw e;
             }
         } else {
             // The file doesn't have any content stored on Drive.
@@ -121,12 +113,13 @@ public class DriveStorage {
         }
     }
 
-    public static String downloadFileAsString(Drive service, File file) {
+    public static String downloadFileAsString(Drive service, File file) throws IOException {
 
-        InputStream is = DriveStorage.downloadFile(service, file);
         String res = null;
 
         try {
+            InputStream is = DriveStorage.downloadFile(service, file);
+
             if (is != null) {
 
                 InputStreamReader isr = new InputStreamReader(is);
@@ -144,7 +137,7 @@ public class DriveStorage {
             }
         } catch (IOException e) {
             Log.d(TAG, "downloadFileAsString exception: " + e);
-            res = null;
+            throw e;
         }
 
         return res;
