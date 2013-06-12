@@ -31,17 +31,25 @@ public class DriveStorage {
 
         List<File> result = new ArrayList<File>();
         Drive.Files.List request = service.files().list();
+        Log.d(TAG, "b");
         request.setQ("'appdata' in parents");
 
         do {
             try {
+                Log.d(TAG, "c");
                 FileList files = request.execute();
+                Log.d(TAG, "d");
 
                 result.addAll(files.getItems());
+                Log.d(TAG, "e");
+
                 request.setPageToken(files.getNextPageToken());
+                Log.d(TAG, "f");
+
             } catch (IOException e) {
                 Log.d("MainActivity", "An error occurred: " + e);
                 request.setPageToken(null);
+                throw e;
             }
         } while (request.getPageToken() != null &&
                 request.getPageToken().length() > 0);

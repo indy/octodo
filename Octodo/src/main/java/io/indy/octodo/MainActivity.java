@@ -140,14 +140,26 @@ public class MainActivity extends SherlockFragmentActivity {
         String accountName = getAccountNamePreference();
         if(accountName.isEmpty()) {
             // get the preferred google account
+            Log.d(TAG, "account name is empty, asking user to choose an account");
             startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+            // after getting the result from the above activity we'll call ensureJsonFileExists
 
         } else {
+
+            // check to make sure we have an accountName and 2 json filenames
             Log.d(TAG, "accountName is " + accountName);
             mCredential.setSelectedAccountName(accountName);
             sService = getDriveService(mCredential);
-            // startCameraIntent();
-            saveFileToDrive();
+
+            if(hasBothJsonFileIdPreferences()) {
+                Log.d(TAG, "have both json files");
+                // saveFileToDrive();
+                // load contents of the 2 json files
+                woohoo();
+
+            } else {
+                ensureJsonFilesExist();
+            }
         }
 
     }
@@ -177,6 +189,15 @@ public class MainActivity extends SherlockFragmentActivity {
         editor.commit();
     }
 
+    private boolean hasBothJsonFileIdPreferences() {
+        String current = getJsonFileIdPreference(CURRENT_JSON);
+        String historic = getJsonFileIdPreference(HISTORIC_JSON);
+        if(current.isEmpty() || historic.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         switch (requestCode) {
@@ -192,10 +213,14 @@ public class MainActivity extends SherlockFragmentActivity {
                         sService = getDriveService(mCredential);
 
                         ensureJsonFilesExist();
+                    } else {
+                        Log.d(TAG, "must have a valid account name");
+                        finish();
                     }
                 }
                 break;
             case REQUEST_AUTHORIZATION:
+                Log.d(TAG, "onActivityResult: request authorization");
                 if (resultCode == Activity.RESULT_OK) {
                     // return to ensureJsonFilesExist
                     ensureJsonFilesExist();
@@ -221,7 +246,10 @@ public class MainActivity extends SherlockFragmentActivity {
             public void run() {
                 try {
                     // LIST FILES
+
+                    Log.d(TAG, "before listAppDataFiles");
                     List<File> files = DriveStorage.listAppDataFiles(sService);
+                    Log.d(TAG, "after listAppDataFiles");
 
                     Log.d(TAG, "files list length is " + files.size());
 
@@ -268,7 +296,7 @@ public class MainActivity extends SherlockFragmentActivity {
                     }
 
                     if(!foundCurrent) {
-                        String json = "{\"array\": [1,2,3]}";
+                        String json = "{}";
                         File file = DriveStorage.createAppDataJsonFile(sService, CURRENT_JSON, json);
                         if (file != null) {
                             // save the file's id in local storage
@@ -279,7 +307,7 @@ public class MainActivity extends SherlockFragmentActivity {
                         }
                     }
                     if(!foundHistoric) {
-                        String json = "{\"array\": [1,2,3]}";
+                        String json = "{}";
                         File file = DriveStorage.createAppDataJsonFile(sService, HISTORIC_JSON, json);
                         if (file != null) {
                             saveJsonFileIdPreference(HISTORIC_JSON, file.getId());
@@ -294,6 +322,10 @@ public class MainActivity extends SherlockFragmentActivity {
                         // return an error, ask user to check permissions or launch account picker activity?
                         // exit the application
 
+                    } else {
+                        // the shared preferences now have the ids of the 2 json files
+                        // get their content and pass it into the database
+                        woohoo();
                     }
 
                 } catch (NullPointerException e) {
@@ -312,8 +344,14 @@ public class MainActivity extends SherlockFragmentActivity {
 
     }
 
+
+    private void woohoo() {
+        Log.d(TAG, "can now get the json and pass it to the database");
+    }
+
     private void saveFileToDrive() {
         Log.d(TAG, "saveFileToDrive");
+
 
         Thread t = new Thread(new Runnable() {
             @Override
