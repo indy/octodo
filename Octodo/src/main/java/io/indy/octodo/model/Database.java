@@ -74,7 +74,7 @@ public class Database {
     // TODO: pass in a proper 'task list' object?
     // TODO: return values to indicate success?
     public void addList(String name) {
-        if (name == "") {
+        if (name.equals("")) {
             Log.d(TAG, "attempting to add a tasklist with an empty name");
             return;
         }
