@@ -18,29 +18,18 @@ import com.actionbarsherlock.view.MenuItem;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.http.ByteArrayContent;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.Drive.Files;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
-import com.google.api.services.drive.model.ParentReference;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.indy.octodo.adapter.TaskListPagerAdapter;
 import io.indy.octodo.controller.MainController;
-import io.indy.octodo.model.Database;
-import io.indy.octodo.model.DriveStorage;
+import io.indy.octodo.model.DriveJunction;
 import io.indy.octodo.model.TaskList;
 
 public class MainActivity extends SherlockFragmentActivity {
@@ -57,8 +46,6 @@ public class MainActivity extends SherlockFragmentActivity {
 
     private MainController mController;
 
-    private Database mDatabase;
-
     private List<TaskList> mTaskLists;
 
     public void refreshTaskListsUI() {
@@ -66,7 +53,7 @@ public class MainActivity extends SherlockFragmentActivity {
             Log.d(TAG, "refreshTaskListsUI");
         }
 
-        List<TaskList> lists = mDatabase.getTaskLists();
+        List<TaskList> lists = mController.onGetTaskLists();
 
         mTaskLists.clear();
         mTaskLists.addAll(lists);
@@ -114,14 +101,11 @@ public class MainActivity extends SherlockFragmentActivity {
             Log.d(TAG, "onCreate");
         }
 
-        // database lifecycle and configuration is managed by MainActivity
-        mDatabase = new Database(this);
-
         if (D) {
             Log.d(TAG, "creating MainController");
         }
-        mController = new MainController(this, mDatabase);
-        mTaskLists = mDatabase.getTaskLists();
+        mController = new MainController(this);
+        mTaskLists = mController.onGetTaskLists();
 
         mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskLists);
 
@@ -130,8 +114,6 @@ public class MainActivity extends SherlockFragmentActivity {
 
         mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
-
-
 
         String scope = "https://www.googleapis.com/auth/drive.appdata";
         mCredential = GoogleAccountCredential.usingOAuth2(this, scope);
@@ -248,7 +230,7 @@ public class MainActivity extends SherlockFragmentActivity {
                     // LIST FILES
 
                     Log.d(TAG, "before listAppDataFiles");
-                    List<File> files = DriveStorage.listAppDataFiles(sService);
+                    List<File> files = DriveJunction.listAppDataFiles(sService);
                     Log.d(TAG, "after listAppDataFiles");
 
                     Log.d(TAG, "files list length is " + files.size());
@@ -280,6 +262,7 @@ public class MainActivity extends SherlockFragmentActivity {
                                 treat the drive version as the canonical truth, overwrite the id stored in shared preferences with the one on drive
 
                                  */
+                                Log.d(TAG, "saving pre-existing id for " + CURRENT_JSON);
                                 saveJsonFileIdPreference(CURRENT_JSON, f.getId());
                             }
 
@@ -288,6 +271,7 @@ public class MainActivity extends SherlockFragmentActivity {
                         if(f.getTitle().equals(HISTORIC_JSON)) {
                             String id = getJsonFileIdPreference(HISTORIC_JSON);
                             if(!id.equals(f.getId())) {
+                                Log.d(TAG, "saving pre-existing id for " + HISTORIC_JSON);
                                 saveJsonFileIdPreference(HISTORIC_JSON, f.getId());
                             }
 
@@ -297,7 +281,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
                     if(!foundCurrent) {
                         String json = "{}";
-                        File file = DriveStorage.createAppDataJsonFile(sService, CURRENT_JSON, json);
+                        File file = DriveJunction.createAppDataJsonFile(sService, CURRENT_JSON, json);
                         if (file != null) {
                             // save the file's id in local storage
                             saveJsonFileIdPreference(CURRENT_JSON, file.getId());
@@ -308,7 +292,7 @@ public class MainActivity extends SherlockFragmentActivity {
                     }
                     if(!foundHistoric) {
                         String json = "{}";
-                        File file = DriveStorage.createAppDataJsonFile(sService, HISTORIC_JSON, json);
+                        File file = DriveJunction.createAppDataJsonFile(sService, HISTORIC_JSON, json);
                         if (file != null) {
                             saveJsonFileIdPreference(HISTORIC_JSON, file.getId());
                             foundHistoric = true;
@@ -360,7 +344,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
 
                     // LIST FILES
-                    List<File> files = DriveStorage.listAppDataFiles(sService);
+                    List<File> files = DriveJunction.listAppDataFiles(sService);
 
                     Log.d(TAG, "files list length is " + files.size());
                     for(File f : files) {
@@ -374,8 +358,8 @@ public class MainActivity extends SherlockFragmentActivity {
 
                     // READ A FILE
                     String fileId = "1dHUJZx-sMkPSVG6Lcg-59JlV0lw";
-                    File ff = DriveStorage.getFileMetadata(sService, fileId);
-                    String jsonContent = DriveStorage.downloadFileAsString(sService, ff);
+                    File ff = DriveJunction.getFileMetadata(sService, fileId);
+                    String jsonContent = DriveJunction.downloadFileAsString(sService, ff);
                     Log.d(TAG, "content of file is " + jsonContent);
 
 
@@ -385,7 +369,7 @@ public class MainActivity extends SherlockFragmentActivity {
                     // CREATE A FILE
                     String filename = "temp03.json";
                     String json = "{\"array\": [1,2,3],\"boolean\": true,\"null\": null,\"number\": 123,\"object\": {\"a\": \"b\", \"c\": \"d\",\"e\": \"f\"},\"string\": \"Hello World\"}";
-                    File file = DriveStorage.createAppDataJsonFile(sService, filename, json);
+                    File file = DriveJunction.createAppDataJsonFile(sService, filename, json);
                     */
 
                     /*
@@ -585,8 +569,7 @@ public class MainActivity extends SherlockFragmentActivity {
         if (D) {
             Log.d(TAG, "onDestroy");
         }
-        mDatabase.closeDatabase();
-        mController.cancelAllNotifications();
+        mController.onDestroy();
     }
 
     @Override

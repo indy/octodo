@@ -23,9 +23,9 @@ public class MainController {
 
     private NotificationHelper mNotification;
 
-    public MainController(Activity activity, Database database) {
+    public MainController(Activity activity) {
         mActivity = activity;
-        mDatabase = database;
+        mDatabase = new Database(activity);
         mNotification = new NotificationHelper(activity);
     }
 
@@ -94,6 +94,27 @@ public class MainController {
         post(new ToggleAddTaskFormEvent(taskListId));
     }
 
+    public void closeDatabase() {
+        mDatabase.closeDatabase();
+    }
+
+    public void deleteList(int id) {
+        mDatabase.deleteList(id);
+    }
+
+    public void addList(String name) {
+        mDatabase.addList(name);
+    }
+
+    public List<TaskList> getDeleteableTaskLists() {
+        return mDatabase.getDeleteableTaskLists();
+    }
+
+    public void onDestroy() {
+        mDatabase.closeDatabase();
+        mNotification.cancelAllNotifications();
+    }
+
     private void notifyUser(String message) {
         mNotification.showConfirmation(message);
     }
@@ -105,9 +126,4 @@ public class MainController {
     private void postRefreshEvent(int taskListId) {
         post(new RefreshTaskListEvent(taskListId));
     }
-
-    public void cancelAllNotifications() {
-        mNotification.cancelAllNotifications();
-    }
-
 }

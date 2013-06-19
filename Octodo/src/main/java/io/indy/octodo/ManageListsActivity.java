@@ -1,13 +1,6 @@
 
 package io.indy.octodo;
 
-import io.indy.octodo.adapter.ManageListsAdapter;
-import io.indy.octodo.helper.AnimationHelper;
-import io.indy.octodo.model.Database;
-import io.indy.octodo.model.TaskList;
-
-import java.util.List;
-
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +17,13 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+import java.util.List;
+
+import io.indy.octodo.adapter.ManageListsAdapter;
+import io.indy.octodo.controller.MainController;
+import io.indy.octodo.helper.AnimationHelper;
+import io.indy.octodo.model.TaskList;
+
 public class ManageListsActivity extends SherlockActivity implements OnClickListener {
 
     private final String TAG = getClass().getSimpleName();
@@ -34,7 +34,7 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
 
     private ManageListsAdapter mAdapter;
 
-    private Database mDatabase;
+    private MainController mController;
 
     private ListView mListView;
 
@@ -57,8 +57,8 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
 
         mListView = (ListView)findViewById(R.id.listViewTaskLists);
 
-        mDatabase = new Database(this);
-        mTaskLists = mDatabase.getDeleteableTaskLists();
+        mController = new MainController(this);
+        mTaskLists = mController.getDeleteableTaskLists();
 
         mAdapter = new ManageListsAdapter(this, mTaskLists);
 
@@ -78,7 +78,7 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
         if (D) {
             Log.d(TAG, "onDestroy");
         }
-        mDatabase.closeDatabase();
+        mController.closeDatabase();
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
             case R.id.menu_discard_lists:
                 for (TaskList tl : mTaskLists) {
                     if (tl.isSelected()) {
-                        mDatabase.deleteList(tl.getId());
+                        mController.deleteList(tl.getId());
                     }
                 }
                 refreshTaskLists();
@@ -117,7 +117,7 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
             Log.d(TAG, "onClick");
         }
         String name = mEditText.getText().toString();
-        mDatabase.addList(name);
+        mController.addList(name);
 
         refreshTaskLists();
 
@@ -125,7 +125,7 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
     }
 
     private void refreshTaskLists() {
-        List<TaskList> taskLists = mDatabase.getDeleteableTaskLists();
+        List<TaskList> taskLists = mController.getDeleteableTaskLists();
         mTaskLists.clear();
         mTaskLists.addAll(taskLists);
         mAdapter.notifyDataSetChanged();
