@@ -17,9 +17,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by indy on 07/06/2013.
- */
 public class DriveStorage {
 
     private final static String TAG = "DriveStorage";
