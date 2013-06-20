@@ -16,10 +16,17 @@
 
 package io.indy.octodo.model;
 
+import android.app.Activity;
 import android.util.Log;
 
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.services.drive.model.File;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.indy.octodo.MainActivity;
 
 public class DriveStorage {
 
@@ -30,9 +37,13 @@ public class DriveStorage {
      */
 
     private final String TAG = getClass().getSimpleName();
-
     private static final boolean D = true;
 
+    private MainActivity mActivity;
+
+    public DriveStorage(MainActivity activity) {
+        mActivity = activity;
+    }
 
     // Called when you no longer need access to the database.
     public void closeDatabase() {
@@ -105,4 +116,126 @@ public class DriveStorage {
         return res;
     }
 
+
+
+    /* -------------------------------------------------------------- */
+
+
+
+    public void ensureJsonFilesExist() {
+        if (D) {
+            Log.d(TAG, "ensureJsonFilesExist");
+        }
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // LIST FILES
+
+                    Log.d(TAG, "before listAppDataFiles");
+                    List<File> files = DriveJunction.listAppDataFiles(mActivity.getStaticDriveService());
+                    Log.d(TAG, "after listAppDataFiles");
+
+                    Log.d(TAG, "files list length is " + files.size());
+
+                    boolean foundCurrent = false;
+                    boolean foundHistoric = false;
+
+                    for(File f : files) {
+
+
+                        if(f.getTitle().equals(mActivity.CURRENT_JSON)) {
+
+                            // check that the found json file's id matches the one in shared preferences
+                            String id = mActivity.getJsonFileIdPreference(mActivity.CURRENT_JSON);
+                            if(!id.equals(f.getId())) {
+                                /*
+                                Scenarios to get here:
+
+                                1. user started using app on machine A
+                                2. user started using app on machine B <- we hit this code path
+
+                                _or_
+
+                                1. user started using app on machine A
+                                2. delete app data using web interface to Google Drive
+                                3. then used app on machine B <- new ids will be made for current and historic
+                                4. then went back to machine A <- we hit this code path - machine A will have the old ids stored in it's shared preferences
+
+                                treat the drive version as the canonical truth, overwrite the id stored in shared preferences with the one on drive
+
+                                 */
+                                Log.d(TAG, "saving pre-existing id for " + mActivity.CURRENT_JSON);
+                                mActivity.saveJsonFileIdPreference(mActivity.CURRENT_JSON, f.getId());
+                            }
+
+                            foundCurrent = true;
+                        }
+                        if(f.getTitle().equals(mActivity.HISTORIC_JSON)) {
+                            String id = mActivity.getJsonFileIdPreference(mActivity.HISTORIC_JSON);
+                            if(!id.equals(f.getId())) {
+                                Log.d(TAG, "saving pre-existing id for " + mActivity.HISTORIC_JSON);
+                                mActivity.saveJsonFileIdPreference(mActivity.HISTORIC_JSON, f.getId());
+                            }
+
+                            foundHistoric = true;
+                        }
+                    }
+
+                    if(!foundCurrent) {
+                        String json = "{}";
+                        File file = DriveJunction.createAppDataJsonFile(mActivity.getStaticDriveService(), mActivity.CURRENT_JSON, json);
+                        if (file != null) {
+                            Log.d(TAG, "saving file id for " + mActivity.CURRENT_JSON);
+                            // save the file's id in local storage
+                            mActivity.saveJsonFileIdPreference(mActivity.CURRENT_JSON, file.getId());
+                            foundCurrent = true;
+                        } else {
+                            Log.d(TAG, "unable to create AppDataJsonFile: " + mActivity.CURRENT_JSON);
+                        }
+                    }
+                    if(!foundHistoric) {
+                        String json = "{}";
+                        File file = DriveJunction.createAppDataJsonFile(mActivity.getStaticDriveService(), mActivity.HISTORIC_JSON, json);
+                        if (file != null) {
+                            Log.d(TAG, "saving file id for " + mActivity.HISTORIC_JSON);
+                            mActivity.saveJsonFileIdPreference(mActivity.HISTORIC_JSON, file.getId());
+                            foundHistoric = true;
+                        } else {
+                            Log.d(TAG, "unable to create AppDataJsonFile: " + mActivity.HISTORIC_JSON);
+                        }
+                    }
+
+                    if(!foundCurrent || !foundHistoric) {
+                        Log.d(TAG, "cannot create required json files");
+                        // return an error, ask user to check permissions or launch account picker activity?
+                        // exit the application
+
+                    } else {
+                        // the shared preferences now have the ids of the 2 json files
+                        // get their content and pass it into the database
+                        Log.d(TAG, "have file ids for both historic and current");
+                        woohoo();
+                    }
+
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "null pointer exception");
+                    e.printStackTrace();
+                } catch (UserRecoverableAuthIOException e) {
+                    Log.d(TAG, "userrecoverableauthioexception");
+                    mActivity.startActivityForResult(e.getIntent(), MainActivity.REQUEST_AUTHORIZATION);
+                } catch (IOException e) {
+                    Log.d(TAG, "IOException");
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+
+    }
+
+    private void woohoo() {
+        Log.d(TAG, "do some work");
+    }
 }

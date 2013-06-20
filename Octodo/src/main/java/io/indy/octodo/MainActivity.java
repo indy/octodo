@@ -30,6 +30,7 @@ import java.util.List;
 import io.indy.octodo.adapter.TaskListPagerAdapter;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.DriveJunction;
+import io.indy.octodo.model.DriveStorage;
 import io.indy.octodo.model.TaskList;
 
 public class MainActivity extends SherlockFragmentActivity {
@@ -45,6 +46,8 @@ public class MainActivity extends SherlockFragmentActivity {
     private PageIndicator mIndicator;
 
     private MainController mController;
+
+    private DriveStorage mDriveStorage;
 
     private List<TaskList> mTaskLists;
 
@@ -74,11 +77,10 @@ public class MainActivity extends SherlockFragmentActivity {
         return mController;
     }
 
-    static final int REQUEST_ACCOUNT_PICKER = 1;
-    static final int REQUEST_AUTHORIZATION = 2;
-    static final int CAPTURE_IMAGE = 3;
+    public static final int REQUEST_ACCOUNT_PICKER = 1;
+    public static final int REQUEST_AUTHORIZATION = 2;
+    public static final int CAPTURE_IMAGE = 3;
 
-    private static Uri fileUri;
     private static Drive sService;
 
     private GoogleAccountCredential mCredential;
@@ -88,9 +90,13 @@ public class MainActivity extends SherlockFragmentActivity {
 
 
     // the suffix used on json file ids saved as shared preferences
-    private final String ID_SUFFIX = ".drive.id";
-    private final String CURRENT_JSON = "current.json";
-    private final String HISTORIC_JSON = "historic.json";
+    public final String ID_SUFFIX = ".drive.id";
+    public final String CURRENT_JSON = "current.json";
+    public final String HISTORIC_JSON = "historic.json";
+
+    public Drive getStaticDriveService() {
+        return sService;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +112,8 @@ public class MainActivity extends SherlockFragmentActivity {
         }
         mController = new MainController(this);
         mTaskLists = mController.onGetTaskLists();
+
+        mDriveStorage = new DriveStorage(this);
 
         mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskLists);
 
@@ -140,7 +148,7 @@ public class MainActivity extends SherlockFragmentActivity {
                 woohoo();
 
             } else {
-                ensureJsonFilesExist();
+                mDriveStorage.ensureJsonFilesExist();
             }
         }
 
@@ -158,13 +166,13 @@ public class MainActivity extends SherlockFragmentActivity {
         editor.commit();
     }
 
-    private String getJsonFileIdPreference(String jsonFilename) {
+    public String getJsonFileIdPreference(String jsonFilename) {
         SharedPreferences settings = getSharedPreferences(PREFS_FILENAME, 0);
         return settings.getString(jsonFilename + ID_SUFFIX, "");
     }
 
     // saves the given json file's drive id as a shared preference
-    private void saveJsonFileIdPreference(String jsonFilename, String id) {
+    public void saveJsonFileIdPreference(String jsonFilename, String id) {
         SharedPreferences settings = getSharedPreferences(PREFS_FILENAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(jsonFilename + ID_SUFFIX, id);
@@ -194,7 +202,7 @@ public class MainActivity extends SherlockFragmentActivity {
                         mCredential.setSelectedAccountName(accountName);
                         sService = getDriveService(mCredential);
 
-                        ensureJsonFilesExist();
+                        mDriveStorage.ensureJsonFilesExist();
                     } else {
                         Log.d(TAG, "must have a valid account name");
                         finish();
@@ -205,7 +213,7 @@ public class MainActivity extends SherlockFragmentActivity {
                 Log.d(TAG, "onActivityResult: request authorization");
                 if (resultCode == Activity.RESULT_OK) {
                     // return to ensureJsonFilesExist
-                    ensureJsonFilesExist();
+                    mDriveStorage.ensureJsonFilesExist();
                 } else {
                     startActivityForResult(mCredential.newChooseAccountIntent(),
                             REQUEST_ACCOUNT_PICKER);
@@ -216,116 +224,6 @@ public class MainActivity extends SherlockFragmentActivity {
                     //saveFileToDrive();
                 }
         }
-    }
-
-    private void ensureJsonFilesExist() {
-        if (D) {
-            Log.d(TAG, "ensureJsonFilesExist");
-        }
-
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // LIST FILES
-
-                    Log.d(TAG, "before listAppDataFiles");
-                    List<File> files = DriveJunction.listAppDataFiles(sService);
-                    Log.d(TAG, "after listAppDataFiles");
-
-                    Log.d(TAG, "files list length is " + files.size());
-
-                    boolean foundCurrent = false;
-                    boolean foundHistoric = false;
-
-                    for(File f : files) {
-
-
-                        if(f.getTitle().equals(CURRENT_JSON)) {
-
-                            // check that the found json file's id matches the one in shared preferences
-                            String id = getJsonFileIdPreference(CURRENT_JSON);
-                            if(!id.equals(f.getId())) {
-                                /*
-                                Scenarios to get here:
-
-                                1. user started using app on machine A
-                                2. user started using app on machine B <- we hit this code path
-
-                                _or_
-
-                                1. user started using app on machine A
-                                2. delete app data using web interface to Google Drive
-                                3. then used app on machine B <- new ids will be made for current and historic
-                                4. then went back to machine A <- we hit this code path - machine A will have the old ids stored in it's shared preferences
-
-                                treat the drive version as the canonical truth, overwrite the id stored in shared preferences with the one on drive
-
-                                 */
-                                Log.d(TAG, "saving pre-existing id for " + CURRENT_JSON);
-                                saveJsonFileIdPreference(CURRENT_JSON, f.getId());
-                            }
-
-                            foundCurrent = true;
-                        }
-                        if(f.getTitle().equals(HISTORIC_JSON)) {
-                            String id = getJsonFileIdPreference(HISTORIC_JSON);
-                            if(!id.equals(f.getId())) {
-                                Log.d(TAG, "saving pre-existing id for " + HISTORIC_JSON);
-                                saveJsonFileIdPreference(HISTORIC_JSON, f.getId());
-                            }
-
-                            foundHistoric = true;
-                        }
-                    }
-
-                    if(!foundCurrent) {
-                        String json = "{}";
-                        File file = DriveJunction.createAppDataJsonFile(sService, CURRENT_JSON, json);
-                        if (file != null) {
-                            // save the file's id in local storage
-                            saveJsonFileIdPreference(CURRENT_JSON, file.getId());
-                            foundCurrent = true;
-                        } else {
-                            Log.d(TAG, "unable to create AppDataJsonFile: " + CURRENT_JSON);
-                        }
-                    }
-                    if(!foundHistoric) {
-                        String json = "{}";
-                        File file = DriveJunction.createAppDataJsonFile(sService, HISTORIC_JSON, json);
-                        if (file != null) {
-                            saveJsonFileIdPreference(HISTORIC_JSON, file.getId());
-                            foundHistoric = true;
-                        } else {
-                            Log.d(TAG, "unable to create AppDataJsonFile: " + HISTORIC_JSON);
-                        }
-                    }
-
-                    if(!foundCurrent || !foundHistoric) {
-                        Log.d(TAG, "cannot create required json files");
-                        // return an error, ask user to check permissions or launch account picker activity?
-                        // exit the application
-
-                    } else {
-                        // the shared preferences now have the ids of the 2 json files
-                        // get their content and pass it into the database
-                        woohoo();
-                    }
-
-                } catch (NullPointerException e) {
-                    Log.d(TAG, "null pointer exception");
-                    e.printStackTrace();
-                } catch (UserRecoverableAuthIOException e) {
-                    Log.d(TAG, "userrecoverableauthioexception");
-                    startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
-                } catch (IOException e) {
-                    Log.d(TAG, "IOException");
-                    e.printStackTrace();
-                }
-            }
-        });
-        t.start();
-
     }
 
 
