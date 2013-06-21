@@ -77,6 +77,11 @@ public class MainActivity extends SherlockFragmentActivity {
         return mController;
     }
 
+    public void woohoo(String message) {
+        Log.d(TAG, message);
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -242,7 +242,13 @@ public class DriveStorage {
                         // the shared preferences now have the ids of the 2 json files
                         // get their content and pass it into the database
                         Log.d(TAG, "have file ids for both historic and current");
-                        woohoo();
+
+                        mActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mActivity.woohoo("run from ensureJsonFilesExist");
+                            }
+                        });
                     }
 
                 } catch (NullPointerException e) {
@@ -260,12 +266,6 @@ public class DriveStorage {
         t.start();
 
     }
-
-    private void woohoo() {
-        Log.d(TAG, "do some work");
-    }
-
-
 
     private String getAccountNamePreference() {
         SharedPreferences settings = mActivity.getSharedPreferences(PREFS_FILENAME, 0);
@@ -324,7 +324,7 @@ public class DriveStorage {
                 Log.d(TAG, "have both json files");
                 // saveFileToDrive();
                 // load contents of the 2 json files
-                woohoo();
+                mActivity.woohoo("called from DriveStorage:initialise main thread");
 
             } else {
                 ensureJsonFilesExist();
@@ -345,7 +345,7 @@ public class DriveStorage {
                         saveAccountNamePreference(accountName);
                         mCredential.setSelectedAccountName(accountName);
                         sService = getDriveService(mCredential);
-
+                        Log.d(TAG, "REQUEST_ACCOUNT_PICKER result calling ensureJsonFilesExist");
                         ensureJsonFilesExist();
                     } else {
                         Log.d(TAG, "must have a valid account name");
@@ -357,6 +357,7 @@ public class DriveStorage {
                 Log.d(TAG, "onActivityResult: request authorization");
                 if (resultCode == Activity.RESULT_OK) {
                     // return to ensureJsonFilesExist
+                    Log.d(TAG, "REQUEST_AUTHORIZATION result calling ensureJsonFilesExist");
                     ensureJsonFilesExist();
                 } else {
                     mActivity.startActivityForResult(mCredential.newChooseAccountIntent(),

@@ -60,7 +60,10 @@ public class DriveJunction {
 
         File file;
         try {
+            Log.d(TAG, "about to insert file");
             file = service.files().insert(config, content).execute();
+            Log.d(TAG, "file returned: " + file);
+
         } catch (IOException e) {
             Log.d(TAG, "createAppDataJsonFile exception: " + e);
             throw e;
