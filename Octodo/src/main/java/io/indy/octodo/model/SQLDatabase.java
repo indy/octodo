@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class Database {
+public class SQLDatabase {
 
     private final String TAG = getClass().getSimpleName();
 
@@ -55,10 +55,10 @@ public class Database {
     // shared columns
     public static final String STATE = "state";
 
-    // Database open/upgrade helper
+    // SQLDatabase open/upgrade helper
     private ModelHelper mModelHelper;
 
-    public Database(Context context) {
+    public SQLDatabase(Context context) {
         mModelHelper = new ModelHelper(context, ModelHelper.DATABASE_NAME, null,
                 ModelHelper.DATABASE_VERSION);
 

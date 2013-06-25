@@ -6,7 +6,7 @@ import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.helper.NotificationHelper;
-import io.indy.octodo.model.Database;
+import io.indy.octodo.model.SQLDatabase;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 
@@ -19,42 +19,42 @@ public class MainController {
 
     private Activity mActivity;
 
-    private Database mDatabase;
+    private SQLDatabase mSQLDatabase;
 
     private NotificationHelper mNotification;
 
     public MainController(Activity activity) {
         mActivity = activity;
-        mDatabase = new Database(activity);
+        mSQLDatabase = new SQLDatabase(activity);
         mNotification = new NotificationHelper(activity);
     }
 
     public void onTaskAdded(Task task) {
-        mDatabase.addTask(task);
+        mSQLDatabase.addTask(task);
 
         postRefreshEvent(task.getListId());
     }
 
     public void onTaskUpdateContent(Task task, String content) {
         int taskId = task.getId();
-        mDatabase.updateTaskContent(taskId, content);
+        mSQLDatabase.updateTaskContent(taskId, content);
 
         postRefreshEvent(task.getListId());
     }
 
     public void onTaskUpdateState(Task task, int state) {
         int taskId = task.getId();
-        mDatabase.updateTaskState(taskId, state);
+        mSQLDatabase.updateTaskState(taskId, state);
 
         postRefreshEvent(task.getListId());
     }
 
     public List<Task> onGetTasks(int taskListId) {
-        return mDatabase.getTasks(taskListId);
+        return mSQLDatabase.getTasks(taskListId);
     }
 
     public List<TaskList> onGetTaskLists() {
-        return mDatabase.getTaskLists();
+        return mSQLDatabase.getTaskLists();
     }
 
     public void onTaskMove(Task task, TaskList destinationTaskList) {
@@ -62,7 +62,7 @@ public class MainController {
         int oldTaskListId = task.getListId();
 
         // update model
-        mDatabase.updateTaskParentList(task.getId(), newTaskListId);
+        mSQLDatabase.updateTaskParentList(task.getId(), newTaskListId);
 
         // update ui
         post(new MoveTaskEvent(task, oldTaskListId, newTaskListId));
@@ -74,13 +74,13 @@ public class MainController {
     }
 
     public void onTaskDelete(Task task) {
-        mDatabase.deleteTask(task.getId());
+        mSQLDatabase.deleteTask(task.getId());
 
         postRefreshEvent(task.getListId());
     }
 
     public void onRemoveCompletedTasks(TaskList taskList) {
-        mDatabase.removeStruckTasks(taskList.getId());
+        mSQLDatabase.removeStruckTasks(taskList.getId());
 
         // update UI (via TaskListFragment)
         postRefreshEvent(taskList.getId());
@@ -95,23 +95,23 @@ public class MainController {
     }
 
     public void closeDatabase() {
-        mDatabase.closeDatabase();
+        mSQLDatabase.closeDatabase();
     }
 
     public void deleteList(int id) {
-        mDatabase.deleteList(id);
+        mSQLDatabase.deleteList(id);
     }
 
     public void addList(String name) {
-        mDatabase.addList(name);
+        mSQLDatabase.addList(name);
     }
 
     public List<TaskList> getDeleteableTaskLists() {
-        return mDatabase.getDeleteableTaskLists();
+        return mSQLDatabase.getDeleteableTaskLists();
     }
 
     public void onDestroy() {
-        mDatabase.closeDatabase();
+        mSQLDatabase.closeDatabase();
         mNotification.cancelAllNotifications();
     }
 

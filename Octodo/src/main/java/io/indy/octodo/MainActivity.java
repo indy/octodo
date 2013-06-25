@@ -1,11 +1,7 @@
 
 package io.indy.octodo;
 
-import android.accounts.AccountManager;
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -15,24 +11,16 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.File;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-import java.io.IOException;
 import java.util.List;
 
 import io.indy.octodo.adapter.TaskListPagerAdapter;
 import io.indy.octodo.async.HistoricTaskListsAsyncTask;
 import io.indy.octodo.async.TaskListsAsyncTask;
 import io.indy.octodo.controller.MainController;
-import io.indy.octodo.model.DriveJunction;
-import io.indy.octodo.model.DriveStorage;
+import io.indy.octodo.model.DriveManager;
 import io.indy.octodo.model.TaskList;
 
 public class MainActivity extends SherlockFragmentActivity {
@@ -49,7 +37,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
     private MainController mController;
 
-    private DriveStorage mDriveStorage;
+    private DriveManager mDriveManager;
 
     private List<TaskList> mTaskLists;
 
@@ -80,9 +68,10 @@ public class MainActivity extends SherlockFragmentActivity {
     }
 
     public void haveCurrentTaskLists() {
-        // mDriveStorage has received the current TaskLists from the TaskListsAsyncTask
+        // mDriveManager has received the current TaskLists from the TaskListsAsyncTask
 
-        mTaskLists = mController.onGetTaskLists();
+        // mTaskLists = mController.onGetTaskLists();
+        mTaskLists = mDriveManager.getTaskLists();
 
         mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskLists);
 
@@ -102,15 +91,15 @@ public class MainActivity extends SherlockFragmentActivity {
            - the 2 json files exist and we have their file ids
          */
 
-        new TaskListsAsyncTask(this, mDriveStorage).execute();
-        new HistoricTaskListsAsyncTask(mDriveStorage).execute();
+        new TaskListsAsyncTask(this, mDriveManager).execute();
+        new HistoricTaskListsAsyncTask(mDriveManager).execute();
 
         /*
 
          * NEXT SET OF ACTIONS
-           - parse the contents of the json files into DriveStorage
+           - parse the contents of the json files into DriveManager
            - populate ui elements with the contents
-           - hook up user events to modify model in DriveStorage
+           - hook up user events to modify model in DriveManager
 
            --------------------------------------------------
 
@@ -134,13 +123,13 @@ public class MainActivity extends SherlockFragmentActivity {
         }
         mController = new MainController(this);
 
-        mDriveStorage = new DriveStorage(this);
-        mDriveStorage.initialise();
+        mDriveManager = new DriveManager(this);
+        mDriveManager.initialise();
     }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        mDriveStorage.onActivityResult(requestCode, resultCode, data);
+        mDriveManager.onActivityResult(requestCode, resultCode, data);
     }
 
     // Called after onCreate has finished, use to restore UI state

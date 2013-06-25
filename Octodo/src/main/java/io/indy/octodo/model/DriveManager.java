@@ -40,15 +40,15 @@ import java.util.List;
 
 import io.indy.octodo.MainActivity;
 
-public class DriveStorage {
+public class DriveManager {
 
     /*
-    re-implement the public methods from Database
+    re-implement the public methods from SQLDatabase
     store an instance of this class in MainController
     (maybe store MainController in Application?)
      */
 
-    private static final String TAG = "DriveStorage";
+    private static final String TAG = "DriveManager";
     private static final boolean D = true;
 
 
@@ -79,7 +79,7 @@ public class DriveStorage {
     private List<TaskList> mHistoricTaskLists;
 
 
-    public DriveStorage(MainActivity activity) {
+    public DriveManager(MainActivity activity) {
         mActivity = activity;
     }
 
@@ -145,8 +145,7 @@ public class DriveStorage {
     }
 
     public List<TaskList> getTaskLists() {
-        List<TaskList> res = new ArrayList<TaskList>();
-        return res;
+        return mTaskLists;
     }
 
     public List<TaskList> getDeleteableTaskLists() {
