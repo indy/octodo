@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.util.List;
 
 import io.indy.octodo.adapter.TaskListPagerAdapter;
+import io.indy.octodo.async.HistoricTaskListsAsyncTask;
+import io.indy.octodo.async.TaskListsAsyncTask;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.DriveJunction;
 import io.indy.octodo.model.DriveStorage;
@@ -77,9 +79,45 @@ public class MainActivity extends SherlockFragmentActivity {
         return mController;
     }
 
-    public void woohoo(String message) {
-        Log.d(TAG, message);
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    public void haveCurrentTaskLists() {
+        // mDriveStorage has received the current TaskLists from the TaskListsAsyncTask
+
+        mTaskLists = mController.onGetTaskLists();
+
+        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskLists);
+
+        mPager = (ViewPager)findViewById(R.id.pager);
+        mPager.setAdapter(mAdapter);
+
+        mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
+        mIndicator.setViewPager(mPager);
+
+    }
+
+    public void onDriveInitialised() {
+        /*
+         * CURRENT STATE
+           - we're on the main thread
+           - we have access to drive
+           - the 2 json files exist and we have their file ids
+         */
+
+        new TaskListsAsyncTask(this, mDriveStorage).execute();
+        new HistoricTaskListsAsyncTask(mDriveStorage).execute();
+
+        /*
+
+         * NEXT SET OF ACTIONS
+           - parse the contents of the json files into DriveStorage
+           - populate ui elements with the contents
+           - hook up user events to modify model in DriveStorage
+
+           --------------------------------------------------
+
+         * PARSE THE CONTENTS OF THE JSON FILES INTO DRIVESTORAGE
+           - AsyncTask to get the contents and return TaskLists etc
+           - at end of AsyncTask populate ui
+         */
     }
 
     @Override
@@ -95,19 +133,8 @@ public class MainActivity extends SherlockFragmentActivity {
             Log.d(TAG, "creating MainController");
         }
         mController = new MainController(this);
-        mTaskLists = mController.onGetTaskLists();
 
         mDriveStorage = new DriveStorage(this);
-
-        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskLists);
-
-        mPager = (ViewPager)findViewById(R.id.pager);
-        mPager.setAdapter(mAdapter);
-
-        mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
-        mIndicator.setViewPager(mPager);
-
-
         mDriveStorage.initialise();
     }
 

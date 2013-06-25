@@ -30,6 +30,10 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +48,7 @@ public class DriveStorage {
     (maybe store MainController in Application?)
      */
 
-    private final String TAG = getClass().getSimpleName();
+    private static final String TAG = "DriveStorage";
     private static final boolean D = true;
 
 
@@ -61,11 +65,19 @@ public class DriveStorage {
     public static final String ACCOUNT_NAME = "account_name";
 
     // the suffix used on json file ids saved as shared preferences
-    public final String ID_SUFFIX = ".drive.id";
-    public final String CURRENT_JSON = "current.json";
-    public final String HISTORIC_JSON = "historic.json";
+    public static final String ID_SUFFIX = ".drive.id";
+    public static final String CURRENT_JSON = "current.json";
+    public static final String HISTORIC_JSON = "historic.json";
+
+
+    public final String EMPTY_JSON_OBJECT = "{}";
 
     private MainActivity mActivity;
+
+
+    private List<TaskList> mTaskLists;
+    private List<TaskList> mHistoricTaskLists;
+
 
     public DriveStorage(MainActivity activity) {
         mActivity = activity;
@@ -142,9 +154,114 @@ public class DriveStorage {
         return res;
     }
 
+    private static final String HEADER = "header";
+    private static final String BODY = "body";
 
+    private static List<TaskList> buildDefaultEmptyTaskLists() {
+        List<TaskList> tasklists = new ArrayList<TaskList>();
+        tasklists.add(new TaskList(0, "today"));
+        tasklists.add(new TaskList(0, "this week"));
+
+        return tasklists;
+    }
+
+    public static List<TaskList> fromJSON(JSONObject json) {
+
+        List<TaskList> tasklists = new ArrayList<TaskList>();
+
+        try {
+
+            // json has form of:
+            // { header: {}, body: array of tasklists}
+
+            if(json.isNull(BODY)) {
+                // empty body so default to empty today and thisweek tasklists
+                Log.d(TAG, "fromJSON: empty body so defaulting to empty today and thisweek tasklists");
+                return buildDefaultEmptyTaskLists();
+            }
+            // ignore header for now, in future this will have version info
+
+            // parse the body which should be a list of tasklists
+            //
+            JSONArray body = json.getJSONArray(BODY);
+            TaskList tasklist;
+            for(int i=0; i<body.length(); i++) {
+                tasklist = TaskList.fromJson(body.getJSONObject(i));
+                tasklists.add(tasklist);
+            }
+
+        } catch (JSONException e) {
+            Log.d(TAG, "fromJSON JSONException: " + e);
+            Log.d(TAG, "defaulting to empty today and thisweek tasklists");
+            tasklists = buildDefaultEmptyTaskLists();
+        }
+
+        return tasklists;
+    }
+
+    private JSONObject toJson(List<TaskList> tasklists) {
+        JSONObject res = new JSONObject();
+
+        try {
+            res.put(HEADER, JSONObject.NULL);
+
+            JSONArray array = new JSONArray();
+            for(TaskList t : tasklists) {
+                JSONObject obj = t.toJson();
+                array.put(obj);
+            }
+            res.put(BODY, array);
+
+        } catch (JSONException e) {
+            Log.d(TAG, "JSONException: " + e);
+        }
+
+        return res;
+    }
+
+    public JSONObject currentToJson() {
+        return toJson(mTaskLists);
+    }
+
+    public JSONObject historicToJson() {
+        return toJson(mHistoricTaskLists);
+    }
+
+    public void setCurrentTaskLists(List<TaskList> tasklists) {
+        mTaskLists = tasklists;
+    }
+
+    public void setHistoricTaskLists(List<TaskList> tasklists) {
+        mHistoricTaskLists = tasklists;
+    }
 
     /* -------------------------------------------------------------- */
+
+    public static Drive getsService() {
+        return sService;
+    }
+
+    public JSONObject getJSON(String driveFilename) {
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            String fileId = getJsonFileIdPreference(driveFilename);
+            File ff = DriveJunction.getFileMetadata(sService, fileId);
+            String jsonString = DriveJunction.downloadFileAsString(sService, ff);
+
+            Log.d(TAG, "content of file is " + jsonString);
+
+            jsonObject = new JSONObject(jsonString);
+
+        } catch (IOException e) {
+            Log.d(TAG, "getJSON IOException: " + e);
+        } catch (JSONException jse) {
+            Log.d(TAG, "getJSON JSONException: " + jse);
+        }
+
+        return jsonObject;
+    }
 
 
 
@@ -210,7 +327,7 @@ public class DriveStorage {
                     }
 
                     if(!foundCurrent) {
-                        String json = "{}";
+                        String json = EMPTY_JSON_OBJECT;
                         File file = DriveJunction.createAppDataJsonFile(sService, CURRENT_JSON, json);
                         if (file != null) {
                             Log.d(TAG, "saving file id for " + CURRENT_JSON);
@@ -222,7 +339,7 @@ public class DriveStorage {
                         }
                     }
                     if(!foundHistoric) {
-                        String json = "{}";
+                        String json = EMPTY_JSON_OBJECT;
                         File file = DriveJunction.createAppDataJsonFile(sService, HISTORIC_JSON, json);
                         if (file != null) {
                             Log.d(TAG, "saving file id for " + HISTORIC_JSON);
@@ -246,7 +363,7 @@ public class DriveStorage {
                         mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mActivity.woohoo("run from ensureJsonFilesExist");
+                                mActivity.onDriveInitialised();
                             }
                         });
                     }
@@ -279,7 +396,7 @@ public class DriveStorage {
         editor.commit();
     }
 
-    private String getJsonFileIdPreference(String jsonFilename) {
+    public String getJsonFileIdPreference(String jsonFilename) {
         SharedPreferences settings = mActivity.getSharedPreferences(PREFS_FILENAME, 0);
         return settings.getString(jsonFilename + ID_SUFFIX, "");
     }
@@ -324,7 +441,7 @@ public class DriveStorage {
                 Log.d(TAG, "have both json files");
                 // saveFileToDrive();
                 // load contents of the 2 json files
-                mActivity.woohoo("called from DriveStorage:initialise main thread");
+                mActivity.onDriveInitialised();
 
             } else {
                 ensureJsonFilesExist();
