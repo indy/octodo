@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import io.indy.octodo.MainActivity;
+import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.DriveManager;
 import io.indy.octodo.model.TaskList;
 
@@ -31,22 +32,23 @@ import io.indy.octodo.model.TaskList;
 
 public class TaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
 
-    private final DriveManager mDriveManager;
+    private final DriveDatabase mDriveDatabase;
     private final MainActivity mActivity; // TODO: change from MainActivity to the OctodoGDriveActivityThingy
 
     // TODO: check chris bane's photup app for usage on WeakReferences in AsyncTasks
 
-    public TaskListsAsyncTask(MainActivity activity, DriveManager driveManager) {
+    public TaskListsAsyncTask(MainActivity activity, DriveDatabase driveDatabase) {
         mActivity = activity;
-        mDriveManager = driveManager;
+        mDriveDatabase = driveDatabase;
     }
 
     @Override
     protected List<TaskList> doInBackground(Void... params) {
         // get the current tasklists from the json files on drive and deserialise them into TaskLists
 
-        JSONObject jsonObject = mDriveManager.getJSON(DriveManager.CURRENT_JSON);
-        return DriveManager.fromJSON(jsonObject);
+        DriveManager driveManager = mDriveDatabase.getDriveManager();
+        JSONObject jsonObject = driveManager.getJSON(DriveManager.CURRENT_JSON);
+        return DriveDatabase.fromJSON(jsonObject);
     }
 
 
@@ -55,7 +57,7 @@ public class TaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
         super.onPostExecute(result);
 
         // populate the current values in drive storage
-        mDriveManager.setCurrentTaskLists(result);
+        mDriveDatabase.setCurrentTaskLists(result);
         // update the UI
         mActivity.haveCurrentTaskLists();
 

@@ -16,5 +16,183 @@
 
 package io.indy.octodo.model;
 
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DriveDatabase {
+
+    private static final String TAG = "DriveDatabase";
+    private static final boolean D = true;
+
+    private List<TaskList> mTaskLists;
+    private List<TaskList> mHistoricTaskLists;
+
+    private DriveManager mDriveManager;
+
+    public DriveDatabase(DriveManager driveManager) {
+        mDriveManager = driveManager;
+    }
+
+    public DriveManager getDriveManager() {
+        return mDriveManager;
+    }
+
+    // Called when you no longer need access to the database.
+    public void closeDatabase() {
+    }
+
+    public void addList(String name) {
+        if (name.equals("")) {
+            Log.d(TAG, "attempting to add a tasklist with an empty name");
+            return;
+        }
+    }
+
+    public void deleteList(int id) {
+        Log.d(TAG, "deleteList: " + id);
+    }
+
+    public void addTask(Task task) {
+    }
+
+    public void updateTaskContent(int taskId, String content) {
+        if (D) {
+            Log.d(TAG, "updateTaskContent id: " + taskId + " content: " + content);
+        }
+    }
+
+    public void updateTaskState(int taskId, int state) {
+        if (D) {
+            Log.d(TAG, "updateTaskState id:" + taskId + " state: " + state);
+        }
+    }
+
+    // re-assign a task to a different tasklist
+    public void updateTaskParentList(int taskId, int taskListId) {
+        if (D) {
+            Log.d(TAG, "updateTaskParentList taskId: " + taskId + " taskListId: " + taskListId);
+        }
+    }
+
+
+    public void updateTask(Task task) {
+    }
+
+    // DELETE the specified task
+    public void deleteTask(int taskId) {
+        if (D) {
+            Log.d(TAG, "deleteTask: taskId=" + taskId);
+        }
+    }
+
+    // mark all struck tasks in the tasklist as closed
+    public void removeStruckTasks(int taskListId) {
+        if (D) {
+            Log.d(TAG, "removeStruckTasks: taskListId=" + taskListId);
+        }
+    }
+
+    // return all the tasks associated with the list
+    public List<Task> getTasks(int taskListId) {
+        List<Task> res = new ArrayList<Task>();
+        return res;
+    }
+
+    public List<TaskList> getTaskLists() {
+        Log.d(TAG, "woohoo getTaskLists called");
+        return mTaskLists;
+    }
+
+    public List<TaskList> getDeleteableTaskLists() {
+        List<TaskList> res = new ArrayList<TaskList>();
+        return res;
+    }
+
+    private static final String HEADER = "header";
+    private static final String BODY = "body";
+
+    private static List<TaskList> buildDefaultEmptyTaskLists() {
+        List<TaskList> tasklists = new ArrayList<TaskList>();
+        tasklists.add(new TaskList(0, "today"));
+        tasklists.add(new TaskList(0, "this week"));
+
+        return tasklists;
+    }
+
+    public static List<TaskList> fromJSON(JSONObject json) {
+
+        List<TaskList> tasklists = new ArrayList<TaskList>();
+
+        try {
+
+            // json has form of:
+            // { header: {}, body: array of tasklists}
+
+            if(json.isNull(BODY)) {
+                // empty body so default to empty today and thisweek tasklists
+                Log.d(TAG, "fromJSON: empty body so defaulting to empty today and thisweek tasklists");
+                return buildDefaultEmptyTaskLists();
+            }
+            // ignore header for now, in future this will have version info
+
+            // parse the body which should be a list of tasklists
+            //
+            JSONArray body = json.getJSONArray(BODY);
+            TaskList tasklist;
+            for(int i=0; i<body.length(); i++) {
+                tasklist = TaskList.fromJson(body.getJSONObject(i));
+                tasklists.add(tasklist);
+            }
+
+        } catch (JSONException e) {
+            Log.d(TAG, "fromJSON JSONException: " + e);
+            Log.d(TAG, "defaulting to empty today and thisweek tasklists");
+            tasklists = buildDefaultEmptyTaskLists();
+        }
+
+        return tasklists;
+    }
+
+    private JSONObject toJson(List<TaskList> tasklists) {
+        JSONObject res = new JSONObject();
+
+        try {
+            res.put(HEADER, JSONObject.NULL);
+
+            JSONArray array = new JSONArray();
+            for(TaskList t : tasklists) {
+                JSONObject obj = t.toJson();
+                array.put(obj);
+            }
+            res.put(BODY, array);
+
+        } catch (JSONException e) {
+            Log.d(TAG, "JSONException: " + e);
+        }
+
+        return res;
+    }
+
+    public JSONObject currentToJson() {
+        return toJson(mTaskLists);
+    }
+
+    public JSONObject historicToJson() {
+        return toJson(mHistoricTaskLists);
+    }
+
+    public void setCurrentTaskLists(List<TaskList> tasklists) {
+        mTaskLists = tasklists;
+    }
+
+    public void setHistoricTaskLists(List<TaskList> tasklists) {
+        mHistoricTaskLists = tasklists;
+    }
+
 }

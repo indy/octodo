@@ -20,6 +20,7 @@ import io.indy.octodo.adapter.TaskListPagerAdapter;
 import io.indy.octodo.async.HistoricTaskListsAsyncTask;
 import io.indy.octodo.async.TaskListsAsyncTask;
 import io.indy.octodo.controller.MainController;
+import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.DriveManager;
 import io.indy.octodo.model.TaskList;
 
@@ -38,6 +39,7 @@ public class MainActivity extends SherlockFragmentActivity {
     private MainController mController;
 
     private DriveManager mDriveManager;
+    private DriveDatabase mDriveDatabase;
 
     private List<TaskList> mTaskLists;
 
@@ -71,7 +73,7 @@ public class MainActivity extends SherlockFragmentActivity {
         // mDriveManager has received the current TaskLists from the TaskListsAsyncTask
 
         // mTaskLists = mController.onGetTaskLists();
-        mTaskLists = mDriveManager.getTaskLists();
+        mTaskLists = mDriveDatabase.getTaskLists();
 
         mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskLists);
 
@@ -91,8 +93,8 @@ public class MainActivity extends SherlockFragmentActivity {
            - the 2 json files exist and we have their file ids
          */
 
-        new TaskListsAsyncTask(this, mDriveManager).execute();
-        new HistoricTaskListsAsyncTask(mDriveManager).execute();
+        new TaskListsAsyncTask(this, mDriveDatabase).execute();
+        new HistoricTaskListsAsyncTask(mDriveDatabase).execute();
 
         /*
 
@@ -124,6 +126,9 @@ public class MainActivity extends SherlockFragmentActivity {
         mController = new MainController(this);
 
         mDriveManager = new DriveManager(this);
+        mDriveDatabase = new DriveDatabase(mDriveManager);
+
+
         mDriveManager.initialise();
     }
 
