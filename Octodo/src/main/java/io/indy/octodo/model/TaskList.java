@@ -97,6 +97,13 @@ public class TaskList {
 
             // the list of tasks
 
+            JSONArray array = new JSONArray();
+            for(Task t : mTasks) {
+                JSONObject obj = t.toJson();
+                array.put(obj);
+            }
+            res.put(TASKS, array);
+
         } catch (JSONException e) {
             Log.d(TAG, "JSONException: " + e);
         }

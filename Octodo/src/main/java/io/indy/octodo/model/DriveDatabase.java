@@ -25,6 +25,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.indy.octodo.async.UpdateTaskListsAsyncTask;
+
 public class DriveDatabase {
 
     private static final String TAG = "DriveDatabase";
@@ -66,6 +68,7 @@ public class DriveDatabase {
 
         Log.d(TAG, "addTask called! on tasklist: " + taskList);
         // save current.json
+        saveCurrentTaskLists();
     }
 
     public void updateTaskContent(int taskId, String content) {
@@ -190,6 +193,11 @@ public class DriveDatabase {
         }
 
         return res;
+    }
+
+    private void saveCurrentTaskLists() {
+        // launch an asyncTask that updates the current json file
+        new UpdateTaskListsAsyncTask(mDriveManager, currentToJson()).execute();
     }
 
     public JSONObject currentToJson() {

@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
@@ -76,6 +77,26 @@ public class DriveManager {
 
     public DriveManager(MainActivity activity) {
         mActivity = activity;
+    }
+
+
+    public void updateFile(String jsonFile, JSONObject jsonObject) {
+        Log.d(TAG, "updatefile");
+
+        try {
+            String fileId = getJsonFileIdPreference(jsonFile);
+            File ff = DriveJunction.getFileMetadata(sService, fileId);
+
+
+            String json = jsonObject.toString();
+            ByteArrayContent content = new ByteArrayContent("application/json", json.getBytes());
+            File config = sService.files().update(ff.getId(), ff, content).execute();
+            Log.d(TAG, "updated file");
+            logFileMetadata(config, jsonFile);
+
+        } catch(IOException e) {
+            Log.d(TAG, "getJSON IOException: " + e);
+        }
     }
 
     public static Drive getsService() {

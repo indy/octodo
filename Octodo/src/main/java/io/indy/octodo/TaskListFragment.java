@@ -39,7 +39,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
     private static final boolean D = true;
 
-    private List<Task> mTasks;
+    // private List<Task> mTasks;
 
     private TaskItemAdapter mTaskItemAdapter;
 
@@ -104,15 +104,13 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         mController = ((MainActivity)mContext).getController();
         if (mTaskList == null) {
-            Log.d(TAG, "WHAT?");
-            // TODO: remove usage of taskListId
-            int taskListId = savedInstanceState.getInt("taskListId");
+            String taskListName = savedInstanceState.getString("taskListName");
             // get TaskList with the given Id from the activity
-            mTaskList = ((MainActivity)mContext).getTaskList(taskListId);
+            mTaskList = mController.onGetTaskList(taskListName);
         }
 
-        TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
-        mTasks = tasklist.getTasks();
+        //TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
+        //mTasks = tasklist.getTasks();
 
         /*
         String now = DateFormatHelper.today();
@@ -125,7 +123,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         Log.d(TAG, "onCreateView mTasks is: " + mTasks);
         */
 
-        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTasks, mController);
+        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList.getTasks(), mController);
         Log.d(TAG, "mTaskItemAdapter = " + mTaskItemAdapter);
         mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter, R.id.expandable_trigger,
                 R.id.expandable);
@@ -189,7 +187,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         }
 
         // save the taskList
-        savedInstanceState.putInt("taskListId", mTaskList.getId());
+        savedInstanceState.putString("taskListName", mTaskList.getName());
     }
 
     // Called at the end of the visible lifetime.
@@ -372,7 +370,6 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     private boolean isEventRelevant(TaskList taskList) {
-        // TODO: remove name comparison and just use 'mTaskList == taskList'
-        return mTaskList.getName().equals(taskList.getName());
+        return mTaskList == taskList;
     }
 }
