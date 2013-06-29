@@ -72,8 +72,8 @@ public class MainActivity extends SherlockFragmentActivity {
     public void haveCurrentTaskLists() {
         // mDriveManager has received the current TaskLists from the TaskListsAsyncTask
 
-        // mTaskLists = mController.onGetTaskLists();
-        mTaskLists = mDriveDatabase.getTaskLists();
+        mTaskLists = mController.onGetTaskLists();
+        //mTaskLists = mDriveDatabase.getTaskLists();
 
         mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskLists);
 
@@ -123,11 +123,11 @@ public class MainActivity extends SherlockFragmentActivity {
         if (D) {
             Log.d(TAG, "creating MainController");
         }
-        mController = new MainController(this);
 
         mDriveManager = new DriveManager(this);
         mDriveDatabase = new DriveDatabase(mDriveManager);
 
+        mController = new MainController(this, mDriveDatabase);
 
         mDriveManager.initialise();
     }
@@ -258,7 +258,7 @@ public class MainActivity extends SherlockFragmentActivity {
             case R.id.menu_add_task:
                 // show the 'add task' ui element in the relevant task list
                 // fragment
-                mController.onToggleAddTaskForm(getCurrentTaskListId());
+                mController.onToggleAddTaskForm(getCurrentTaskList());
                 break;
 
             case R.id.menu_manage_lists:
@@ -280,11 +280,6 @@ public class MainActivity extends SherlockFragmentActivity {
             }
         }
         return null;
-    }
-
-    private int getCurrentTaskListId() {
-        TaskList taskList = getCurrentTaskList();
-        return taskList.getId();
     }
 
     private TaskList getCurrentTaskList() {

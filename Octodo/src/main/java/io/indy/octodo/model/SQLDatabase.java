@@ -229,7 +229,7 @@ public class SQLDatabase {
         Task task;
         while (cursor.moveToNext()) {
 
-            task = new Task.Builder().id(cursor.getInt(ID_INDEX)).listId(taskListId)
+            task = new Task.Builder().id(cursor.getInt(ID_INDEX))//.listId(taskListId)
                     .content(cursor.getString(CONTENT_INDEX)).state(cursor.getInt(STATE_INDEX))
                     .startedAt(cursor.getString(STARTED_AT_INDEX))
                     .finishedAt(cursor.getString(FINISHED_AT_INDEX)).build();

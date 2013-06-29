@@ -57,7 +57,7 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
 
         mListView = (ListView)findViewById(R.id.listViewTaskLists);
 
-        mController = new MainController(this);
+        mController = new MainController(this, null); // TODO: instantiate DriveDatabase
         mTaskLists = mController.getDeleteableTaskLists();
 
         mAdapter = new ManageListsAdapter(this, mTaskLists);

@@ -15,7 +15,7 @@ public class Task {
 
     private int mId;
 
-    private int mListId;
+    private TaskList mParentTaskList;
 
     private String mContent;
 
@@ -32,18 +32,21 @@ public class Task {
     public static final int STATE_CLOSED = 2;
 
     private static final String ID = "id";
-    private static final String LIST_ID = "list_id";
     private static final String CONTENT = "content";
     private static final String STARTED_AT = "started_at";
     private static final String FINISHED_AT = "finished_at";
 
     private Task(Builder builder) {
         mId = builder.mId;
-        mListId = builder.mListId;
         mContent = builder.mContent;
         mState = builder.mState;
         mStartedAt = builder.mStartedAt;
         mFinishedAt = builder.mFinishedAt;
+        mParentTaskList = builder.mParentTaskList;
+    }
+
+    public void setParentTaskList(TaskList parent) {
+        mParentTaskList = parent;
     }
 
     public static Task fromJson(JSONObject jsonObject) {
@@ -51,7 +54,6 @@ public class Task {
         try {
             Builder builder = new Builder()
                     .id(jsonObject.getInt(ID))
-                    .listId(jsonObject.getInt(LIST_ID))
                     .content(jsonObject.getString(CONTENT))
                     .startedAt(jsonObject.getString(STARTED_AT));
 
@@ -73,7 +75,6 @@ public class Task {
 
         try {
             res.put(ID, mId);
-            res.put(LIST_ID, mListId);
             res.put(CONTENT, mContent);
             res.put(STARTED_AT, mStartedAt);
             res.put(FINISHED_AT, mFinishedAt);
@@ -88,8 +89,15 @@ public class Task {
         return mId;
     }
 
+    public TaskList getParentTaskList() {
+        return mParentTaskList;
+    }
+
     public int getListId() {
-        return mListId;
+        if(mParentTaskList != null) {
+            return mParentTaskList.getId();
+        }
+        return 0;
     }
 
     public String getContent() {
@@ -116,8 +124,6 @@ public class Task {
     public static class Builder {
         private int mId = 0;
 
-        private int mListId = 0;
-
         private String mContent = "";
 
         private int mState = 0;
@@ -125,6 +131,8 @@ public class Task {
         private String mStartedAt = "";
 
         private String mFinishedAt = "";
+
+        private TaskList mParentTaskList = null;
 
         public Builder() {
 
@@ -135,8 +143,8 @@ public class Task {
             return this;
         }
 
-        public Builder listId(int val) {
-            mListId = val;
+        public Builder parentTaskList(TaskList val) {
+            mParentTaskList = val;
             return this;
         }
 

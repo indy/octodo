@@ -58,7 +58,14 @@ public class DriveDatabase {
         Log.d(TAG, "deleteList: " + id);
     }
 
-    public void addTask(Task task) {
+    /*
+        add task to taskList
+     */
+    public void addTask(TaskList taskList, Task task) {
+        taskList.add(task);
+
+        Log.d(TAG, "addTask called! on tasklist: " + taskList);
+        // save current.json
     }
 
     public void updateTaskContent(int taskId, String content) {
@@ -99,9 +106,15 @@ public class DriveDatabase {
     }
 
     // return all the tasks associated with the list
-    public List<Task> getTasks(int taskListId) {
-        List<Task> res = new ArrayList<Task>();
-        return res;
+    public TaskList getTaskList(String name) {
+        for(TaskList tasklist: mTaskLists) {
+            if(tasklist.getName().equals(name)) {
+                Log.d(TAG, "found tasklist with name: " + name);
+                return tasklist;
+            }
+        }
+        Log.d(TAG, "unable to find tasklist with name: " + name);
+        return null;
     }
 
     public List<TaskList> getTaskLists() {

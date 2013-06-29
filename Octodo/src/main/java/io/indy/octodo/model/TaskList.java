@@ -48,8 +48,13 @@ public class TaskList {
         mIsDeleteable = true;
     }
 
+    public List<Task> getTasks() {
+        return mTasks;
+    }
+
     public TaskList add(Task task) {
         mTasks.add(task);
+        task.setParentTaskList(this);
         return this;
     }
 
@@ -118,7 +123,8 @@ public class TaskList {
 
     @Override
     public String toString() {
-        return mName;
+        return mName + " " + System.identityHashCode(this);
+
     }
 
 }

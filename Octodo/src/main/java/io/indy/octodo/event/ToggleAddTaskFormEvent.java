@@ -1,15 +1,17 @@
 
 package io.indy.octodo.event;
 
+import io.indy.octodo.model.TaskList;
+
 public class ToggleAddTaskFormEvent {
 
-    private int mTaskListId;
+    private TaskList mTaskList;
 
-    public ToggleAddTaskFormEvent(int taskListId) {
-        mTaskListId = taskListId;
+    public ToggleAddTaskFormEvent(TaskList taskList) {
+        mTaskList = taskList;
     }
 
-    public int getTaskListId() {
-        return mTaskListId;
+    public TaskList getTaskList() {
+        return mTaskList;
     }
 }

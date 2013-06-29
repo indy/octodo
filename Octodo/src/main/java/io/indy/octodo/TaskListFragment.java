@@ -104,15 +104,29 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         mController = ((MainActivity)mContext).getController();
         if (mTaskList == null) {
+            Log.d(TAG, "WHAT?");
+            // TODO: remove usage of taskListId
             int taskListId = savedInstanceState.getInt("taskListId");
             // get TaskList with the given Id from the activity
             mTaskList = ((MainActivity)mContext).getTaskList(taskListId);
         }
 
-        mTasks = mController.onGetTasks(mTaskList.getId());
+        TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
+        mTasks = tasklist.getTasks();
+
+        /*
+        String now = DateFormatHelper.today();
+        Task task = new Task.Builder()
+                .content("hello world")
+                .state(0)
+                .startedAt(now)
+                .build();
+        mTasks.add(task);
+        Log.d(TAG, "onCreateView mTasks is: " + mTasks);
+        */
 
         mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTasks, mController);
-
+        Log.d(TAG, "mTaskItemAdapter = " + mTaskItemAdapter);
         mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter, R.id.expandable_trigger,
                 R.id.expandable);
 
@@ -211,20 +225,22 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     // common event fired whenever a task is modified and it's parent tasklist
     // UI needs to be updated
     public void onEvent(RefreshTaskListEvent event) {
-        if (isEventRelevant(event.getTaskListId())) {
+        Log.d(TAG, "received RefreshTaskListEvent");
+        if (isEventRelevant(event.getTaskList())) {
+            Log.d(TAG, "valid RefreshTaskListEvent received in TaskListFragment");
             refreshTasks();
             mEditText.setText("");
         }
     }
 
     public void onEvent(MoveTaskEvent event) {
-        if (isEventRelevant(event.getOldTaskListId()) || isEventRelevant(event.getNewTaskListId())) {
+        if (isEventRelevant(event.getOldTaskList()) || isEventRelevant(event.getNewTaskList())) {
             refreshTasks();
         }
     }
 
     public void onEvent(ToggleAddTaskFormEvent event) {
-        if (isEventRelevant(event.getTaskListId())) {
+        if (isEventRelevant(event.getTaskList())) {
 
             int h = mSectionAddTask.getMeasuredHeight();
             float fakeheight = 96.0f;
@@ -319,8 +335,11 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         String now = DateFormatHelper.today();
 
-        Task task = new Task.Builder().id(0).listId(mTaskList.getId()).content(content).state(0)
-                .startedAt(now).build();
+        Task task = new Task.Builder()
+                        .content(content)
+                        .state(0)
+                        .startedAt(now)
+                        .build();
 
         if (D) {
             Log.d(TAG, "adding a task");
@@ -333,21 +352,27 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         }
 
         // update db
-        mController.onTaskAdded(task);
+        mController.onTaskAdd(mTaskList, task);
     }
 
     // get the list of tasks from the model and display them
     private void refreshTasks() {
-
         mSlideAdapter.collapseLastOpen();
 
-        List<Task> tasks = mController.onGetTasks(mTaskList.getId());
-        mTasks.clear();
-        mTasks.addAll(tasks);
+        // SQLDatabase will need to rebuild mTasks
+        //
+        //TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
+        //List<Task> tasks = tasklist.getTasks();
+        //mTasks.clear();
+        //mTasks.addAll(tasks);
+
+        // DriveDatabase uses the same TaskList reference
+
         mTaskItemAdapter.notifyDataSetChanged();
     }
 
-    private boolean isEventRelevant(int taskListId) {
-        return mTaskList.getId() == taskListId;
+    private boolean isEventRelevant(TaskList taskList) {
+        // TODO: remove name comparison and just use 'mTaskList == taskList'
+        return mTaskList.getName().equals(taskList.getName());
     }
 }

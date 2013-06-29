@@ -6,6 +6,7 @@ import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.helper.NotificationHelper;
+import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.SQLDatabase;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
@@ -23,38 +24,46 @@ public class MainController {
 
     private NotificationHelper mNotification;
 
-    public MainController(Activity activity) {
+    private DriveDatabase mDriveDatabase;
+
+    public MainController(Activity activity, DriveDatabase driveDatabase) {
         mActivity = activity;
         mSQLDatabase = new SQLDatabase(activity);
         mNotification = new NotificationHelper(activity);
+        mDriveDatabase = driveDatabase;
     }
 
-    public void onTaskAdded(Task task) {
-        mSQLDatabase.addTask(task);
+    public void onTaskAdd(TaskList parentTaskList, Task task) {
+        //mSQLDatabase.addTask(task);
+        mDriveDatabase.addTask(parentTaskList, task);
 
-        postRefreshEvent(task.getListId());
+        postRefreshEvent(parentTaskList);
     }
 
     public void onTaskUpdateContent(Task task, String content) {
         int taskId = task.getId();
         mSQLDatabase.updateTaskContent(taskId, content);
 
-        postRefreshEvent(task.getListId());
+        postRefreshEvent(task.getParentTaskList());
     }
 
     public void onTaskUpdateState(Task task, int state) {
         int taskId = task.getId();
         mSQLDatabase.updateTaskState(taskId, state);
 
-        postRefreshEvent(task.getListId());
+        postRefreshEvent(task.getParentTaskList());
     }
 
-    public List<Task> onGetTasks(int taskListId) {
-        return mSQLDatabase.getTasks(taskListId);
+    // updated
+    public TaskList onGetTaskList(String name) {
+        return mDriveDatabase.getTaskList(name);
+        // return mSQLDatabase.getTasks(taskListId);
     }
 
+    // updated
     public List<TaskList> onGetTaskLists() {
-        return mSQLDatabase.getTaskLists();
+        return mDriveDatabase.getTaskLists();
+        //return mSQLDatabase.getTaskLists();
     }
 
     public void onTaskMove(Task task, TaskList destinationTaskList) {
@@ -65,7 +74,7 @@ public class MainController {
         mSQLDatabase.updateTaskParentList(task.getId(), newTaskListId);
 
         // update ui
-        post(new MoveTaskEvent(task, oldTaskListId, newTaskListId));
+        post(new MoveTaskEvent(task, task.getParentTaskList(), destinationTaskList));
 
         // show crouton
         String messagePrefix = mActivity.getString(R.string.notification_moved_task);
@@ -76,22 +85,22 @@ public class MainController {
     public void onTaskDelete(Task task) {
         mSQLDatabase.deleteTask(task.getId());
 
-        postRefreshEvent(task.getListId());
+        postRefreshEvent(task.getParentTaskList());
     }
 
     public void onRemoveCompletedTasks(TaskList taskList) {
         mSQLDatabase.removeStruckTasks(taskList.getId());
 
         // update UI (via TaskListFragment)
-        postRefreshEvent(taskList.getId());
+        postRefreshEvent(taskList);
 
         // show Crouton
         String messagePrefix = mActivity.getString(R.string.notification_remove_completed_tasks);
         notifyUser(messagePrefix + " \"" + taskList.getName() + "\"");
     }
 
-    public void onToggleAddTaskForm(int taskListId) {
-        post(new ToggleAddTaskFormEvent(taskListId));
+    public void onToggleAddTaskForm(TaskList taskList) {
+        post(new ToggleAddTaskFormEvent(taskList));
     }
 
     public void closeDatabase() {
@@ -123,7 +132,7 @@ public class MainController {
         EventBus.getDefault().post(event);
     }
 
-    private void postRefreshEvent(int taskListId) {
-        post(new RefreshTaskListEvent(taskListId));
+    private void postRefreshEvent(TaskList taskList) {
+        post(new RefreshTaskListEvent(taskList));
     }
 }

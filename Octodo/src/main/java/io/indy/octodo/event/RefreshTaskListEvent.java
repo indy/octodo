@@ -4,15 +4,17 @@ package io.indy.octodo.event;
 // event that's broadcast whenever a task is modified
 // any UI element that's displaying the task's parent TaskList should refresh
 
+import io.indy.octodo.model.TaskList;
+
 public class RefreshTaskListEvent {
 
-    private int mTaskListId;
+    private TaskList mTaskList;
 
-    public RefreshTaskListEvent(int taskListId) {
-        mTaskListId = taskListId;
+    public RefreshTaskListEvent(TaskList taskList) {
+        mTaskList = taskList;
     }
 
-    public int getTaskListId() {
-        return mTaskListId;
+    public TaskList getTaskList() {
+        return mTaskList;
     }
 }
