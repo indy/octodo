@@ -43,15 +43,16 @@ public class MainActivity extends SherlockFragmentActivity {
 
     private List<TaskList> mTaskLists;
 
+    // TODO: check why this is used now
     public void refreshTaskListsUI() {
         if (D) {
             Log.d(TAG, "refreshTaskListsUI");
         }
 
-        List<TaskList> lists = mController.onGetTaskLists();
+//        List<TaskList> lists = mController.onGetTaskLists();
 
-        mTaskLists.clear();
-        mTaskLists.addAll(lists);
+//        mTaskLists.clear();
+//        mTaskLists.addAll(lists);
 
         mAdapter.notifyDataSetChanged();
     }
@@ -71,6 +72,8 @@ public class MainActivity extends SherlockFragmentActivity {
 
     public void haveCurrentTaskLists() {
         // mDriveManager has received the current TaskLists from the TaskListsAsyncTask
+
+        Log.d(TAG, "haveCurrentTaskLists");
 
         mTaskLists = mController.onGetTaskLists();
         //mTaskLists = mDriveDatabase.getTaskLists();
@@ -92,6 +95,8 @@ public class MainActivity extends SherlockFragmentActivity {
            - we have access to drive
            - the 2 json files exist and we have their file ids
          */
+
+        Log.d(TAG, "onDriveInitialised");
 
         new TaskListsAsyncTask(this, mDriveDatabase).execute();
         new HistoricTaskListsAsyncTask(mDriveDatabase).execute();

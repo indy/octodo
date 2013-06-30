@@ -104,9 +104,11 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         mController = ((MainActivity)mContext).getController();
         if (mTaskList == null) {
+            Log.d(TAG, "mTaskList is null - do some re-initialisation with DriveDatabase?");
             String taskListName = savedInstanceState.getString("taskListName");
             // get TaskList with the given Id from the activity
             mTaskList = mController.onGetTaskList(taskListName);
+            Log.d(TAG, "got tasklist for " + taskListName + " has length of " + mTaskList.getTasks().size());
         }
 
         //TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
