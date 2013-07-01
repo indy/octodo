@@ -22,7 +22,9 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import io.indy.octodo.MainActivity;
+import io.indy.octodo.event.HaveCurrentTaskListEvent;
 import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.DriveManager;
 import io.indy.octodo.model.TaskList;
@@ -33,12 +35,10 @@ import io.indy.octodo.model.TaskList;
 public class TaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
 
     private final DriveDatabase mDriveDatabase;
-    private final MainActivity mActivity; // TODO: change from MainActivity to the OctodoGDriveActivityThingy
 
     // TODO: check chris bane's photup app for usage on WeakReferences in AsyncTasks
 
-    public TaskListsAsyncTask(MainActivity activity, DriveDatabase driveDatabase) {
-        mActivity = activity;
+    public TaskListsAsyncTask(DriveDatabase driveDatabase) {
         mDriveDatabase = driveDatabase;
     }
 
@@ -58,8 +58,10 @@ public class TaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
 
         // populate the current values in drive storage
         mDriveDatabase.setCurrentTaskLists(result);
-        // update the UI
-        mActivity.haveCurrentTaskLists();
+
+        // fire event to update the UI
+        HaveCurrentTaskListEvent event = new HaveCurrentTaskListEvent();
+        EventBus.getDefault().post(event);
 
     }
 

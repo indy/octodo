@@ -14,9 +14,14 @@ import io.indy.octodo.model.TaskList;
 import java.util.List;
 
 import android.app.Activity;
+import android.util.Log;
+
 import de.greenrobot.event.EventBus;
 
 public class MainController {
+
+    private final String TAG = getClass().getSimpleName();
+    private static final boolean D = true;
 
     private Activity mActivity;
 
@@ -33,9 +38,12 @@ public class MainController {
         mDriveDatabase = driveDatabase;
     }
 
-    public void onTaskAdd(TaskList parentTaskList, Task task) {
+    public void onTaskAdd(String taskListName, Task task) {
+
         //mSQLDatabase.addTask(task);
-        mDriveDatabase.addTask(parentTaskList, task);
+
+
+        TaskList parentTaskList = mDriveDatabase.addTask(taskListName, task);
 
         postRefreshEvent(parentTaskList);
     }
@@ -56,6 +64,8 @@ public class MainController {
 
     // updated
     public TaskList onGetTaskList(String name) {
+        Log.d(TAG, "onGetTaskList: " + name);
+        Log.d(TAG, "mDriveDatabase: " + mDriveDatabase);
         return mDriveDatabase.getTaskList(name);
         // return mSQLDatabase.getTasks(taskListId);
     }

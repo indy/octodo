@@ -3,6 +3,7 @@ package io.indy.octodo;
 
 import io.indy.octodo.adapter.TaskItemAdapter;
 import io.indy.octodo.controller.MainController;
+import io.indy.octodo.event.HaveCurrentTaskListEvent;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
@@ -39,8 +40,6 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
     private static final boolean D = true;
 
-    // private List<Task> mTasks;
-
     private TaskItemAdapter mTaskItemAdapter;
 
     private SlideExpandableListAdapter mSlideAdapter;
@@ -62,6 +61,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     public static TaskListFragment newInstance(TaskList taskList) {
         TaskListFragment fragment = new TaskListFragment();
         fragment.setTaskList(taskList);
+        Log.d("TaskListFragment", "newInstance: " + taskList.getName());
         return fragment;
     }
 
@@ -106,24 +106,11 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         if (mTaskList == null) {
             Log.d(TAG, "mTaskList is null - do some re-initialisation with DriveDatabase?");
             String taskListName = savedInstanceState.getString("taskListName");
-            // get TaskList with the given Id from the activity
-            mTaskList = mController.onGetTaskList(taskListName);
+            mTaskList = new TaskList(0, taskListName);
+
+            //mTaskList = mController.onGetTaskList(taskListName);
             Log.d(TAG, "got tasklist for " + taskListName + " has length of " + mTaskList.getTasks().size());
         }
-
-        //TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
-        //mTasks = tasklist.getTasks();
-
-        /*
-        String now = DateFormatHelper.today();
-        Task task = new Task.Builder()
-                .content("hello world")
-                .state(0)
-                .startedAt(now)
-                .build();
-        mTasks.add(task);
-        Log.d(TAG, "onCreateView mTasks is: " + mTasks);
-        */
 
         mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList.getTasks(), mController);
         Log.d(TAG, "mTaskItemAdapter = " + mTaskItemAdapter);
@@ -222,20 +209,26 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         EventBus.getDefault().unregister(this);
     }
 
+
+    public void onEvent(HaveCurrentTaskListEvent event) {
+        Log.d(TAG, "received HaveCurrentTaskListEvent");
+        refreshUI();
+    }
+
     // common event fired whenever a task is modified and it's parent tasklist
     // UI needs to be updated
     public void onEvent(RefreshTaskListEvent event) {
         Log.d(TAG, "received RefreshTaskListEvent");
         if (isEventRelevant(event.getTaskList())) {
             Log.d(TAG, "valid RefreshTaskListEvent received in TaskListFragment");
-            refreshTasks();
+            refreshUI();
             mEditText.setText("");
         }
     }
 
     public void onEvent(MoveTaskEvent event) {
         if (isEventRelevant(event.getOldTaskList()) || isEventRelevant(event.getNewTaskList())) {
-            refreshTasks();
+            refreshUI();
         }
     }
 
@@ -302,7 +295,16 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     public void setTaskList(TaskList taskList) {
-        mTaskList = taskList;
+        //mTaskList = taskList;
+
+        // create a local copy of the taskList
+        // this.mTaskList will provide data to this fragment's ui
+        mTaskList = new TaskList(taskList.getId(), taskList.getName());
+
+        List<Task> localTasks = mTaskList.getTasks();
+        localTasks.clear();
+        localTasks.addAll(taskList.getTasks());
+
         if (D) {
             Log.d(TAG, "mTaskList set to " + taskList);
         }
@@ -352,26 +354,31 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         }
 
         // update db
-        mController.onTaskAdd(mTaskList, task);
+        mController.onTaskAdd(mTaskList.getName(), task);
+    }
+
+
+    private void updateLocalTaskList() {
+        TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
+        List<Task> tasks = tasklist.getTasks();
+
+        List<Task> localTasks = mTaskList.getTasks();
+        localTasks.clear();
+        localTasks.addAll(tasks);
+
+        for(Task t: localTasks) {
+            Log.d(TAG, "taskContent: " + t.getContent());
+        }
     }
 
     // get the list of tasks from the model and display them
-    private void refreshTasks() {
+    private void refreshUI() {
         mSlideAdapter.collapseLastOpen();
-
-        // SQLDatabase will need to rebuild mTasks
-        //
-        //TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
-        //List<Task> tasks = tasklist.getTasks();
-        //mTasks.clear();
-        //mTasks.addAll(tasks);
-
-        // DriveDatabase uses the same TaskList reference
-
+        updateLocalTaskList();
         mTaskItemAdapter.notifyDataSetChanged();
     }
 
     private boolean isEventRelevant(TaskList taskList) {
-        return mTaskList == taskList;
+        return mTaskList.getName().equals(taskList.getName());
     }
 }
