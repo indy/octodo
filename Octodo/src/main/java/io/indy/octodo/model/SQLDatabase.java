@@ -1,11 +1,6 @@
 
 package io.indy.octodo.model;
 
-import io.indy.octodo.helper.DateFormatHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,6 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.indy.octodo.helper.DateFormatHelper;
 
 public class SQLDatabase {
 

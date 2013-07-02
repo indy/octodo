@@ -1,6 +1,12 @@
 
 package io.indy.octodo.controller;
 
+import android.app.Activity;
+import android.util.Log;
+
+import java.util.List;
+
+import de.greenrobot.event.EventBus;
 import io.indy.octodo.R;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
@@ -10,13 +16,6 @@ import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.SQLDatabase;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
-
-import java.util.List;
-
-import android.app.Activity;
-import android.util.Log;
-
-import de.greenrobot.event.EventBus;
 
 public class MainController {
 

@@ -20,12 +20,7 @@ import android.os.AsyncTask;
 
 import org.json.JSONObject;
 
-import java.util.List;
-
-import io.indy.octodo.MainActivity;
-import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.DriveManager;
-import io.indy.octodo.model.TaskList;
 
 
 // get the current tasklists from drive

@@ -1,13 +1,14 @@
 
 package io.indy.octodo.helper;
 
-import io.indy.octodo.R;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.view.ViewGroup.LayoutParams;
+
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import de.keyboardsurfer.android.widget.crouton.Style.Builder;
+import io.indy.octodo.R;
 
 // Show the user notifications
 public class NotificationHelper {

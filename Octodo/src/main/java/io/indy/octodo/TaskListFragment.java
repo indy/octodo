@@ -1,19 +1,6 @@
 
 package io.indy.octodo;
 
-import io.indy.octodo.adapter.TaskItemAdapter;
-import io.indy.octodo.controller.MainController;
-import io.indy.octodo.event.HaveCurrentTaskListEvent;
-import io.indy.octodo.event.MoveTaskEvent;
-import io.indy.octodo.event.RefreshTaskListEvent;
-import io.indy.octodo.event.ToggleAddTaskFormEvent;
-import io.indy.octodo.helper.AnimationHelper;
-import io.indy.octodo.helper.DateFormatHelper;
-import io.indy.octodo.model.Task;
-import io.indy.octodo.model.TaskList;
-
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -32,7 +19,19 @@ import android.widget.ListView;
 
 import com.tjerkw.slideexpandable.library.SlideExpandableListAdapter;
 
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
+import io.indy.octodo.adapter.TaskItemAdapter;
+import io.indy.octodo.controller.MainController;
+import io.indy.octodo.event.HaveCurrentTaskListEvent;
+import io.indy.octodo.event.MoveTaskEvent;
+import io.indy.octodo.event.RefreshTaskListEvent;
+import io.indy.octodo.event.ToggleAddTaskFormEvent;
+import io.indy.octodo.helper.AnimationHelper;
+import io.indy.octodo.helper.DateFormatHelper;
+import io.indy.octodo.model.Task;
+import io.indy.octodo.model.TaskList;
 
 public final class TaskListFragment extends Fragment implements OnClickListener {
 
@@ -369,8 +368,10 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         localTasks.clear();
         localTasks.addAll(tasks);
 
-        for(Task t: localTasks) {
-            Log.d(TAG, "taskContent: " + t.getContent());
+        if(D) {
+            for(Task t: localTasks) {
+                Log.d(TAG, "taskContent: " + t.getContent());
+            }
         }
     }
 

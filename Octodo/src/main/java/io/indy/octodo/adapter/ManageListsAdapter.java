@@ -1,11 +1,6 @@
 
 package io.indy.octodo.adapter;
 
-import io.indy.octodo.R;
-import io.indy.octodo.model.TaskList;
-
-import java.util.List;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +10,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import java.util.List;
+
+import io.indy.octodo.R;
+import io.indy.octodo.model.TaskList;
 
 public class ManageListsAdapter extends ArrayAdapter<TaskList> implements OnClickListener {
 

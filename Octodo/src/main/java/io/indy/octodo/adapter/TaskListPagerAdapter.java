@@ -1,16 +1,14 @@
 
 package io.indy.octodo.adapter;
 
-import io.indy.octodo.TaskListFragment;
-import io.indy.octodo.model.TaskList;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
+
+import java.util.List;
+
+import io.indy.octodo.TaskListFragment;
 
 public class TaskListPagerAdapter extends FragmentStatePagerAdapter {
 

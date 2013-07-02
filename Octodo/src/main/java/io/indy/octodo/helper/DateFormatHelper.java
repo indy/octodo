@@ -1,11 +1,11 @@
 
 package io.indy.octodo.helper;
 
+import android.text.format.DateUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import android.text.format.DateUtils;
 
 public class DateFormatHelper {
 

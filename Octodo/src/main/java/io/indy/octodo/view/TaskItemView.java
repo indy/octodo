@@ -1,13 +1,6 @@
 
 package io.indy.octodo.view;
 
-import io.indy.octodo.R;
-import io.indy.octodo.controller.MainController;
-import io.indy.octodo.model.Task;
-import io.indy.octodo.model.TaskList;
-
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,6 +14,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.List;
+
+import io.indy.octodo.R;
+import io.indy.octodo.controller.MainController;
+import io.indy.octodo.model.Task;
+import io.indy.octodo.model.TaskList;
 
 public class TaskItemView extends LinearLayout {
 
