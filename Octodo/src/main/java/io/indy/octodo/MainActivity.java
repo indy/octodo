@@ -14,18 +14,14 @@ import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.TaskListPagerAdapter;
-import io.indy.octodo.async.HistoricTaskListsAsyncTask;
 import io.indy.octodo.async.TaskListsAsyncTask;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
-import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.DriveManager;
 import io.indy.octodo.model.TaskList;
@@ -47,7 +43,6 @@ public class MainActivity extends SherlockFragmentActivity {
     private DriveManager mDriveManager;
     private DriveDatabase mDriveDatabase;
 
-    private List<TaskList> mTaskLists;
     private List<String> mTaskListNames;
 
     // TODO: check why this is used now
@@ -58,12 +53,9 @@ public class MainActivity extends SherlockFragmentActivity {
 
         List<TaskList> lists = mController.onGetTaskLists();
 
-        mTaskLists.clear();
-        mTaskLists.addAll(lists);
-
         // re-create the list of tasklist names and notify mAdapter of change
         mTaskListNames.clear();
-        for(TaskList taskList: mTaskLists) {
+        for(TaskList taskList: lists) {
             mTaskListNames.add(taskList.getName());
         }
         mAdapter.notifyDataSetChanged();
@@ -71,9 +63,9 @@ public class MainActivity extends SherlockFragmentActivity {
 
     private void logTaskLists(String message) {
         Log.d(TAG, message);
-        Log.d(TAG, "mTaskLists.size() = " + mTaskLists.size());
-        for(TaskList t : mTaskLists) {
-            Log.d(TAG, t.getName() + " task size: " + t.getTasks().size());
+        Log.d(TAG, "mTaskListNames.size() = " + mTaskListNames.size());
+        for(String s : mTaskListNames) {
+            Log.d(TAG, s);
         }
         Log.d(TAG, "");
     }
@@ -140,13 +132,8 @@ public class MainActivity extends SherlockFragmentActivity {
 
         mController = new MainController(this, mDriveDatabase);
 
-
-        // mTaskLists will be populated by an event fired from the TaskListsAsyncTask
-        mTaskLists = new ArrayList<TaskList>();
         mTaskListNames = new ArrayList<String>();
         mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskListNames);
-
-        Log.d(TAG, "mTaskLists id: " + System.identityHashCode(mTaskLists));
 
         mPager = (ViewPager)findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
@@ -176,7 +163,6 @@ public class MainActivity extends SherlockFragmentActivity {
         }
 
         logTaskLists("onRestoreInstanceState");
-        Log.d(TAG, "mTaskLists id: " + System.identityHashCode(mTaskLists));
     }
 
     // Called before subsequent visible lifetimes
@@ -308,7 +294,6 @@ public class MainActivity extends SherlockFragmentActivity {
     private TaskList getCurrentTaskList() {
         int i = mPager.getCurrentItem();
         return mController.onGetTaskList(i);
-        //return mAdapter.getTaskList(i);
     }
 
     private void startManageListsActivity() {
