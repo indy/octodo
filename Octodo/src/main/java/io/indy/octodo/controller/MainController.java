@@ -70,6 +70,13 @@ public class MainController {
         // return mSQLDatabase.getTasks(taskListId);
     }
 
+    public TaskList onGetTaskList(int index) {
+        Log.d(TAG, "onGetTaskList: at index " + index);
+        Log.d(TAG, "mDriveDatabase: " + mDriveDatabase);
+        return mDriveDatabase.getTaskList(index);
+        // return mSQLDatabase.getTasks(taskListId);
+    }
+
     // updated
     public List<TaskList> onGetTaskLists() {
         return mDriveDatabase.getTaskLists();

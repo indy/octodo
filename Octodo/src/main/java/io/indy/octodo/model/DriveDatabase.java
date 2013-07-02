@@ -131,8 +131,19 @@ public class DriveDatabase {
         return null;
     }
 
+    public TaskList getTaskList(int index) {
+        Log.d(TAG, "getTaskList: at index " + index);
+        if(mTaskLists == null) {
+            Log.d(TAG, "mTaskLists is empty");
+            return null;
+        } else if(mTaskLists.size() >= index){
+            Log.d(TAG, "getTaskList index is too large");
+            return null;
+        }
+        return mTaskLists.get(index);
+    }
+
     public List<TaskList> getTaskLists() {
-        Log.d(TAG, "woohoo getTaskLists called");
         return mTaskLists;
     }
 

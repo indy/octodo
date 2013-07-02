@@ -48,6 +48,7 @@ public class MainActivity extends SherlockFragmentActivity {
     private DriveDatabase mDriveDatabase;
 
     private List<TaskList> mTaskLists;
+    private List<String> mTaskListNames;
 
     // TODO: check why this is used now
     public void refreshTaskListsUI() {
@@ -60,6 +61,11 @@ public class MainActivity extends SherlockFragmentActivity {
         mTaskLists.clear();
         mTaskLists.addAll(lists);
 
+        // re-create the list of tasklist names and notify mAdapter of change
+        mTaskListNames.clear();
+        for(TaskList taskList: mTaskLists) {
+            mTaskListNames.add(taskList.getName());
+        }
         mAdapter.notifyDataSetChanged();
     }
 
@@ -87,18 +93,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
     public void onEvent(HaveCurrentTaskListEvent event) {
         Log.d(TAG, "received HaveCurrentTaskListEvent");
-
-        List<TaskList> lists = mController.onGetTaskLists();
-
-        mTaskLists.clear();
-        mTaskLists.addAll(lists);
-
-        logTaskLists("onEvent HaveCurrentTaskListEvent");
-
-        Log.d(TAG, "mTaskLists id: " + System.identityHashCode(mTaskLists));
-
-
-        mAdapter.notifyDataSetChanged();
+        refreshTaskListsUI();
     }
 
     public void onDriveInitialised() {
@@ -148,7 +143,8 @@ public class MainActivity extends SherlockFragmentActivity {
 
         // mTaskLists will be populated by an event fired from the TaskListsAsyncTask
         mTaskLists = new ArrayList<TaskList>();
-        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskLists);
+        mTaskListNames = new ArrayList<String>();
+        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskListNames);
 
         Log.d(TAG, "mTaskLists id: " + System.identityHashCode(mTaskLists));
 
@@ -309,18 +305,10 @@ public class MainActivity extends SherlockFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public TaskList getTaskList(int id) {
-        for (TaskList taskList : mTaskLists) {
-            if (taskList.getId() == id) {
-                return taskList;
-            }
-        }
-        return null;
-    }
-
     private TaskList getCurrentTaskList() {
         int i = mPager.getCurrentItem();
-        return mAdapter.getTaskList(i);
+        return mController.onGetTaskList(i);
+        //return mAdapter.getTaskList(i);
     }
 
     private void startManageListsActivity() {

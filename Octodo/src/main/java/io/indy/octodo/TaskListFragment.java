@@ -58,10 +58,10 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
     private Context mContext;
 
-    public static TaskListFragment newInstance(TaskList taskList) {
+    public static TaskListFragment newInstance(String taskListName) {
         TaskListFragment fragment = new TaskListFragment();
-        fragment.setTaskList(taskList);
-        Log.d("TaskListFragment", "newInstance: " + taskList.getName());
+        fragment.setTaskList(taskListName);
+        Log.d("TaskListFragment", "newInstance: " + taskListName);
         return fragment;
     }
 
@@ -107,9 +107,10 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
             Log.d(TAG, "mTaskList is null - do some re-initialisation with DriveDatabase?");
             String taskListName = savedInstanceState.getString("taskListName");
             mTaskList = new TaskList(0, taskListName);
-
-            //mTaskList = mController.onGetTaskList(taskListName);
-            Log.d(TAG, "got tasklist for " + taskListName + " has length of " + mTaskList.getTasks().size());
+            // TODO: would updateLocalTaskList fail here?
+        } else {
+            // already have a mTaskList from setInstance
+            updateLocalTaskList();
         }
 
         mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList.getTasks(), mController);
@@ -294,19 +295,21 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         }
     }
 
-    public void setTaskList(TaskList taskList) {
+    public void setTaskList(String taskListName) {
         //mTaskList = taskList;
 
         // create a local copy of the taskList
         // this.mTaskList will provide data to this fragment's ui
-        mTaskList = new TaskList(taskList.getId(), taskList.getName());
 
-        List<Task> localTasks = mTaskList.getTasks();
-        localTasks.clear();
-        localTasks.addAll(taskList.getTasks());
+        //mTaskList = new TaskList(taskList.getId(), taskList.getName());
+        mTaskList = new TaskList(0, taskListName);
+
+        //List<Task> localTasks = mTaskList.getTasks();
+        //localTasks.clear();
+        //localTasks.addAll(taskList.getTasks());
 
         if (D) {
-            Log.d(TAG, "mTaskList set to " + taskList);
+            Log.d(TAG, "mTaskList set to " + taskListName);
         }
     }
 
