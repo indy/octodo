@@ -8,21 +8,21 @@ public class MoveTaskEvent {
 
     private Task mTask;
 
-    private TaskList mOldTaskList;
+    private String mOldTaskList;
 
-    private TaskList mNewTaskList;
+    private String mNewTaskList;
 
-    public MoveTaskEvent(Task task, TaskList oldTaskList, TaskList newTaskList) {
+    public MoveTaskEvent(Task task, String oldTaskList, String newTaskList) {
         mTask = task;
         mOldTaskList = oldTaskList;
         mNewTaskList = newTaskList;
     }
 
-    public TaskList getOldTaskList() {
+    public String getOldTaskList() {
         return mOldTaskList;
     }
 
-    public TaskList getNewTaskList() {
+    public String getNewTaskList() {
         return mNewTaskList;
     }
 }

@@ -52,12 +52,8 @@ public class MainController {
         postRefreshEvent(taskListName);
     }
 
-    // updated
     public TaskList onGetTaskList(String name) {
-        Log.d(TAG, "onGetTaskList: " + name);
-        Log.d(TAG, "mDriveDatabase: " + mDriveDatabase);
         return mDriveDatabase.getTaskList(name);
-        // return mSQLDatabase.getTasks(taskListId);
     }
 
     public TaskList onGetTaskList(int index) {
@@ -68,19 +64,17 @@ public class MainController {
         return mDriveDatabase.getTaskLists();
     }
 
-    public void onTaskMove(Task task, TaskList destinationTaskList) {
-        int newTaskListId = destinationTaskList.getId();
-        int oldTaskListId = task.getListId();
+    public void onTaskMove(Task task, String sourceTaskList, String destinationTaskList) {
 
         // update model
-        mSQLDatabase.updateTaskParentList(task.getId(), newTaskListId);
+        mDriveDatabase.moveTask(task, sourceTaskList, destinationTaskList);
 
         // update ui
-        post(new MoveTaskEvent(task, task.getParentTaskList(), destinationTaskList));
+        post(new MoveTaskEvent(task, sourceTaskList, destinationTaskList));
 
         // show crouton
         String messagePrefix = mActivity.getString(R.string.notification_moved_task);
-        notifyUser(messagePrefix + " \"" + destinationTaskList.getName() + "\"");
+        notifyUser(messagePrefix + " \"" + destinationTaskList + "\"");
 
     }
 

@@ -265,7 +265,8 @@ public class TaskItemView extends LinearLayout {
                             Log.d(TAG, "chosen " + taskLists.get(s).getId());
                         }
 
-                        moveTask(taskLists.get(s));
+                        String destinationTaskList = taskLists.get(s).getName();
+                        moveTask(destinationTaskList);
                     }
                 });
 
@@ -293,9 +294,8 @@ public class TaskItemView extends LinearLayout {
 
     }
 
-    // move mTask to the list with id: taskListId
-    private void moveTask(TaskList destinationTaskList) {
-        mController.onTaskMove(mTask, destinationTaskList);
+    private void moveTask(String destinationTaskList) {
+        mController.onTaskMove(mTask, mTaskListName, destinationTaskList);
     }
 
     private void setContentAsStruckThru() {

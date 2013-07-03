@@ -96,10 +96,18 @@ public class DriveDatabase {
     }
 
     // re-assign a task to a different tasklist
-    public void updateTaskParentList(int taskId, int taskListId) {
+    public void moveTask(Task task, String source, String destination) {
         if (D) {
-            Log.d(TAG, "updateTaskParentList taskId: " + taskId + " taskListId: " + taskListId);
+            Log.d(TAG, "moveTask " + task.getContent() + " to: " + destination);
         }
+
+        TaskList sourceTaskList = getTaskList(source);
+        TaskList destinationTaskList = getTaskList(destination);
+
+        sourceTaskList.remove(task);
+        destinationTaskList.add(task);
+
+        saveCurrentTaskLists();
     }
 
 

@@ -68,6 +68,11 @@ public class TaskList {
         return this;
     }
 
+    public TaskList remove(Task task) {
+        mTasks.remove(task);
+        return this;
+    }
+
     public static TaskList fromJson(JSONObject jsonObject) {
 
         try {
