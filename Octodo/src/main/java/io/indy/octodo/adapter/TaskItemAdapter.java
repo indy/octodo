@@ -11,6 +11,7 @@ import java.util.List;
 
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Task;
+import io.indy.octodo.model.TaskList;
 import io.indy.octodo.view.TaskItemView;
 
 public class TaskItemAdapter extends ArrayAdapter<Task> {
@@ -23,11 +24,14 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
 
     private MainController mController;
 
-    public TaskItemAdapter(Context context, List<Task> items, MainController controller) {
-        super(context, android.R.layout.simple_list_item_1, items);
+    private String mTaskListName;
+
+    public TaskItemAdapter(Context context, TaskList taskList, MainController controller) {
+        super(context, android.R.layout.simple_list_item_1, taskList.getTasks());
 
         mController = controller;
         mContext = context;
+        mTaskListName = taskList.getName();
     }
 
     @Override
@@ -45,7 +49,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
             taskItemView.setController(mController);
         }
 
-        taskItemView.setupWithTask(task);
+        taskItemView.setupWithTask(mTaskListName, task);
 
         return taskItemView;
     }

@@ -112,7 +112,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
             updateLocalTaskList();
         }
 
-        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList.getTasks(), mController);
+        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList, mController);
         Log.d(TAG, "mTaskItemAdapter = " + mTaskItemAdapter);
         mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter, R.id.expandable_trigger,
                 R.id.expandable);
@@ -219,7 +219,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     // UI needs to be updated
     public void onEvent(RefreshTaskListEvent event) {
         Log.d(TAG, "received RefreshTaskListEvent");
-        if (isEventRelevant(event.getTaskList())) {
+        if (isEventRelevant(event.getTaskListName())) {
             Log.d(TAG, "valid RefreshTaskListEvent received in TaskListFragment");
             refreshUI();
             mEditText.setText("");
@@ -356,7 +356,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         }
 
         // update db
-        mController.onTaskAdd(mTaskList.getName(), task);
+        mController.onTaskAdd(task, mTaskList.getName());
     }
 
 
@@ -382,7 +382,12 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         mTaskItemAdapter.notifyDataSetChanged();
     }
 
+    // TODO: remove this
     private boolean isEventRelevant(TaskList taskList) {
         return mTaskList.getName().equals(taskList.getName());
+    }
+
+    private boolean isEventRelevant(String taskListName) {
+        return mTaskList.getName().equals(taskListName);
     }
 }

@@ -44,6 +44,8 @@ public class TaskItemView extends LinearLayout {
 
     private Task mTask;
 
+    private String mTaskListName;
+
     public TaskItemView(Context context) {
         super(context);
 
@@ -64,8 +66,9 @@ public class TaskItemView extends LinearLayout {
         addClickListeners();
     }
 
-    public void setupWithTask(Task task) {
+    public void setupWithTask(String taskListName, Task task) {
 
+        mTaskListName = taskListName;
         mTask = task;
 
         // Integer taskId = Integer.valueOf(mTaskId);
@@ -127,7 +130,7 @@ public class TaskItemView extends LinearLayout {
             state = Task.STATE_OPEN;
         }
 
-        mController.onTaskUpdateState(mTask, state);
+        mController.onTaskUpdateState(mTask, mTaskListName, state);
     };
 
     private void clickedEditTask(View view) {
@@ -155,7 +158,7 @@ public class TaskItemView extends LinearLayout {
                         }
                         final String newContent = input.getText().toString().trim();
                         hideSoftKeyboard(input);
-                        mController.onTaskUpdateContent(mTask, newContent);
+                        mController.onTaskUpdateContent(mTask, mTaskListName, newContent);
                     }
                 });
         ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
