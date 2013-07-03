@@ -37,28 +37,19 @@ public class MainController {
         mDriveDatabase = driveDatabase;
     }
 
-    public void onTaskAdd(String taskListName, Task task) {
-
-        //mSQLDatabase.addTask(task);
-
-
-        TaskList parentTaskList = mDriveDatabase.addTask(taskListName, task);
-
-        postRefreshEvent(parentTaskList);
+    public void onTaskAdd(Task task, String taskListName) {
+        mDriveDatabase.addTask(task, taskListName);
+        postRefreshEvent(taskListName);
     }
 
-    public void onTaskUpdateContent(Task task, String content) {
-        int taskId = task.getId();
-        mSQLDatabase.updateTaskContent(taskId, content);
-
-        postRefreshEvent(task.getParentTaskList());
+    public void onTaskUpdateContent(Task task, String taskListName, String content) {
+        mDriveDatabase.updateTaskContent(task, content);
+        postRefreshEvent(taskListName);
     }
 
-    public void onTaskUpdateState(Task task, int state) {
-        int taskId = task.getId();
-        mSQLDatabase.updateTaskState(taskId, state);
-
-        postRefreshEvent(task.getParentTaskList());
+    public void onTaskUpdateState(Task task, String taskListName, int state) {
+        mDriveDatabase.updateTaskState(task, state);
+        postRefreshEvent(taskListName);
     }
 
     // updated
@@ -70,16 +61,11 @@ public class MainController {
     }
 
     public TaskList onGetTaskList(int index) {
-        Log.d(TAG, "onGetTaskList: at index " + index);
-        Log.d(TAG, "mDriveDatabase: " + mDriveDatabase);
         return mDriveDatabase.getTaskList(index);
-        // return mSQLDatabase.getTasks(taskListId);
     }
 
-    // updated
     public List<TaskList> onGetTaskLists() {
         return mDriveDatabase.getTaskLists();
-        //return mSQLDatabase.getTaskLists();
     }
 
     public void onTaskMove(Task task, TaskList destinationTaskList) {
@@ -99,20 +85,20 @@ public class MainController {
     }
 
     public void onTaskDelete(Task task) {
-        mSQLDatabase.deleteTask(task.getId());
+//        mSQLDatabase.deleteTask(task.getId());
 
-        postRefreshEvent(task.getParentTaskList());
+//        postRefreshEvent(task.getParentTaskList());
     }
 
     public void onRemoveCompletedTasks(TaskList taskList) {
-        mSQLDatabase.removeStruckTasks(taskList.getId());
+//        mSQLDatabase.removeStruckTasks(taskList.getId());
 
         // update UI (via TaskListFragment)
-        postRefreshEvent(taskList);
+  //      postRefreshEvent(taskList);
 
         // show Crouton
-        String messagePrefix = mActivity.getString(R.string.notification_remove_completed_tasks);
-        notifyUser(messagePrefix + " \"" + taskList.getName() + "\"");
+    //    String messagePrefix = mActivity.getString(R.string.notification_remove_completed_tasks);
+    //    notifyUser(messagePrefix + " \"" + taskList.getName() + "\"");
     }
 
     public void onToggleAddTaskForm(TaskList taskList) {
@@ -148,7 +134,7 @@ public class MainController {
         EventBus.getDefault().post(event);
     }
 
-    private void postRefreshEvent(TaskList taskList) {
-        post(new RefreshTaskListEvent(taskList));
+    private void postRefreshEvent(String taskListName) {
+        post(new RefreshTaskListEvent(taskListName));
     }
 }

@@ -6,6 +6,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.indy.octodo.helper.DateFormatHelper;
+
 // Task specific
 //
 public class Task {
@@ -33,6 +35,7 @@ public class Task {
 
     private static final String ID = "id";
     private static final String CONTENT = "content";
+    private static final String STATE = "state";
     private static final String STARTED_AT = "started_at";
     private static final String FINISHED_AT = "finished_at";
 
@@ -49,15 +52,31 @@ public class Task {
         mParentTaskList = parent;
     }
 
+    public void setState(int state) {
+        mState = state;
+
+        if(mState == STATE_OPEN) {
+            mFinishedAt = "";
+        } else if(mState == STATE_STRUCK) {
+            mFinishedAt = DateFormatHelper.today();
+        }
+    }
+
+    public void setContent(String content) {
+        mContent = content;
+    }
+
     public static Task fromJson(JSONObject jsonObject) {
 
         try {
             Builder builder = new Builder()
-                    .id(jsonObject.getInt(ID))
                     .content(jsonObject.getString(CONTENT))
                     .startedAt(jsonObject.getString(STARTED_AT));
 
-            if(jsonObject.get(FINISHED_AT) != JSONObject.NULL) {
+            if(jsonObject.has(STATE)) {
+                builder.state(jsonObject.getInt(STATE));
+            }
+            if(jsonObject.has(FINISHED_AT)) {
                 builder.finishedAt(jsonObject.getString(FINISHED_AT));
             }
 
@@ -74,10 +93,12 @@ public class Task {
         JSONObject res = new JSONObject();
 
         try {
-            res.put(ID, mId);
             res.put(CONTENT, mContent);
+            res.put(STATE, mState);
             res.put(STARTED_AT, mStartedAt);
-            res.put(FINISHED_AT, mFinishedAt);
+            if(!mFinishedAt.isEmpty()) {
+                res.put(FINISHED_AT, mFinishedAt);
+            }
         } catch (JSONException e) {
             Log.d(TAG, "JSONException: " + e);
         }

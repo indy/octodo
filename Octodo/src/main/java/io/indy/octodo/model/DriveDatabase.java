@@ -37,6 +37,12 @@ public class DriveDatabase {
 
     private DriveManager mDriveManager;
 
+
+    public void logTaskList(String taskListName) {
+        TaskList taskList = getTaskList(taskListName);
+        taskList.logTaskList();
+    }
+
     public DriveDatabase(DriveManager driveManager) {
         mDriveManager = driveManager;
     }
@@ -60,31 +66,33 @@ public class DriveDatabase {
         Log.d(TAG, "deleteList: " + id);
     }
 
-    /*
-        add task to taskList
-     */
-    public TaskList addTask(String taskListName, Task task) {
+    public void addTask(Task task, String taskListName) {
 
         TaskList taskList = getTaskList(taskListName);
+        if(D) {
+            Log.d(TAG, "addTask called! on tasklist: " + taskList);
+        }
+
         taskList.add(task);
-
-        Log.d(TAG, "addTask called! on tasklist: " + taskList);
-        // save current.json
         saveCurrentTaskLists();
-
-        return taskList;
     }
 
-    public void updateTaskContent(int taskId, String content) {
+    public void updateTaskContent(Task task, String content) {
         if (D) {
-            Log.d(TAG, "updateTaskContent id: " + taskId + " content: " + content);
+            Log.d(TAG, "updateTaskContent old: " + task.getContent() + " new: " + content);
         }
+
+        task.setContent(content);
+        saveCurrentTaskLists();
     }
 
-    public void updateTaskState(int taskId, int state) {
+    public void updateTaskState(Task task, int state) {
         if (D) {
-            Log.d(TAG, "updateTaskState id:" + taskId + " state: " + state);
+            Log.d(TAG, "updateTaskState content:" + task.getContent() + " state: " + state);
         }
+
+        task.setState(state);
+        saveCurrentTaskLists();
     }
 
     // re-assign a task to a different tasklist
@@ -218,6 +226,15 @@ public class DriveDatabase {
     }
 
     private void saveCurrentTaskLists() {
+        /*
+        JSONObject current = currentToJson();
+        try {
+            Log.d(TAG, current.toString(2));
+        } catch(JSONException e) {
+            Log.e(TAG, e.toString());
+        }
+        */
+
         // launch an asyncTask that updates the current json file
         new UpdateTaskListsAsyncTask(mDriveManager, currentToJson()).execute();
     }

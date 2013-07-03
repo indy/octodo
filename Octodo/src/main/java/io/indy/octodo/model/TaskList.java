@@ -38,6 +38,16 @@ public class TaskList {
     // name given to json array of tasks
     private static final String TASKS = "tasks";
 
+
+    public void logTaskList() {
+
+        Log.d(TAG, "logTaskList: " + mName);
+        for(Task t: mTasks) {
+            int id = System.identityHashCode(t);
+            Log.d(TAG, "task: " + id + " " + t.getContent() + " state: " + t.getState());
+        }
+    }
+
     // use a builder similar to the Task one
     public TaskList(int id, String name) {
         mId = id;
