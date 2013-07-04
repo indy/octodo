@@ -65,34 +65,27 @@ public class MainController {
     }
 
     public void onTaskMove(Task task, String sourceTaskList, String destinationTaskList) {
-
-        // update model
         mDriveDatabase.moveTask(task, sourceTaskList, destinationTaskList);
 
-        // update ui
         post(new MoveTaskEvent(task, sourceTaskList, destinationTaskList));
 
-        // show crouton
         String messagePrefix = mActivity.getString(R.string.notification_moved_task);
         notifyUser(messagePrefix + " \"" + destinationTaskList + "\"");
-
     }
 
-    public void onTaskDelete(Task task) {
-//        mSQLDatabase.deleteTask(task.getId());
-
-//        postRefreshEvent(task.getParentTaskList());
+    public void onTaskDelete(Task task, String taskListName) {
+        mDriveDatabase.deleteTask(task, taskListName);
+        postRefreshEvent(taskListName);
     }
 
-    public void onRemoveCompletedTasks(TaskList taskList) {
-//        mSQLDatabase.removeStruckTasks(taskList.getId());
+    public void onRemoveCompletedTasks(String taskListName) {
 
-        // update UI (via TaskListFragment)
-  //      postRefreshEvent(taskList);
+        mDriveDatabase.removeStruckTasks(taskListName);
+        postRefreshEvent(taskListName);
 
         // show Crouton
-    //    String messagePrefix = mActivity.getString(R.string.notification_remove_completed_tasks);
-    //    notifyUser(messagePrefix + " \"" + taskList.getName() + "\"");
+        String messagePrefix = mActivity.getString(R.string.notification_remove_completed_tasks);
+        notifyUser(messagePrefix + " \"" + taskListName + "\"");
     }
 
     public void onToggleAddTaskForm(TaskList taskList) {

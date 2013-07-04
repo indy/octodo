@@ -114,18 +114,28 @@ public class DriveDatabase {
     public void updateTask(Task task) {
     }
 
-    // DELETE the specified task
-    public void deleteTask(int taskId) {
+    // DELETE the specified task without adding it to the 'completed' tasklists
+    public void deleteTask(Task task, String taskListName) {
         if (D) {
-            Log.d(TAG, "deleteTask: taskId=" + taskId);
+            Log.d(TAG, "deleteTask: getContent = " + task.getContent());
         }
+        TaskList taskList = getTaskList(taskListName);
+        taskList.remove(task);
+        saveCurrentTaskLists();
     }
 
     // mark all struck tasks in the tasklist as closed
-    public void removeStruckTasks(int taskListId) {
+    public void removeStruckTasks(String taskListName) {
         if (D) {
-            Log.d(TAG, "removeStruckTasks: taskListId=" + taskListId);
+            Log.d(TAG, "removeStruckTasks: " + taskListName);
         }
+
+        TaskList taskList = getTaskList(taskListName);
+
+        // get (or make) tasklist in completed tasklists
+        // iterate through tasklist and add into completed
+        // change state of each task
+        // save all
     }
 
     // return all the tasks associated with the list

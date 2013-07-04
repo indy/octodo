@@ -194,7 +194,7 @@ public class TaskItemView extends LinearLayout {
                             Log.d(TAG, "pressed the delete button");
                         }
                         // close the drawer
-                        mController.onTaskDelete(mTask);
+                        mController.onTaskDelete(mTask, mTaskListName);
                     }
                 });
 

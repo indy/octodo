@@ -19,6 +19,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.TaskListPagerAdapter;
+import io.indy.octodo.async.HistoricTaskListsAsyncTask;
 import io.indy.octodo.async.TaskListsAsyncTask;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
@@ -99,7 +100,7 @@ public class MainActivity extends SherlockFragmentActivity {
         Log.d(TAG, "onDriveInitialised");
 
         new TaskListsAsyncTask(mDriveDatabase).execute();
-        //new HistoricTaskListsAsyncTask(mDriveDatabase).execute();
+        new HistoricTaskListsAsyncTask(mDriveDatabase).execute();
 
         /*
 
@@ -266,7 +267,8 @@ public class MainActivity extends SherlockFragmentActivity {
 
         switch (item.getItemId()) {
             case R.id.menu_remove_completed_tasks:
-                mController.onRemoveCompletedTasks(getCurrentTaskList());
+
+                mController.onRemoveCompletedTasks(getCurrentTaskListName());
                 break;
 
             case R.id.menu_settings:
@@ -294,6 +296,11 @@ public class MainActivity extends SherlockFragmentActivity {
     private TaskList getCurrentTaskList() {
         int i = mPager.getCurrentItem();
         return mController.onGetTaskList(i);
+    }
+
+    private String getCurrentTaskListName() {
+        int i = mPager.getCurrentItem();
+        return (String)mAdapter.getPageTitle(i);
     }
 
     private void startManageListsActivity() {
