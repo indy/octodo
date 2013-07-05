@@ -37,7 +37,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
-import io.indy.octodo.MainActivity;
+import io.indy.octodo.DriveBaseActivity;
 
 public class DriveManager {
 
@@ -71,9 +71,9 @@ public class DriveManager {
 
     public final String EMPTY_JSON_OBJECT = "{}";
 
-    private MainActivity mActivity;
+    private DriveBaseActivity mActivity;
 
-    public DriveManager(MainActivity activity) {
+    public DriveManager(DriveBaseActivity activity) {
         mActivity = activity;
     }
 

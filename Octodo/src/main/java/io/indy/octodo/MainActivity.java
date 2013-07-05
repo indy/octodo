@@ -27,7 +27,7 @@ import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.DriveManager;
 import io.indy.octodo.model.TaskList;
 
-public class MainActivity extends SherlockFragmentActivity {
+public class MainActivity extends DriveBaseActivity {
 
     private final String TAG = getClass().getSimpleName();
 
@@ -40,9 +40,6 @@ public class MainActivity extends SherlockFragmentActivity {
     private PageIndicator mIndicator;
 
     private MainController mController;
-
-    private DriveManager mDriveManager;
-    private DriveDatabase mDriveDatabase;
 
     private List<String> mTaskListNames;
 
@@ -128,9 +125,6 @@ public class MainActivity extends SherlockFragmentActivity {
 
         EventBus.getDefault().register(this);
 
-        mDriveManager = new DriveManager(this);
-        mDriveDatabase = new DriveDatabase(mDriveManager);
-
         mController = new MainController(this, mDriveDatabase);
 
         mTaskListNames = new ArrayList<String>();
@@ -144,11 +138,6 @@ public class MainActivity extends SherlockFragmentActivity {
 
 
         mDriveManager.initialise();
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        mDriveManager.onActivityResult(requestCode, resultCode, data);
     }
 
     // Called after onCreate has finished, use to restore UI state
