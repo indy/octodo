@@ -133,9 +133,43 @@ public class DriveDatabase {
         TaskList taskList = getTaskList(taskListName);
 
         // get (or make) tasklist in completed tasklists
-        // iterate through tasklist and add into completed
-        // change state of each task
+        TaskList historicTaskList = getHistoricTaskList(taskListName);
+
+        // iterate through tasklist and add into historic
+        for(Task t: taskList.getTasks()) {
+            if(t.getState() == Task.STATE_STRUCK) {
+                t.setState(Task.STATE_CLOSED); // no real need for this in GDrive backend
+                historicTaskList.add(t);
+            }
+        }
+
+        // remove closed tasks from taskList
+        taskList.getTasks().removeAll(historicTaskList.getTasks());
+
         // save all
+        saveCurrentTaskLists();
+        saveHistoricTaskLists();
+    }
+
+    private TaskList getHistoricTaskList(String name) {
+        // get the TaskList called name from mHistoricTaskLists
+        // if it doesn't exist, create it
+        TaskList taskList = getTaskList(mHistoricTaskLists, name);
+        if(taskList == null) {
+            taskList = new TaskList(0, name);
+            mHistoricTaskLists.add(taskList);
+        }
+        return taskList;
+    }
+
+    private TaskList getTaskList(List<TaskList> taskLists, String name) {
+
+        for(TaskList tasklist: taskLists) {
+            if(tasklist.getName().equals(name)) {
+                return tasklist;
+            }
+        }
+        return null;
     }
 
     // return all the tasks associated with the list
@@ -254,7 +288,13 @@ public class DriveDatabase {
         */
 
         // launch an asyncTask that updates the current json file
-        new UpdateTaskListsAsyncTask(mDriveManager, currentToJson()).execute();
+        JSONObject json = currentToJson();
+        new UpdateTaskListsAsyncTask(mDriveManager, DriveManager.CURRENT_JSON, json).execute();
+    }
+
+    private void saveHistoricTaskLists() {
+        JSONObject json = historicToJson();
+        new UpdateTaskListsAsyncTask(mDriveManager, DriveManager.HISTORIC_JSON, json).execute();
     }
 
     public JSONObject currentToJson() {

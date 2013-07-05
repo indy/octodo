@@ -29,15 +29,17 @@ public class UpdateTaskListsAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private final DriveManager mDriveManager;
     private final JSONObject mJSONObject;
+    private final String mJSONFileName;
 
-    public UpdateTaskListsAsyncTask(DriveManager driveManager, JSONObject jsonObject) {
+    public UpdateTaskListsAsyncTask(DriveManager driveManager, String jsonFileName, JSONObject jsonObject) {
         mDriveManager = driveManager;
         mJSONObject = jsonObject;
+        mJSONFileName = jsonFileName;
     }
 
     @Override
     protected Void doInBackground(Void... params) {
-        mDriveManager.updateFile(DriveManager.CURRENT_JSON, mJSONObject);
+        mDriveManager.updateFile(mJSONFileName, mJSONObject);
         return null;
     }
 
