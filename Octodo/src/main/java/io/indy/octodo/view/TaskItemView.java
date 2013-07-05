@@ -44,8 +44,6 @@ public class TaskItemView extends LinearLayout {
 
     private Task mTask;
 
-    private String mTaskListName;
-
     public TaskItemView(Context context) {
         super(context);
 
@@ -66,9 +64,8 @@ public class TaskItemView extends LinearLayout {
         addClickListeners();
     }
 
-    public void setupWithTask(String taskListName, Task task) {
+    public void setupWithTask(Task task) {
 
-        mTaskListName = taskListName;
         mTask = task;
 
         // Integer taskId = Integer.valueOf(mTaskId);
@@ -130,7 +127,7 @@ public class TaskItemView extends LinearLayout {
             state = Task.STATE_OPEN;
         }
 
-        mController.onTaskUpdateState(mTask, mTaskListName, state);
+        mController.onTaskUpdateState(mTask, state);
     };
 
     private void clickedEditTask(View view) {
@@ -158,7 +155,7 @@ public class TaskItemView extends LinearLayout {
                         }
                         final String newContent = input.getText().toString().trim();
                         hideSoftKeyboard(input);
-                        mController.onTaskUpdateContent(mTask, mTaskListName, newContent);
+                        mController.onTaskUpdateContent(mTask, newContent);
                     }
                 });
         ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
@@ -194,7 +191,7 @@ public class TaskItemView extends LinearLayout {
                             Log.d(TAG, "pressed the delete button");
                         }
                         // close the drawer
-                        mController.onTaskDelete(mTask, mTaskListName);
+                        mController.onTaskDelete(mTask);
                     }
                 });
 
@@ -295,7 +292,7 @@ public class TaskItemView extends LinearLayout {
     }
 
     private void moveTask(String destinationTaskList) {
-        mController.onTaskMove(mTask, mTaskListName, destinationTaskList);
+        mController.onTaskMove(mTask, destinationTaskList);
     }
 
     private void setContentAsStruckThru() {

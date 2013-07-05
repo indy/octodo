@@ -74,6 +74,7 @@ public class DriveDatabase {
         }
 
         taskList.add(task);
+        task.setParentName(taskListName);
         saveCurrentTaskLists();
     }
 
@@ -96,16 +97,18 @@ public class DriveDatabase {
     }
 
     // re-assign a task to a different tasklist
-    public void moveTask(Task task, String source, String destination) {
+    public void moveTask(Task task, String destination) {
         if (D) {
             Log.d(TAG, "moveTask " + task.getContent() + " to: " + destination);
         }
 
-        TaskList sourceTaskList = getCurrentTaskList(source);
+        TaskList sourceTaskList = getCurrentTaskList(task.getParentName());
         TaskList destinationTaskList = getCurrentTaskList(destination);
 
         sourceTaskList.remove(task);
         destinationTaskList.add(task);
+
+        task.setParentName(destination);
 
         saveCurrentTaskLists();
     }
@@ -115,11 +118,11 @@ public class DriveDatabase {
     }
 
     // DELETE the specified task without adding it to the 'completed' tasklists
-    public void deleteTask(Task task, String taskListName) {
+    public void deleteTask(Task task) {
         if (D) {
             Log.d(TAG, "deleteTask: getContent = " + task.getContent());
         }
-        TaskList taskList = getCurrentTaskList(taskListName);
+        TaskList taskList = getCurrentTaskList(task.getParentName());
         taskList.remove(task);
         saveCurrentTaskLists();
     }

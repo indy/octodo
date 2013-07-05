@@ -2,6 +2,7 @@
 package io.indy.octodo.controller;
 
 import android.app.Activity;
+import android.util.Log;
 
 import java.util.List;
 
@@ -41,14 +42,14 @@ public class MainController {
         postRefreshEvent(taskListName);
     }
 
-    public void onTaskUpdateContent(Task task, String taskListName, String content) {
+    public void onTaskUpdateContent(Task task, String content) {
         mDriveDatabase.updateTaskContent(task, content);
-        postRefreshEvent(taskListName);
+        postRefreshEvent(task.getParentName());
     }
 
-    public void onTaskUpdateState(Task task, String taskListName, int state) {
+    public void onTaskUpdateState(Task task, int state) {
         mDriveDatabase.updateTaskState(task, state);
-        postRefreshEvent(taskListName);
+        postRefreshEvent(task.getParentName());
     }
 
     public TaskList onGetTaskList(String name) {
@@ -63,18 +64,19 @@ public class MainController {
         return mDriveDatabase.getCurrentTaskLists();
     }
 
-    public void onTaskMove(Task task, String sourceTaskList, String destinationTaskList) {
-        mDriveDatabase.moveTask(task, sourceTaskList, destinationTaskList);
+    public void onTaskMove(Task task, String destinationTaskList) {
+        mDriveDatabase.moveTask(task, destinationTaskList);
 
-        post(new MoveTaskEvent(task, sourceTaskList, destinationTaskList));
+        post(new MoveTaskEvent(task, task.getParentName(), destinationTaskList));
 
         String messagePrefix = mActivity.getString(R.string.notification_moved_task);
         notifyUser(messagePrefix + " \"" + destinationTaskList + "\"");
     }
 
-    public void onTaskDelete(Task task, String taskListName) {
-        mDriveDatabase.deleteTask(task, taskListName);
-        postRefreshEvent(taskListName);
+    public void onTaskDelete(Task task) {
+        String parentName = task.getParentName();
+        mDriveDatabase.deleteTask(task);
+        postRefreshEvent(parentName);
     }
 
     public void onRemoveCompletedTasks(String taskListName) {

@@ -18,6 +18,7 @@ public class Task {
     private int mId;
 
     private TaskList mParentTaskList;
+    private String mParentName;
 
     private String mContent;
 
@@ -46,6 +47,14 @@ public class Task {
         mStartedAt = builder.mStartedAt;
         mFinishedAt = builder.mFinishedAt;
         mParentTaskList = builder.mParentTaskList;
+    }
+
+    public void setParentName(String name) {
+        mParentName = name;
+    }
+
+    public String getParentName() {
+        return mParentName;
     }
 
     public void setParentTaskList(TaskList parent) {

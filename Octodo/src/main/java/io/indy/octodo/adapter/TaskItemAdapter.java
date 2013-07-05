@@ -49,7 +49,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
             taskItemView.setController(mController);
         }
 
-        taskItemView.setupWithTask(mTaskListName, task);
+        taskItemView.setupWithTask(task);
 
         return taskItemView;
     }
