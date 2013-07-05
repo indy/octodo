@@ -2,7 +2,6 @@
 package io.indy.octodo.controller;
 
 import android.app.Activity;
-import android.util.Log;
 
 import java.util.List;
 
@@ -53,15 +52,15 @@ public class MainController {
     }
 
     public TaskList onGetTaskList(String name) {
-        return mDriveDatabase.getTaskList(name);
+        return mDriveDatabase.getCurrentTaskList(name);
     }
 
     public TaskList onGetTaskList(int index) {
-        return mDriveDatabase.getTaskList(index);
+        return mDriveDatabase.getCurrentTaskList(index);
     }
 
     public List<TaskList> onGetTaskLists() {
-        return mDriveDatabase.getTaskLists();
+        return mDriveDatabase.getCurrentTaskLists();
     }
 
     public void onTaskMove(Task task, String sourceTaskList, String destinationTaskList) {

@@ -39,7 +39,7 @@ public class DriveDatabase {
 
 
     public void logTaskList(String taskListName) {
-        TaskList taskList = getTaskList(taskListName);
+        TaskList taskList = getCurrentTaskList(taskListName);
         taskList.logTaskList();
     }
 
@@ -68,7 +68,7 @@ public class DriveDatabase {
 
     public void addTask(Task task, String taskListName) {
 
-        TaskList taskList = getTaskList(taskListName);
+        TaskList taskList = getCurrentTaskList(taskListName);
         if(D) {
             Log.d(TAG, "addTask called! on tasklist: " + taskList);
         }
@@ -101,8 +101,8 @@ public class DriveDatabase {
             Log.d(TAG, "moveTask " + task.getContent() + " to: " + destination);
         }
 
-        TaskList sourceTaskList = getTaskList(source);
-        TaskList destinationTaskList = getTaskList(destination);
+        TaskList sourceTaskList = getCurrentTaskList(source);
+        TaskList destinationTaskList = getCurrentTaskList(destination);
 
         sourceTaskList.remove(task);
         destinationTaskList.add(task);
@@ -119,7 +119,7 @@ public class DriveDatabase {
         if (D) {
             Log.d(TAG, "deleteTask: getContent = " + task.getContent());
         }
-        TaskList taskList = getTaskList(taskListName);
+        TaskList taskList = getCurrentTaskList(taskListName);
         taskList.remove(task);
         saveCurrentTaskLists();
     }
@@ -130,7 +130,7 @@ public class DriveDatabase {
             Log.d(TAG, "removeStruckTasks: " + taskListName);
         }
 
-        TaskList taskList = getTaskList(taskListName);
+        TaskList taskList = getCurrentTaskList(taskListName);
 
         // get (or make) tasklist in completed tasklists
         TaskList historicTaskList = getHistoricTaskList(taskListName);
@@ -173,37 +173,22 @@ public class DriveDatabase {
     }
 
     // return all the tasks associated with the list
-    public TaskList getTaskList(String name) {
-        Log.d(TAG, "getTaskList: " + name);
-        if(mTaskLists == null) {
-            Log.d(TAG, "mTAskLists is empty");
-        } else {
-            Log.d(TAG, "mTaskLists: " + mTaskLists);
-        }
-
-        for(TaskList tasklist: mTaskLists) {
-            if(tasklist.getName().equals(name)) {
-                Log.d(TAG, "found tasklist with name: " + name);
-                return tasklist;
-            }
-        }
-        Log.d(TAG, "unable to find tasklist with name: " + name);
-        return null;
+    public TaskList getCurrentTaskList(String name) {
+        return getTaskList(mTaskLists, name);
     }
 
-    public TaskList getTaskList(int index) {
-        Log.d(TAG, "getTaskList: at index " + index);
+    public TaskList getCurrentTaskList(int index) {
         if(mTaskLists == null) {
             Log.d(TAG, "mTaskLists is empty");
             return null;
         } else if(mTaskLists.size() >= index){
-            Log.d(TAG, "getTaskList index is too large");
+            Log.d(TAG, "getCurrentTaskList index is too large");
             return null;
         }
         return mTaskLists.get(index);
     }
 
-    public List<TaskList> getTaskLists() {
+    public List<TaskList> getCurrentTaskLists() {
         return mTaskLists;
     }
 
