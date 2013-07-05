@@ -181,7 +181,7 @@ public class DriveDatabase {
         if(mTaskLists == null) {
             Log.d(TAG, "mTaskLists is empty");
             return null;
-        } else if(mTaskLists.size() >= index){
+        } else if(index >= mTaskLists.size()){
             Log.d(TAG, "getCurrentTaskList index is too large");
             return null;
         }
