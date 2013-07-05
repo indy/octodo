@@ -52,11 +52,13 @@ public class MainActivity extends DriveBaseActivity {
         List<TaskList> lists = mController.onGetTaskLists();
 
         // re-create the list of tasklist names and notify mAdapter of change
-        mTaskListNames.clear();
-        for(TaskList taskList: lists) {
-            mTaskListNames.add(taskList.getName());
+        if (lists != null) {
+            mTaskListNames.clear();
+            for(TaskList taskList: lists) {
+                mTaskListNames.add(taskList.getName());
+            }
+            mAdapter.notifyDataSetChanged();
         }
-        mAdapter.notifyDataSetChanged();
     }
 
     private void logTaskLists(String message) {
