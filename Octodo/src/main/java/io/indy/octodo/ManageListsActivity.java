@@ -35,11 +35,13 @@ import com.actionbarsherlock.view.MenuItem;
 import java.util.List;
 
 import io.indy.octodo.adapter.ManageListsAdapter;
+import io.indy.octodo.async.HistoricTaskListsAsyncTask;
+import io.indy.octodo.async.TaskListsAsyncTask;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.helper.AnimationHelper;
 import io.indy.octodo.model.TaskList;
 
-public class ManageListsActivity extends SherlockActivity implements OnClickListener {
+public class ManageListsActivity extends DriveBaseActivity implements OnClickListener {
 
     private final String TAG = getClass().getSimpleName();
 
@@ -59,20 +61,23 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
 
     private EditText mEditText;
 
+    public void onDriveInitialised() {
+        Log.d(TAG, "onDriveInitialised");
+        new TaskListsAsyncTask(mDriveDatabase).execute();
+        new HistoricTaskListsAsyncTask(mDriveDatabase).execute();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_lists);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // same as com.viewpagerindicator.TitlePageIndicator app:footerColor
-        // in activity_main.xml
-        ColorDrawable cd = new ColorDrawable(0xff4fb4e7);
-        getSupportActionBar().setBackgroundDrawable(cd);
-
         mListView = (ListView)findViewById(R.id.listViewTaskLists);
 
-        mController = new MainController(this, null); // TODO: instantiate DriveDatabase
+        mController = new MainController(this, mDriveDatabase);
+
+        /*
         mTaskLists = mController.getDeleteableTaskLists();
 
         mAdapter = new ManageListsAdapter(this, mTaskLists);
@@ -85,6 +90,9 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
         mListView.setAdapter(mAdapter);
 
         mButtonAddList.setOnClickListener(this);
+        */
+
+        mDriveManager.initialise();
     }
 
     @Override
@@ -93,7 +101,7 @@ public class ManageListsActivity extends SherlockActivity implements OnClickList
         if (D) {
             Log.d(TAG, "onDestroy");
         }
-        mController.closeDatabase();
+        mController.onDestroy();
     }
 
     @Override
