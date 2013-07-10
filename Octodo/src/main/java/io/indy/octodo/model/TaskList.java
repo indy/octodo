@@ -73,6 +73,14 @@ public class TaskList {
         mIsDeleteable = true;
     }
 
+    public void setDeleteable(boolean isDeleteable) {
+        mIsDeleteable = isDeleteable;
+    }
+
+    public boolean isDeleteable() {
+        return mIsDeleteable;
+    }
+
     public List<Task> getTasks() {
         return mTasks;
     }

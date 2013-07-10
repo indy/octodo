@@ -32,12 +32,15 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.ManageListsAdapter;
 import io.indy.octodo.async.HistoricTaskListsAsyncTask;
 import io.indy.octodo.async.TaskListsAsyncTask;
 import io.indy.octodo.controller.MainController;
+import io.indy.octodo.event.HaveCurrentTaskListEvent;
 import io.indy.octodo.helper.AnimationHelper;
 import io.indy.octodo.model.TaskList;
 
@@ -61,10 +64,14 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
 
     private EditText mEditText;
 
+    public void onEvent(HaveCurrentTaskListEvent event) {
+        Log.d(TAG, "received HaveCurrentTaskListEvent");
+        refreshTaskLists();
+    }
+
     public void onDriveInitialised() {
         Log.d(TAG, "onDriveInitialised");
         new TaskListsAsyncTask(mDriveDatabase).execute();
-        new HistoricTaskListsAsyncTask(mDriveDatabase).execute();
     }
 
     @Override
@@ -77,8 +84,7 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
 
         mController = new MainController(this, mDriveDatabase);
 
-        /*
-        mTaskLists = mController.getDeleteableTaskLists();
+        mTaskLists = new ArrayList<TaskList>();
 
         mAdapter = new ManageListsAdapter(this, mTaskLists);
 
@@ -90,7 +96,7 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
         mListView.setAdapter(mAdapter);
 
         mButtonAddList.setOnClickListener(this);
-        */
+
 
         mDriveManager.initialise();
     }
@@ -103,6 +109,35 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
         }
         mController.onDestroy();
     }
+
+    // Called at the start of the active lifetime.
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (D) {
+            Log.d(TAG, "onResume");
+        }
+        // Resume any paused UI updates, threads, or processes required
+        // by the Activity but suspended when it was inactive.
+
+        // Apply any required UI change now that the Activity is visible.
+        EventBus.getDefault().register(this);
+
+    }
+
+    // Called at the end of the active lifetime.
+    @Override
+    public void onPause() {
+        // Suspend UI updates, threads, or CPU intensive processes
+        // that don't need to be updated when the Activity isn't
+        // the active foreground Activity.
+        super.onPause();
+        if (D) {
+            Log.d(TAG, "onPause");
+        }
+        EventBus.getDefault().unregister(this);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -118,7 +153,7 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
             case R.id.menu_discard_lists:
                 for (TaskList tl : mTaskLists) {
                     if (tl.isSelected()) {
-                        mController.deleteList(tl.getId());
+                        mController.deleteList(tl.getName());
                     }
                 }
                 refreshTaskLists();

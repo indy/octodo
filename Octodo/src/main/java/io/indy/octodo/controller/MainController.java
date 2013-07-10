@@ -19,6 +19,7 @@ package io.indy.octodo.controller;
 import android.app.Activity;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -112,20 +113,21 @@ public class MainController {
         mSQLDatabase.closeDatabase();
     }
 
-    public void deleteList(int id) {
-        mSQLDatabase.deleteList(id);
+    public boolean deleteList(String name) {
+        return mDriveDatabase.deleteList(name);
     }
 
     public void addList(String name) {
-        mSQLDatabase.addList(name);
+        // check if a tasklist with this name already exists
+        mDriveDatabase.addList(name);
     }
 
     public List<TaskList> getDeleteableTaskLists() {
-        return mSQLDatabase.getDeleteableTaskLists();
+        return mDriveDatabase.getDeleteableTaskLists();
     }
 
     public void onDestroy() {
-        mSQLDatabase.closeDatabase();
+        //mSQLDatabase.closeDatabase();
         mNotification.cancelAllNotifications();
     }
 

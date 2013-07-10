@@ -60,10 +60,29 @@ public class DriveDatabase {
             Log.d(TAG, "attempting to add a tasklist with an empty name");
             return;
         }
+
+        TaskList existing = getCurrentTaskList(name);
+        if(existing != null) {
+            Log.d(TAG, "addList: a list with the name " + name + " already exists");
+            return;
+        }
+
+        TaskList taskList = new TaskList(0, name);
+        mTaskLists.add(taskList);
+
+        saveCurrentTaskLists();
     }
 
-    public void deleteList(int id) {
-        Log.d(TAG, "deleteList: " + id);
+    public boolean deleteList(String name) {
+
+        Log.d(TAG, "deleteList " + name);
+        TaskList taskList = this.getCurrentTaskList(name);
+        if(taskList == null) {
+            return false;
+        }
+        mTaskLists.remove(taskList);
+        saveCurrentTaskLists();
+        return true;
     }
 
     public void addTask(Task task, String taskListName) {
@@ -167,11 +186,18 @@ public class DriveDatabase {
 
     private TaskList getTaskList(List<TaskList> taskLists, String name) {
 
+        if(taskLists == null) {
+            Log.d(TAG, "getTaskList given null taskLists when searching for " + name);
+            return null;
+        }
+
         for(TaskList tasklist: taskLists) {
             if(tasklist.getName().equals(name)) {
                 return tasklist;
             }
         }
+
+        Log.d(TAG, "unable to find taskList called: " + name);
         return null;
     }
 
@@ -192,11 +218,22 @@ public class DriveDatabase {
     }
 
     public List<TaskList> getCurrentTaskLists() {
+        Log.d(TAG, "getCurrentTaskLists: mTaskLists is " + System.identityHashCode(mTaskLists));
         return mTaskLists;
     }
 
     public List<TaskList> getDeleteableTaskLists() {
+
+        Log.d(TAG, "getDeleteableTaskLists");
+        Log.d(TAG, "mTaskLists is " + System.identityHashCode(mTaskLists));
+
         List<TaskList> res = new ArrayList<TaskList>();
+        for(TaskList taskList: mTaskLists) {
+            if(taskList.isDeleteable()) {
+                Log.d(TAG, "adding " + taskList.getName());
+                res.add(taskList);
+            }
+        }
         return res;
     }
 
@@ -205,8 +242,14 @@ public class DriveDatabase {
 
     private static List<TaskList> buildDefaultEmptyTaskLists() {
         List<TaskList> tasklists = new ArrayList<TaskList>();
-        tasklists.add(new TaskList(0, "today"));
-        tasklists.add(new TaskList(0, "this week"));
+
+        TaskList today = new TaskList(0, "today");
+        today.setDeleteable(false);
+        tasklists.add(today);
+
+        TaskList thisWeek = new TaskList(0, "this week");
+        thisWeek.setDeleteable(false);
+        tasklists.add(thisWeek);
 
         return tasklists;
     }

@@ -71,6 +71,7 @@ public class MainActivity extends DriveBaseActivity {
             mTaskListNames.clear();
             for(TaskList taskList: lists) {
                 mTaskListNames.add(taskList.getName());
+                Log.d(TAG, "refresh: adding " + taskList.getName());
             }
             mAdapter.notifyDataSetChanged();
         }
@@ -140,7 +141,7 @@ public class MainActivity extends DriveBaseActivity {
             Log.d(TAG, "onCreate");
         }
 
-        EventBus.getDefault().register(this);
+        //EventBus.getDefault().register(this);
 
         mController = new MainController(this, mDriveDatabase);
 
@@ -180,11 +181,12 @@ public class MainActivity extends DriveBaseActivity {
         if (D) {
             Log.d(TAG, "onRestart");
         }
+
         // Load changes knowing that the Activity has already
         // been visible within this process.
         refreshTaskListsUI();
 
-        logTaskLists("onRestart");
+        //logTaskLists("onRestart");
     }
 
     // Called at the start of the visible lifetime.
@@ -194,7 +196,6 @@ public class MainActivity extends DriveBaseActivity {
         if (D) {
             Log.d(TAG, "onStart");
         }
-        // Apply any required UI change now that the Activity is visible.
     }
 
     // Called at the start of the active lifetime.
@@ -206,6 +207,13 @@ public class MainActivity extends DriveBaseActivity {
         }
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
+
+        // maybe coming back from a ManageListsActivity in which TaskLists were created/deleted
+        //refreshTaskListsUI();
+
+        // Apply any required UI change now that the Activity is visible.
+        EventBus.getDefault().register(this);
+
     }
 
     // Called to save UI state changes at the
@@ -232,6 +240,7 @@ public class MainActivity extends DriveBaseActivity {
         if (D) {
             Log.d(TAG, "onPause");
         }
+        EventBus.getDefault().unregister(this);
     }
 
     // Called at the end of the visible lifetime.
@@ -256,7 +265,7 @@ public class MainActivity extends DriveBaseActivity {
         if (D) {
             Log.d(TAG, "onDestroy");
         }
-        EventBus.getDefault().unregister(this);
+        //EventBus.getDefault().unregister(this);
         mController.onDestroy();
     }
 

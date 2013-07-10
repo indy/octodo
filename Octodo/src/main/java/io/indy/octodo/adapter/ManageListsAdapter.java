@@ -81,8 +81,8 @@ public class ManageListsAdapter extends ArrayAdapter<TaskList> implements OnClic
         ManageListsViewHolder holder = (ManageListsViewHolder)cb.getTag();
         TaskList taskList = holder.mTaskList;
 
-        int id = taskList.getId();
-        Log.d(TAG, "clicked on " + id);
+        String name = taskList.getName();
+        Log.d(TAG, "clicked on " + name);
 
         taskList.setSelected(cb.isChecked());
     }
