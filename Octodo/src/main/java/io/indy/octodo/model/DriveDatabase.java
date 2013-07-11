@@ -26,7 +26,7 @@ import io.indy.octodo.async.TaskListsAsyncTask;
 
 public class DriveDatabase {
 
-    private static final String TAG = "DriveDatabase";Ø
+    private static final String TAG = "DriveDatabase";
     private static final boolean D = true;
 
     private DriveManager mDriveManager;
