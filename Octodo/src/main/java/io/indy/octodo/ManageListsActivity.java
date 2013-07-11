@@ -107,7 +107,7 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
         mButtonAddList.setOnClickListener(this);
 
 
-        mDriveManager.initialise();
+        mDriveDatabase.initialise();
     }
 
     @Override

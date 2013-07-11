@@ -150,7 +150,7 @@ public class MainActivity extends DriveBaseActivity {
         mIndicator.setViewPager(mPager);
 
 
-        mDriveManager.initialise();
+        mDriveDatabase.initialise();
     }
 
     // Called after onCreate has finished, use to restore UI state

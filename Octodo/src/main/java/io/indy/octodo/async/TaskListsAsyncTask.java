@@ -24,7 +24,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
-import io.indy.octodo.model.DriveManager;
+import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.TaskList;
 
 
@@ -32,20 +32,20 @@ import io.indy.octodo.model.TaskList;
 
 public class TaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
 
-    private final DriveManager mDriveManager;
+    private final DriveDatabase mDriveDatabase;
 
     // TODO: check chris bane's photup app for usage on WeakReferences in AsyncTasks
 
-    public TaskListsAsyncTask(DriveManager driveManager) {
-        mDriveManager = driveManager;
+    public TaskListsAsyncTask(DriveDatabase driveDatabase) {
+        mDriveDatabase = driveDatabase;
     }
 
     @Override
     protected List<TaskList> doInBackground(Void... params) {
         // get the current tasklists from the json files on drive and deserialise them into TaskLists
 
-        JSONObject jsonObject = mDriveManager.getJSON(DriveManager.CURRENT_JSON);
-        return DriveManager.fromJSON(jsonObject);
+        JSONObject jsonObject = mDriveDatabase.getJSON(DriveDatabase.CURRENT_JSON);
+        return DriveDatabase.fromJSON(jsonObject);
     }
 
 
@@ -54,7 +54,7 @@ public class TaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
         super.onPostExecute(result);
 
         // populate the current values in drive storage
-        mDriveManager.setCurrentTaskLists(result);
+        mDriveDatabase.setCurrentTaskLists(result);
 
         // fire event to update the UI
         HaveCurrentTaskListEvent event = new HaveCurrentTaskListEvent();

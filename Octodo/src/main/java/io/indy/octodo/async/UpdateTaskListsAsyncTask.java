@@ -20,26 +20,26 @@ import android.os.AsyncTask;
 
 import org.json.JSONObject;
 
-import io.indy.octodo.model.DriveManager;
+import io.indy.octodo.model.DriveDatabase;
 
 
 // get the current tasklists from drive
 
 public class UpdateTaskListsAsyncTask extends AsyncTask<Void, Void, Void> {
 
-    private final DriveManager mDriveManager;
+    private final DriveDatabase mDriveDatabase;
     private final JSONObject mJSONObject;
     private final String mJSONFileName;
 
-    public UpdateTaskListsAsyncTask(DriveManager driveManager, String jsonFileName, JSONObject jsonObject) {
-        mDriveManager = driveManager;
+    public UpdateTaskListsAsyncTask(DriveDatabase driveDatabase, String jsonFileName, JSONObject jsonObject) {
+        mDriveDatabase = driveDatabase;
         mJSONObject = jsonObject;
         mJSONFileName = jsonFileName;
     }
 
     @Override
     protected Void doInBackground(Void... params) {
-        mDriveManager.updateFile(mJSONFileName, mJSONObject);
+        mDriveDatabase.updateFile(mJSONFileName, mJSONObject);
         return null;
     }
 
