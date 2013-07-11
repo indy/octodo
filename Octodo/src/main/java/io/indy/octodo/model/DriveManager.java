@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -31,14 +30,17 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.indy.octodo.DriveBaseActivity;
 import io.indy.octodo.OctodoApplication;
+import io.indy.octodo.async.UpdateTaskListsAsyncTask;
 
 public class DriveManager {
 
@@ -61,6 +63,10 @@ public class DriveManager {
     public static final String HISTORIC_JSON = "historic.json";
 
     public final String EMPTY_JSON_OBJECT = "{}";
+
+    private static final String HEADER = "header";
+    private static final String BODY = "body";
+
 
     private DriveBaseActivity mActivity;
     private OctodoApplication mApplication;
@@ -112,10 +118,6 @@ public class DriveManager {
         } catch(IOException e) {
             Log.d(TAG, "getJSON IOException: " + e);
         }
-    }
-
-    public static Drive getsService() {
-        return sService;
     }
 
     public JSONObject getJSON(String driveFilename) {
@@ -373,6 +375,87 @@ public class DriveManager {
         Log.d(TAG, "id: " + file.getId());
         Log.d(TAG, "mimetype: " + file.getMimeType());
         Log.d(TAG, "title: " + file.getTitle());
+    }
+
+
+    private static List<TaskList> buildDefaultEmptyTaskLists() {
+        List<TaskList> tasklists = new ArrayList<TaskList>();
+
+        TaskList today = new TaskList(0, "today");
+        today.setDeleteable(false);
+        tasklists.add(today);
+
+        TaskList thisWeek = new TaskList(0, "this week");
+        thisWeek.setDeleteable(false);
+        tasklists.add(thisWeek);
+
+        return tasklists;
+    }
+
+    public static List<TaskList> fromJSON(JSONObject json) {
+
+        List<TaskList> tasklists = new ArrayList<TaskList>();
+
+        try {
+
+            // json has form of:
+            // { header: {}, body: array of tasklists}
+
+            if(json.isNull(BODY)) {
+                // empty body so default to empty today and thisweek tasklists
+                Log.d(TAG, "fromJSON: empty body so defaulting to empty today and thisweek tasklists");
+                return buildDefaultEmptyTaskLists();
+            }
+            // ignore header for now, in future this will have version info
+
+            // parse the body which should be a list of tasklists
+            //
+            JSONArray body = json.getJSONArray(BODY);
+            TaskList tasklist;
+            for(int i=0; i<body.length(); i++) {
+                tasklist = TaskList.fromJson(body.getJSONObject(i));
+                tasklists.add(tasklist);
+            }
+
+        } catch (JSONException e) {
+            Log.d(TAG, "fromJSON JSONException: " + e);
+            Log.d(TAG, "defaulting to empty today and thisweek tasklists");
+            tasklists = buildDefaultEmptyTaskLists();
+        }
+
+        return tasklists;
+    }
+
+    private JSONObject toJson(List<TaskList> tasklists) {
+        JSONObject res = new JSONObject();
+
+        try {
+            res.put(HEADER, JSONObject.NULL);
+
+            JSONArray array = new JSONArray();
+            for(TaskList t : tasklists) {
+                JSONObject obj = t.toJson();
+                array.put(obj);
+            }
+            res.put(BODY, array);
+
+        } catch (JSONException e) {
+            Log.d(TAG, "JSONException: " + e);
+        }
+
+        return res;
+    }
+
+
+    public void saveCurrentTaskLists() {
+        // launch an asyncTask that updates the current json file
+        JSONObject json = toJson(getCurrentTaskLists());
+        new UpdateTaskListsAsyncTask(this, CURRENT_JSON, json).execute();
+    }
+
+    public void saveHistoricTaskLists() {
+        JSONObject json = toJson(getHistoricTaskLists());
+        new UpdateTaskListsAsyncTask(this, HISTORIC_JSON, json).execute();
     }
 
 }

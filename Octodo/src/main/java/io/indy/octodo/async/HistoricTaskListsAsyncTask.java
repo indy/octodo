@@ -31,29 +31,26 @@ import io.indy.octodo.model.TaskList;
 
 public class HistoricTaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
 
-    private final DriveDatabase mDriveDatabase;
+    private final DriveManager mDriveManager;
 
-    public HistoricTaskListsAsyncTask(DriveDatabase driveDatabase) {
-        mDriveDatabase = driveDatabase;
+    public HistoricTaskListsAsyncTask(DriveManager driveManager) {
+        mDriveManager = driveManager;
     }
 
     @Override
     protected List<TaskList> doInBackground(Void... params) {
         // get the current tasklists from the json files on drive and deserialise them into TaskLists
 
-        DriveManager driveManager = mDriveDatabase.getDriveManager();
-        JSONObject jsonObject = driveManager.getJSON(DriveManager.HISTORIC_JSON);
-        return DriveDatabase.fromJSON(jsonObject);
-
+        JSONObject jsonObject = mDriveManager.getJSON(DriveManager.HISTORIC_JSON);
+        return DriveManager.fromJSON(jsonObject);
     }
-
 
     @Override
     protected void onPostExecute(List<TaskList> result) {
         super.onPostExecute(result);
 
         // populate the current values in drive storage
-        mDriveDatabase.setHistoricTaskLists(result);
+        mDriveManager.setHistoricTaskLists(result);
     }
 
 }

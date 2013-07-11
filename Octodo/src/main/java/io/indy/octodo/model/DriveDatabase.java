@@ -18,41 +18,21 @@ package io.indy.octodo.model;
 
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import io.indy.octodo.async.UpdateTaskListsAsyncTask;
+import io.indy.octodo.async.HistoricTaskListsAsyncTask;
+import io.indy.octodo.async.TaskListsAsyncTask;
 
 public class DriveDatabase {
 
-    private static final String TAG = "DriveDatabase";
+    private static final String TAG = "DriveDatabase";Ø
     private static final boolean D = true;
-
-    //private List<TaskList> mTaskLists;
-    //private List<TaskList> mHistoricTaskLists;
 
     private DriveManager mDriveManager;
 
-
-    public void logTaskList(String taskListName) {
-        TaskList taskList = getCurrentTaskList(taskListName);
-        taskList.logTaskList();
-    }
-
     public DriveDatabase(DriveManager driveManager) {
         mDriveManager = driveManager;
-    }
-
-    public DriveManager getDriveManager() {
-        return mDriveManager;
-    }
-
-    // Called when you no longer need access to the database.
-    public void closeDatabase() {
     }
 
     public void addList(String name) {
@@ -70,7 +50,7 @@ public class DriveDatabase {
         TaskList taskList = new TaskList(0, name);
         List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
         taskLists.add(taskList);
-        saveCurrentTaskLists();
+        mDriveManager.saveCurrentTaskLists();
     }
 
     public boolean deleteList(String name) {
@@ -82,7 +62,7 @@ public class DriveDatabase {
 
         List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
         taskLists.remove(taskList);
-        saveCurrentTaskLists();
+        mDriveManager.saveCurrentTaskLists();
         return true;
     }
 
@@ -95,7 +75,7 @@ public class DriveDatabase {
 
         taskList.add(task);
         task.setParentName(taskListName);
-        saveCurrentTaskLists();
+        mDriveManager.saveCurrentTaskLists();
     }
 
     public void updateTaskContent(Task task, String content) {
@@ -104,7 +84,7 @@ public class DriveDatabase {
         }
 
         task.setContent(content);
-        saveCurrentTaskLists();
+        mDriveManager.saveCurrentTaskLists();
     }
 
     public void updateTaskState(Task task, int state) {
@@ -113,7 +93,7 @@ public class DriveDatabase {
         }
 
         task.setState(state);
-        saveCurrentTaskLists();
+        mDriveManager.saveCurrentTaskLists();
     }
 
     // re-assign a task to a different tasklist
@@ -130,7 +110,7 @@ public class DriveDatabase {
 
         task.setParentName(destination);
 
-        saveCurrentTaskLists();
+        mDriveManager.saveCurrentTaskLists();
     }
 
 
@@ -144,7 +124,7 @@ public class DriveDatabase {
         }
         TaskList taskList = getCurrentTaskList(task.getParentName());
         taskList.remove(task);
-        saveCurrentTaskLists();
+        mDriveManager.saveCurrentTaskLists();
     }
 
     // mark all struck tasks in the tasklist as closed
@@ -170,8 +150,8 @@ public class DriveDatabase {
         taskList.getTasks().removeAll(historicTaskList.getTasks());
 
         // save all
-        saveCurrentTaskLists();
-        saveHistoricTaskLists();
+        mDriveManager.saveCurrentTaskLists();
+        mDriveManager.saveHistoricTaskLists();
     }
 
     private TaskList getHistoricTaskList(String name) {
@@ -226,137 +206,31 @@ public class DriveDatabase {
 
     public List<TaskList> getCurrentTaskLists() {
         List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
-        Log.d(TAG, "getCurrentTaskLists: mTaskLists is " + System.identityHashCode(taskLists));
         return taskLists;
     }
 
     public List<TaskList> getDeleteableTaskLists() {
         List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
 
-        //Log.d(TAG, "getDeleteableTaskLists");
-        //Log.d(TAG, "taskLists is " + System.identityHashCode(taskLists));
-
         List<TaskList> res = new ArrayList<TaskList>();
         for(TaskList taskList: taskLists) {
             if(taskList.isDeleteable()) {
-                //Log.d(TAG, "adding " + taskList.getName());
                 res.add(taskList);
             }
         }
         return res;
     }
 
-    private static final String HEADER = "header";
-    private static final String BODY = "body";
-
-    private static List<TaskList> buildDefaultEmptyTaskLists() {
-        List<TaskList> tasklists = new ArrayList<TaskList>();
-
-        TaskList today = new TaskList(0, "today");
-        today.setDeleteable(false);
-        tasklists.add(today);
-
-        TaskList thisWeek = new TaskList(0, "this week");
-        thisWeek.setDeleteable(false);
-        tasklists.add(thisWeek);
-
-        return tasklists;
-    }
-
-    public static List<TaskList> fromJSON(JSONObject json) {
-
-        List<TaskList> tasklists = new ArrayList<TaskList>();
-
-        try {
-
-            // json has form of:
-            // { header: {}, body: array of tasklists}
-
-            if(json.isNull(BODY)) {
-                // empty body so default to empty today and thisweek tasklists
-                Log.d(TAG, "fromJSON: empty body so defaulting to empty today and thisweek tasklists");
-                return buildDefaultEmptyTaskLists();
-            }
-            // ignore header for now, in future this will have version info
-
-            // parse the body which should be a list of tasklists
-            //
-            JSONArray body = json.getJSONArray(BODY);
-            TaskList tasklist;
-            for(int i=0; i<body.length(); i++) {
-                tasklist = TaskList.fromJson(body.getJSONObject(i));
-                tasklists.add(tasklist);
-            }
-
-        } catch (JSONException e) {
-            Log.d(TAG, "fromJSON JSONException: " + e);
-            Log.d(TAG, "defaulting to empty today and thisweek tasklists");
-            tasklists = buildDefaultEmptyTaskLists();
-        }
-
-        return tasklists;
-    }
-
-    private JSONObject toJson(List<TaskList> tasklists) {
-        JSONObject res = new JSONObject();
-
-        try {
-            res.put(HEADER, JSONObject.NULL);
-
-            JSONArray array = new JSONArray();
-            for(TaskList t : tasklists) {
-                JSONObject obj = t.toJson();
-                array.put(obj);
-            }
-            res.put(BODY, array);
-
-        } catch (JSONException e) {
-            Log.d(TAG, "JSONException: " + e);
-        }
-
-        return res;
-    }
-
-    private void saveCurrentTaskLists() {
-        /*
-        JSONObject current = currentToJson();
-        try {
-            Log.d(TAG, current.toString(2));
-        } catch(JSONException e) {
-            Log.e(TAG, e.toString());
-        }
-        */
-
-        // launch an asyncTask that updates the current json file
-        JSONObject json = currentToJson();
-        new UpdateTaskListsAsyncTask(mDriveManager, DriveManager.CURRENT_JSON, json).execute();
-    }
-
-    private void saveHistoricTaskLists() {
-        JSONObject json = historicToJson();
-        new UpdateTaskListsAsyncTask(mDriveManager, DriveManager.HISTORIC_JSON, json).execute();
-    }
-
-    public JSONObject currentToJson() {
-        List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
-        return toJson(taskLists);
-    }
-
-    public JSONObject historicToJson() {
-        List<TaskList> taskLists = mDriveManager.getHistoricTaskLists();
-        return toJson(taskLists);
-    }
-
-    public void setCurrentTaskLists(List<TaskList> tasklists) {
-        mDriveManager.setCurrentTaskLists(tasklists);
-    }
-
-    public void setHistoricTaskLists(List<TaskList> tasklists) {
-        mDriveManager.setHistoricTaskLists(tasklists);
-    }
-
     public boolean hasLoadedTaskLists() {
         return mDriveManager.hasLoadedTaskLists();
+    }
+
+    public void asyncLoadCurrentTaskLists() {
+        new TaskListsAsyncTask(mDriveManager).execute();
+    }
+
+    public void asyncLoadHistoricTaskLists() {
+        new HistoricTaskListsAsyncTask(mDriveManager).execute();
     }
 
 }

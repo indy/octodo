@@ -65,12 +65,16 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
     private EditText mEditText;
 
     public void onEvent(HaveCurrentTaskListEvent event) {
-        Log.d(TAG, "received HaveCurrentTaskListEvent");
+        if(D) {
+            Log.d(TAG, "received HaveCurrentTaskListEvent");
+        }
         refreshTaskLists();
     }
 
     public void onDriveInitialised() {
-        Log.d(TAG, "onDriveInitialised");
+        if(D) {
+            Log.d(TAG, "onDriveInitialised");
+        }
 
         if(mDriveDatabase.hasLoadedTaskLists()) {
             // use already loaded data
@@ -78,7 +82,7 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
         } else {
             // load tasklists if a previous activity hasn't done so
             // this async task will send a HaveCurrentTaskListEvent
-            new TaskListsAsyncTask(mDriveDatabase).execute();
+            mDriveDatabase.asyncLoadCurrentTaskLists();
         }
 
     }

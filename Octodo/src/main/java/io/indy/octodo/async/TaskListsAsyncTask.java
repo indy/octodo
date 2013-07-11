@@ -33,21 +33,20 @@ import io.indy.octodo.model.TaskList;
 
 public class TaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
 
-    private final DriveDatabase mDriveDatabase;
+    private final DriveManager mDriveManager;
 
     // TODO: check chris bane's photup app for usage on WeakReferences in AsyncTasks
 
-    public TaskListsAsyncTask(DriveDatabase driveDatabase) {
-        mDriveDatabase = driveDatabase;
+    public TaskListsAsyncTask(DriveManager driveManager) {
+        mDriveManager = driveManager;
     }
 
     @Override
     protected List<TaskList> doInBackground(Void... params) {
         // get the current tasklists from the json files on drive and deserialise them into TaskLists
 
-        DriveManager driveManager = mDriveDatabase.getDriveManager();
-        JSONObject jsonObject = driveManager.getJSON(DriveManager.CURRENT_JSON);
-        return DriveDatabase.fromJSON(jsonObject);
+        JSONObject jsonObject = mDriveManager.getJSON(DriveManager.CURRENT_JSON);
+        return DriveManager.fromJSON(jsonObject);
     }
 
 
@@ -56,7 +55,7 @@ public class TaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
         super.onPostExecute(result);
 
         // populate the current values in drive storage
-        mDriveDatabase.setCurrentTaskLists(result);
+        mDriveManager.setCurrentTaskLists(result);
 
         // fire event to update the UI
         HaveCurrentTaskListEvent event = new HaveCurrentTaskListEvent();

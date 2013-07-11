@@ -111,34 +111,25 @@ public class MainActivity extends DriveBaseActivity {
            - the 2 json files exist and we have their file ids
          */
 
-        Log.d(TAG, "onDriveInitialised");
-
+        if(D) {
+            Log.d(TAG, "onDriveInitialised");
+        }
+        
         if(mDriveDatabase.hasLoadedTaskLists()) {
             // use already loaded data
-            Log.d(TAG, "already loaded data");
+            if(D) {
+                Log.d(TAG, "already loaded data");
+            }
             refreshTaskListsUI();
         } else {
-            Log.d(TAG, "launching async tasks to load data");
-
+            if(D) {
+                Log.d(TAG, "launching async tasks to load data");
+            }
             // load tasklists if a previous activity hasn't done so
             // this async task will send a HaveCurrentTaskListEvent
-            new TaskListsAsyncTask(mDriveDatabase).execute();
-            new HistoricTaskListsAsyncTask(mDriveDatabase).execute();
+            mDriveDatabase.asyncLoadCurrentTaskLists();
+            mDriveDatabase.asyncLoadHistoricTaskLists();
         }
-
-        /*
-
-         * NEXT SET OF ACTIONS
-           - parse the contents of the json files into DriveManager
-           - populate ui elements with the contents
-           - hook up user events to modify model in DriveManager
-
-           --------------------------------------------------
-
-         * PARSE THE CONTENTS OF THE JSON FILES INTO DRIVESTORAGE
-           - AsyncTask to get the contents and return TaskLists etc
-           - at end of AsyncTask populate ui
-         */
     }
 
     @Override
