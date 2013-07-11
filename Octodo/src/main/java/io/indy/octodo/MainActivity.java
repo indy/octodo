@@ -71,7 +71,6 @@ public class MainActivity extends DriveBaseActivity {
             mTaskListNames.clear();
             for(TaskList taskList: lists) {
                 mTaskListNames.add(taskList.getName());
-                Log.d(TAG, "refresh: adding " + taskList.getName());
             }
             mAdapter.notifyDataSetChanged();
         }
@@ -114,8 +113,18 @@ public class MainActivity extends DriveBaseActivity {
 
         Log.d(TAG, "onDriveInitialised");
 
-        new TaskListsAsyncTask(mDriveDatabase).execute();
-        new HistoricTaskListsAsyncTask(mDriveDatabase).execute();
+        if(mDriveDatabase.hasLoadedTaskLists()) {
+            // use already loaded data
+            Log.d(TAG, "already loaded data");
+            refreshTaskListsUI();
+        } else {
+            Log.d(TAG, "launching async tasks to load data");
+
+            // load tasklists if a previous activity hasn't done so
+            // this async task will send a HaveCurrentTaskListEvent
+            new TaskListsAsyncTask(mDriveDatabase).execute();
+            new HistoricTaskListsAsyncTask(mDriveDatabase).execute();
+        }
 
         /*
 

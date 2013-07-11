@@ -17,12 +17,17 @@
 package io.indy.octodo;
 
 import android.app.Application;
+import android.util.Log;
 
 import java.util.List;
 
 import io.indy.octodo.model.TaskList;
 
 public class OctodoApplication extends Application {
+
+    private final String TAG = getClass().getSimpleName();
+
+    private static final boolean D = true;
 
     private List<TaskList> mTaskLists;
     private List<TaskList> mHistoricTaskLists;

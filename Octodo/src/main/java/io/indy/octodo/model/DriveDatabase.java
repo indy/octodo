@@ -355,4 +355,8 @@ public class DriveDatabase {
         mDriveManager.setHistoricTaskLists(tasklists);
     }
 
+    public boolean hasLoadedTaskLists() {
+        return mDriveManager.hasLoadedTaskLists();
+    }
+
 }

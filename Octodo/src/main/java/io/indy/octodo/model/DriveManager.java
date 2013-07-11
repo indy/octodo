@@ -95,6 +95,10 @@ public class DriveManager {
         return mApplication.getHistoricTaskLists();
     }
 
+    public boolean hasLoadedTaskLists() {
+        return mApplication.hasTaskLists();
+    }
+
     public void updateFile(String jsonFile, JSONObject jsonObject) {
         Log.d(TAG, "updatefile");
 

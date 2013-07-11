@@ -71,7 +71,16 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
 
     public void onDriveInitialised() {
         Log.d(TAG, "onDriveInitialised");
-        new TaskListsAsyncTask(mDriveDatabase).execute();
+
+        if(mDriveDatabase.hasLoadedTaskLists()) {
+            // use already loaded data
+            refreshTaskLists();
+        } else {
+            // load tasklists if a previous activity hasn't done so
+            // this async task will send a HaveCurrentTaskListEvent
+            new TaskListsAsyncTask(mDriveDatabase).execute();
+        }
+
     }
 
     @Override
