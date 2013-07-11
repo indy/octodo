@@ -110,7 +110,7 @@ public class MainActivity extends DriveBaseActivity {
             Log.d(TAG, "onDriveInitialised");
         }
 
-        if(mDriveDatabase.hasLoadedTaskLists()) {
+        if(mDriveModel.hasLoadedTaskLists()) {
             // use already loaded data
             if(D) {
                 Log.d(TAG, "already loaded data");
@@ -122,8 +122,8 @@ public class MainActivity extends DriveBaseActivity {
             }
             // load tasklists if a previous activity hasn't done so
             // this async task will send a HaveCurrentTaskListEvent
-            mDriveDatabase.asyncLoadCurrentTaskLists();
-            mDriveDatabase.asyncLoadHistoricTaskLists();
+            mDriveModel.asyncLoadCurrentTaskLists();
+            mDriveModel.asyncLoadHistoricTaskLists();
         }
     }
 
@@ -138,7 +138,7 @@ public class MainActivity extends DriveBaseActivity {
 
         //EventBus.getDefault().register(this);
 
-        mController = new MainController(this, mDriveDatabase);
+        mController = new MainController(this, mDriveModel);
 
         mTaskListNames = new ArrayList<String>();
         mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskListNames);
@@ -180,7 +180,7 @@ public class MainActivity extends DriveBaseActivity {
         // Load changes knowing that the Activity has already
         // been visible within this process.
         refreshTaskListsUI();
-        //new TaskListsAsyncTask(mDriveDatabase).execute();
+        //new TaskListsAsyncTask(mDriveModel).execute();
     }
 
     // Called at the start of the visible lifetime.

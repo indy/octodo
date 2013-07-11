@@ -26,7 +26,7 @@ import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.helper.NotificationHelper;
-import io.indy.octodo.model.DriveDatabase;
+import io.indy.octodo.model.DriveModel;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 
@@ -39,43 +39,43 @@ public class MainController {
 
     private NotificationHelper mNotification;
 
-    private DriveDatabase mDriveDatabase;
+    private DriveModel mDriveModel;
 
-    public MainController(Activity activity, DriveDatabase driveDatabase) {
+    public MainController(Activity activity, DriveModel driveModel) {
         mActivity = activity;
         mNotification = new NotificationHelper(activity);
-        mDriveDatabase = driveDatabase;
+        mDriveModel = driveModel;
     }
 
     public void onTaskAdd(Task task, String taskListName) {
-        mDriveDatabase.addTask(task, taskListName);
+        mDriveModel.addTask(task, taskListName);
         postRefreshEvent(taskListName);
     }
 
     public void onTaskUpdateContent(Task task, String content) {
-        mDriveDatabase.updateTaskContent(task, content);
+        mDriveModel.updateTaskContent(task, content);
         postRefreshEvent(task.getParentName());
     }
 
     public void onTaskUpdateState(Task task, int state) {
-        mDriveDatabase.updateTaskState(task, state);
+        mDriveModel.updateTaskState(task, state);
         postRefreshEvent(task.getParentName());
     }
 
     public TaskList onGetTaskList(String name) {
-        return mDriveDatabase.getCurrentTaskList(name);
+        return mDriveModel.getCurrentTaskList(name);
     }
 
     public TaskList onGetTaskList(int index) {
-        return mDriveDatabase.getCurrentTaskList(index);
+        return mDriveModel.getCurrentTaskList(index);
     }
 
     public List<TaskList> onGetTaskLists() {
-        return mDriveDatabase.getCurrentTaskLists();
+        return mDriveModel.getCurrentTaskLists();
     }
 
     public void onTaskMove(Task task, String destinationTaskList) {
-        mDriveDatabase.moveTask(task, destinationTaskList);
+        mDriveModel.moveTask(task, destinationTaskList);
 
         post(new MoveTaskEvent(task, task.getParentName(), destinationTaskList));
 
@@ -85,13 +85,13 @@ public class MainController {
 
     public void onTaskDelete(Task task) {
         String parentName = task.getParentName();
-        mDriveDatabase.deleteTask(task);
+        mDriveModel.deleteTask(task);
         postRefreshEvent(parentName);
     }
 
     public void onRemoveCompletedTasks(String taskListName) {
 
-        mDriveDatabase.removeStruckTasks(taskListName);
+        mDriveModel.removeStruckTasks(taskListName);
         postRefreshEvent(taskListName);
 
         // show Crouton
@@ -104,16 +104,16 @@ public class MainController {
     }
 
     public boolean deleteList(String name) {
-        return mDriveDatabase.deleteList(name);
+        return mDriveModel.deleteList(name);
     }
 
     public void addList(String name) {
         // check if a tasklist with this name already exists
-        mDriveDatabase.addList(name);
+        mDriveModel.addList(name);
     }
 
     public List<TaskList> getDeleteableTaskLists() {
-        return mDriveDatabase.getDeleteableTaskLists();
+        return mDriveModel.getDeleteableTaskLists();
     }
 
     public void onDestroy() {

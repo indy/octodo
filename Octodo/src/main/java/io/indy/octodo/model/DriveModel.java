@@ -24,14 +24,14 @@ import java.util.List;
 import io.indy.octodo.async.HistoricTaskListsAsyncTask;
 import io.indy.octodo.async.TaskListsAsyncTask;
 
-public class DriveDatabase {
+public class DriveModel {
 
-    private static final String TAG = "DriveDatabase";
+    private static final String TAG = "DriveModel";
     private static final boolean D = true;
 
     private DriveManager mDriveManager;
 
-    public DriveDatabase(DriveManager driveManager) {
+    public DriveModel(DriveManager driveManager) {
         mDriveManager = driveManager;
     }
 

@@ -117,7 +117,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         mController = ((MainActivity)mContext).getController();
         if (mTaskList == null) {
-            Log.d(TAG, "mTaskList is null - do some re-initialisation with DriveDatabase?");
+            Log.d(TAG, "mTaskList is null - do some re-initialisation with DriveModel?");
             String taskListName = savedInstanceState.getString("taskListName");
             mTaskList = new TaskList(0, taskListName);
             // TODO: would updateLocalTaskList fail here?

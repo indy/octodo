@@ -22,7 +22,7 @@ import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-import io.indy.octodo.model.DriveDatabase;
+import io.indy.octodo.model.DriveModel;
 import io.indy.octodo.model.DriveManager;
 
 public abstract class DriveBaseActivity extends SherlockFragmentActivity {
@@ -31,7 +31,7 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
     private static final boolean D = true;
 
     protected DriveManager mDriveManager;
-    protected DriveDatabase mDriveDatabase;
+    protected DriveModel mDriveModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
         }
 
         mDriveManager = new DriveManager(this);
-        mDriveDatabase = new DriveDatabase(mDriveManager);
+        mDriveModel = new DriveModel(mDriveManager);
     }
 
     public abstract void onDriveInitialised();
