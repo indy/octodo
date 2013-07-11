@@ -42,24 +42,15 @@ import io.indy.octodo.OctodoApplication;
 
 public class DriveManager {
 
-    /*
-    re-implement the public methods from SQLDatabase
-    store an instance of this class in MainController
-    (maybe store MainController in Application?)
-     */
-
     private static final String TAG = "DriveManager";
     private static final boolean D = true;
 
-
     public static final int REQUEST_ACCOUNT_PICKER = 1;
     public static final int REQUEST_AUTHORIZATION = 2;
-    public static final int CAPTURE_IMAGE = 3;
 
     private static Drive sService;
 
     private GoogleAccountCredential mCredential;
-
 
     public static final String PREFS_FILENAME = "MyPrefsFile";
     public static final String ACCOUNT_NAME = "account_name";
@@ -100,7 +91,10 @@ public class DriveManager {
     }
 
     public void updateFile(String jsonFile, JSONObject jsonObject) {
-        Log.d(TAG, "updatefile");
+
+        if(D) {
+            Log.d(TAG, "updatefile");
+        }
 
         try {
             String fileId = getJsonFileIdPreference(jsonFile);
@@ -110,9 +104,11 @@ public class DriveManager {
             String json = jsonObject.toString();
             ByteArrayContent content = new ByteArrayContent("application/json", json.getBytes());
             File config = sService.files().update(ff.getId(), ff, content).execute();
-            Log.d(TAG, "updated file");
-            logFileMetadata(config, jsonFile);
 
+            if(D) {
+                Log.d(TAG, "updated file");
+                logFileMetadata(config, jsonFile);
+            }
         } catch(IOException e) {
             Log.d(TAG, "getJSON IOException: " + e);
         }
@@ -131,7 +127,9 @@ public class DriveManager {
             File ff = DriveJunction.getFileMetadata(sService, fileId);
             String jsonString = DriveJunction.downloadFileAsString(sService, ff);
 
-            Log.d(TAG, "content of file is " + jsonString);
+            if(D) {
+                Log.d(TAG, "content of " + driveFilename + " is " + jsonString);
+            }
 
             jsonObject = new JSONObject(jsonString);
 
@@ -157,11 +155,11 @@ public class DriveManager {
                 try {
                     // LIST FILES
 
-                    Log.d(TAG, "before listAppDataFiles");
                     List<File> files = DriveJunction.listAppDataFiles(sService);
-                    Log.d(TAG, "after listAppDataFiles");
 
-                    Log.d(TAG, "files list length is " + files.size());
+                    if(D) {
+                        Log.d(TAG, "files list length is " + files.size());
+                    }
 
                     boolean foundCurrent = false;
                     boolean foundHistoric = false;
@@ -297,6 +295,7 @@ public class DriveManager {
             return false;
         }
         return true;
+//        return !current.isEmpty() && !historic.isEmpty()
     }
 
     public void initialise() {
@@ -320,7 +319,6 @@ public class DriveManager {
 
             if(hasBothJsonFileIdPreferences()) {
                 Log.d(TAG, "have both json files");
-                // saveFileToDrive();
                 // load contents of the 2 json files
                 mActivity.onDriveInitialised();
 
@@ -362,10 +360,6 @@ public class DriveManager {
                             REQUEST_ACCOUNT_PICKER);
                 }
                 break;
-            case CAPTURE_IMAGE:
-                if (resultCode == Activity.RESULT_OK) {
-                    //saveFileToDrive();
-                }
         }
     }
 
@@ -374,140 +368,11 @@ public class DriveManager {
                 credential).build();
     }
 
-    private void saveFileToDrive() {
-        Log.d(TAG, "saveFileToDrive");
-
-
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try { // File's binary content
-
-
-                    // LIST FILES
-                    List<File> files = DriveJunction.listAppDataFiles(sService);
-
-                    Log.d(TAG, "files list length is " + files.size());
-                    for(File f : files) {
-                        Log.d(TAG, "title: " + f.getTitle());
-                        Log.d(TAG, "id:" + f.getId());
-                    }
-                    Log.d(TAG, "finished retrieving files");
-
-
-
-
-                    // READ A FILE
-                    String fileId = "1dHUJZx-sMkPSVG6Lcg-59JlV0lw";
-                    File ff = DriveJunction.getFileMetadata(sService, fileId);
-                    String jsonContent = DriveJunction.downloadFileAsString(sService, ff);
-                    Log.d(TAG, "content of file is " + jsonContent);
-
-
-
-
-                    /*
-                    // CREATE A FILE
-                    String filename = "temp03.json";
-                    String json = "{\"array\": [1,2,3],\"boolean\": true,\"null\": null,\"number\": 123,\"object\": {\"a\": \"b\", \"c\": \"d\",\"e\": \"f\"},\"string\": \"Hello World\"}";
-                    File file = DriveJunction.createAppDataJsonFile(sService, filename, json);
-                    */
-
-                    /*
-                    // File's metadata.
-                    File config = new File();
-                    String filename = "temp03.json";
-
-                    String json = "{\"array\": [1,2,3],\"boolean\": true,\"null\": null,\"number\": 123,\"object\": {\"a\": \"b\", \"c\": \"d\",\"e\": \"f\"},\"string\": \"Hello World\"}";
-                    ByteArrayContent content = ByteArrayContent.fromString("application/json", json);
-
-                    List<ParentReference> parents = new ArrayList<ParentReference>();
-                    parents.add(new ParentReference().setId("appdata"));
-
-                    config.setTitle(filename);
-                    config.setParents(parents);
-
-                    Log.d(TAG, "about to call sService.files().insert");
-                    File file = sService.files().insert(config, content).execute();
-                    Log.d(TAG, "called sService.files().insert");
-*/
-
-
-                    /*
-                    if (file != null) {
-                        showToast("file uploaded: " + file.getTitle());
-
-                        Log.d(TAG, "id: " + file.getId()); // 1dHUJZx-sMkPSVG6Lcg-59JlV0lw
-                        Log.d(TAG, "mimetype: " + file.getMimeType()); // application/json
-                        Log.d(TAG, "title: " + file.getTitle()); // temp03.json
-                        List<ParentReference> par = file.getParents();
-                        Log.d(TAG, "size of parentReferences is:" + par.size()); // 1
-                        for(ParentReference pr : par) {
-                            Log.d(TAG, "parent id is " + pr.getId()); // 1J54mT3DZPd2UgdO-rewnesDNCadn
-                        }
-
-                        startCameraIntent();
-                    }
-                    */
-
-
-
-                    // UPDATE file
-                    /*
-                    Log.d(TAG, "about to update file");
-                    String json = "{\"array\": [71,72,73],\"boolean\": false,\"null\": null,\"number\": 42,\"object\": {\"z\": \"y\", \"x\": \"w\",\"v\": \"u\"},\"string\": \"Goodbye World\"}";
-                    ByteArrayContent content2 = new ByteArrayContent("application/json", json.getBytes());
-                    File config = sService.files().update(ff.getId(), ff, content2).execute();
-                    Log.d(TAG, "updated file");
-                    logFileMetadata(config, "config");
-                    */
-
-
-                } catch (NullPointerException e) {
-                    Log.d(TAG, "null pointer exception");
-                    e.printStackTrace();
-                } catch (UserRecoverableAuthIOException e) {
-                    Log.d(TAG, "userrecoverableauthioexception");
-                    mActivity.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
-                } catch (IOException e) {
-                    Log.d(TAG, "IOException");
-                    e.printStackTrace();
-                }
-            }
-        });
-        t.start();
-
-    }
-
     private void logFileMetadata(File file, String label) {
         Log.d(TAG, "logging metadata for: " + label);
         Log.d(TAG, "id: " + file.getId());
         Log.d(TAG, "mimetype: " + file.getMimeType());
         Log.d(TAG, "title: " + file.getTitle());
-    }
-
-    public void showToast(final String toast) {
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(mActivity.getApplicationContext(), toast, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void startCameraIntent() {
-        Log.d(TAG, "startCameraIntent");
-        /*
-         * String mediaStorageDir =
-         * Environment.getExternalStoragePublicDirectory(
-         * Environment.DIRECTORY_PICTURES).getPath(); String timeStamp = new
-         * SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
-         * fileUri = Uri.fromFile(new java.io.File(mediaStorageDir +
-         * java.io.File.separator + "IMG_" + timeStamp + ".jpg")); Intent
-         * cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-         * cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-         * startActivityForResult(cameraIntent, CAPTURE_IMAGE);
-         */
     }
 
 }
