@@ -22,7 +22,6 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.DriveManager;
 import io.indy.octodo.model.TaskList;
 

@@ -22,8 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import java.util.List;
-
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;

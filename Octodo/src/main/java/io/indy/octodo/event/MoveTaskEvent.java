@@ -17,7 +17,6 @@
 package io.indy.octodo.event;
 
 import io.indy.octodo.model.Task;
-import io.indy.octodo.model.TaskList;
 
 public class MoveTaskEvent {
 

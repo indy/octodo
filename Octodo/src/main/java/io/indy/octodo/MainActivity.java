@@ -22,7 +22,6 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -34,12 +33,8 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.TaskListPagerAdapter;
-import io.indy.octodo.async.HistoricTaskListsAsyncTask;
-import io.indy.octodo.async.TaskListsAsyncTask;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
-import io.indy.octodo.model.DriveDatabase;
-import io.indy.octodo.model.DriveManager;
 import io.indy.octodo.model.TaskList;
 
 public class MainActivity extends DriveBaseActivity {
@@ -114,7 +109,7 @@ public class MainActivity extends DriveBaseActivity {
         if(D) {
             Log.d(TAG, "onDriveInitialised");
         }
-        
+
         if(mDriveDatabase.hasLoadedTaskLists()) {
             // use already loaded data
             if(D) {

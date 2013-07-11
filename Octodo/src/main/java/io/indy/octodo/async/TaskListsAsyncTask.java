@@ -24,7 +24,6 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
-import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.DriveManager;
 import io.indy.octodo.model.TaskList;
 

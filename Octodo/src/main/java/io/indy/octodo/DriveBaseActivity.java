@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+
 import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.DriveManager;
 

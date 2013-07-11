@@ -17,7 +17,6 @@
 package io.indy.octodo;
 
 import android.app.Application;
-import android.util.Log;
 
 import java.util.List;
 

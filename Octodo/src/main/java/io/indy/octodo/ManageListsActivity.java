@@ -16,7 +16,6 @@
 
 package io.indy.octodo;
 
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,7 +26,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -37,8 +35,6 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.ManageListsAdapter;
-import io.indy.octodo.async.HistoricTaskListsAsyncTask;
-import io.indy.octodo.async.TaskListsAsyncTask;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
 import io.indy.octodo.helper.AnimationHelper;
