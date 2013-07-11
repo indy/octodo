@@ -32,8 +32,8 @@ public class DriveDatabase {
     private static final String TAG = "DriveDatabase";
     private static final boolean D = true;
 
-    private List<TaskList> mTaskLists;
-    private List<TaskList> mHistoricTaskLists;
+    //private List<TaskList> mTaskLists;
+    //private List<TaskList> mHistoricTaskLists;
 
     private DriveManager mDriveManager;
 
@@ -68,19 +68,20 @@ public class DriveDatabase {
         }
 
         TaskList taskList = new TaskList(0, name);
-        mTaskLists.add(taskList);
-
+        List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
+        taskLists.add(taskList);
         saveCurrentTaskLists();
     }
 
     public boolean deleteList(String name) {
-
         Log.d(TAG, "deleteList " + name);
         TaskList taskList = this.getCurrentTaskList(name);
         if(taskList == null) {
             return false;
         }
-        mTaskLists.remove(taskList);
+
+        List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
+        taskLists.remove(taskList);
         saveCurrentTaskLists();
         return true;
     }
@@ -176,10 +177,13 @@ public class DriveDatabase {
     private TaskList getHistoricTaskList(String name) {
         // get the TaskList called name from mHistoricTaskLists
         // if it doesn't exist, create it
-        TaskList taskList = getTaskList(mHistoricTaskLists, name);
+
+        List<TaskList> historicTaskLists = mDriveManager.getHistoricTaskLists();
+
+        TaskList taskList = getTaskList(historicTaskLists, name);
         if(taskList == null) {
             taskList = new TaskList(0, name);
-            mHistoricTaskLists.add(taskList);
+            historicTaskLists.add(taskList);
         }
         return taskList;
     }
@@ -203,34 +207,39 @@ public class DriveDatabase {
 
     // return all the tasks associated with the list
     public TaskList getCurrentTaskList(String name) {
-        return getTaskList(mTaskLists, name);
+        List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
+        return getTaskList(taskLists, name);
     }
 
     public TaskList getCurrentTaskList(int index) {
-        if(mTaskLists == null) {
+        List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
+
+        if(taskLists == null) {
             Log.d(TAG, "mTaskLists is empty");
             return null;
-        } else if(index >= mTaskLists.size()){
+        } else if(index >= taskLists.size()){
             Log.d(TAG, "getCurrentTaskList index is too large");
             return null;
         }
-        return mTaskLists.get(index);
+        return taskLists.get(index);
     }
 
     public List<TaskList> getCurrentTaskLists() {
-        Log.d(TAG, "getCurrentTaskLists: mTaskLists is " + System.identityHashCode(mTaskLists));
-        return mTaskLists;
+        List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
+        Log.d(TAG, "getCurrentTaskLists: mTaskLists is " + System.identityHashCode(taskLists));
+        return taskLists;
     }
 
     public List<TaskList> getDeleteableTaskLists() {
+        List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
 
-        Log.d(TAG, "getDeleteableTaskLists");
-        Log.d(TAG, "mTaskLists is " + System.identityHashCode(mTaskLists));
+        //Log.d(TAG, "getDeleteableTaskLists");
+        //Log.d(TAG, "taskLists is " + System.identityHashCode(taskLists));
 
         List<TaskList> res = new ArrayList<TaskList>();
-        for(TaskList taskList: mTaskLists) {
+        for(TaskList taskList: taskLists) {
             if(taskList.isDeleteable()) {
-                Log.d(TAG, "adding " + taskList.getName());
+                //Log.d(TAG, "adding " + taskList.getName());
                 res.add(taskList);
             }
         }
@@ -329,19 +338,21 @@ public class DriveDatabase {
     }
 
     public JSONObject currentToJson() {
-        return toJson(mTaskLists);
+        List<TaskList> taskLists = mDriveManager.getCurrentTaskLists();
+        return toJson(taskLists);
     }
 
     public JSONObject historicToJson() {
-        return toJson(mHistoricTaskLists);
+        List<TaskList> taskLists = mDriveManager.getHistoricTaskLists();
+        return toJson(taskLists);
     }
 
     public void setCurrentTaskLists(List<TaskList> tasklists) {
-        mTaskLists = tasklists;
+        mDriveManager.setCurrentTaskLists(tasklists);
     }
 
     public void setHistoricTaskLists(List<TaskList> tasklists) {
-        mHistoricTaskLists = tasklists;
+        mDriveManager.setHistoricTaskLists(tasklists);
     }
 
 }

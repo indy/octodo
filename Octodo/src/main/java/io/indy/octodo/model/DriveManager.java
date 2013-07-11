@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.List;
 
 import io.indy.octodo.DriveBaseActivity;
+import io.indy.octodo.OctodoApplication;
 
 public class DriveManager {
 
@@ -68,15 +69,31 @@ public class DriveManager {
     public static final String CURRENT_JSON = "current.json";
     public static final String HISTORIC_JSON = "historic.json";
 
-
     public final String EMPTY_JSON_OBJECT = "{}";
 
     private DriveBaseActivity mActivity;
+    private OctodoApplication mApplication;
 
     public DriveManager(DriveBaseActivity activity) {
         mActivity = activity;
+        mApplication = (OctodoApplication)mActivity.getApplication();
     }
 
+    public void setCurrentTaskLists(List<TaskList> taskLists) {
+        mApplication.setCurrentTaskLists(taskLists);
+    }
+
+    public void setHistoricTaskLists(List<TaskList> taskLists) {
+        mApplication.setHistoricTaskLists(taskLists);
+    }
+
+    public List<TaskList> getCurrentTaskLists() {
+        return mApplication.getCurrentTaskLists();
+    }
+
+    public List<TaskList> getHistoricTaskLists() {
+        return mApplication.getHistoricTaskLists();
+    }
 
     public void updateFile(String jsonFile, JSONObject jsonObject) {
         Log.d(TAG, "updatefile");

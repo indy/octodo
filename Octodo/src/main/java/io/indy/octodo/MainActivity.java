@@ -185,8 +185,7 @@ public class MainActivity extends DriveBaseActivity {
         // Load changes knowing that the Activity has already
         // been visible within this process.
         refreshTaskListsUI();
-
-        //logTaskLists("onRestart");
+        //new TaskListsAsyncTask(mDriveDatabase).execute();
     }
 
     // Called at the start of the visible lifetime.

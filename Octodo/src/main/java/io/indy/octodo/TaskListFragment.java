@@ -93,7 +93,6 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
         if (D)
             Log.d(TAG, "onCreate");
     }
@@ -166,6 +165,10 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         }
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
+
+        Log.d(TAG, "registering: " + System.identityHashCode(this));
+        EventBus.getDefault().register(this);
+
     }
 
     @Override
@@ -177,6 +180,9 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         if (D) {
             Log.d(TAG, "onPause");
         }
+
+        Log.d(TAG, "unregistering: " + System.identityHashCode(this));
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -221,7 +227,9 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
+        if (D) {
+            Log.d(TAG, "onDestroy");
+        }
     }
 
 

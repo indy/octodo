@@ -18,6 +18,41 @@ package io.indy.octodo;
 
 import android.app.Application;
 
+import java.util.List;
+
+import io.indy.octodo.model.TaskList;
+
 public class OctodoApplication extends Application {
+
+    private List<TaskList> mTaskLists;
+    private List<TaskList> mHistoricTaskLists;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        mTaskLists = null;
+        mHistoricTaskLists = null;
+    }
+
+    public void setCurrentTaskLists(List<TaskList> tasklists) {
+        mTaskLists = tasklists;
+    }
+
+    public void setHistoricTaskLists(List<TaskList> tasklists) {
+        mHistoricTaskLists = tasklists;
+    }
+
+    public List<TaskList> getCurrentTaskLists() {
+        return mTaskLists;
+    }
+
+    public List<TaskList> getHistoricTaskLists() {
+        return mHistoricTaskLists;
+    }
+
+    public boolean hasTaskLists() {
+        return (mTaskLists != null && mHistoricTaskLists != null);
+    }
 
 }
