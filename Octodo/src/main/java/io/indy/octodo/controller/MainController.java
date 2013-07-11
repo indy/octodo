@@ -27,7 +27,6 @@ import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.DriveDatabase;
-import io.indy.octodo.model.SQLDatabase;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 
@@ -38,15 +37,12 @@ public class MainController {
 
     private Activity mActivity;
 
-    private SQLDatabase mSQLDatabase;
-
     private NotificationHelper mNotification;
 
     private DriveDatabase mDriveDatabase;
 
     public MainController(Activity activity, DriveDatabase driveDatabase) {
         mActivity = activity;
-        mSQLDatabase = new SQLDatabase(activity);
         mNotification = new NotificationHelper(activity);
         mDriveDatabase = driveDatabase;
     }
@@ -107,10 +103,6 @@ public class MainController {
         post(new ToggleAddTaskFormEvent(taskList));
     }
 
-    public void closeDatabase() {
-        mSQLDatabase.closeDatabase();
-    }
-
     public boolean deleteList(String name) {
         return mDriveDatabase.deleteList(name);
     }
@@ -125,7 +117,6 @@ public class MainController {
     }
 
     public void onDestroy() {
-        //mSQLDatabase.closeDatabase();
         mNotification.cancelAllNotifications();
     }
 
