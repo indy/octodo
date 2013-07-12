@@ -20,6 +20,7 @@
     <style name="Theme.Octodo" parent="@style/Theme.Sherlock.Light.DarkActionBar">
         <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
         <item name="android:actionBarStyle">@style/Widget.Styled.ActionBar</item>
+
     </style>
 
     <!-- prevent flicker at startup by specifying colour in theme -->

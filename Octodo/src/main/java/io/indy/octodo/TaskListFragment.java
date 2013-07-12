@@ -21,6 +21,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -63,6 +64,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     private TaskList mTaskList;
 
     private EditText mEditText;
+    private EditText mEditText2;
 
     private ListView mListView;
 
@@ -109,11 +111,13 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         View view = inflater.inflate(R.layout.fragment_tasklist, container, false);
 
         mEditText = (EditText)view.findViewById(R.id.editTextTask);
+        mEditText2 = (EditText)view.findViewById(R.id.editTextTask2);
         mListView = (ListView)view.findViewById(R.id.listViewTasks);
         mButtonAddTask = (Button)view.findViewById(R.id.buttonAddTask);
         mSectionAddTask = (LinearLayout)view.findViewById(R.id.sectionAddTask);
 
         setKeyboardVisibility(mEditText);
+        setKeyboardVisibility2(mEditText2);
 
         mController = ((MainActivity)mContext).getController();
         if (mTaskList == null) {
@@ -246,6 +250,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
             Log.d(TAG, "valid RefreshTaskListEvent received in TaskListFragment");
             refreshUI();
             mEditText.setText("");
+            mEditText2.setText("");
         }
     }
 
@@ -350,6 +355,47 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
                 }
             }
         });
+    }
+
+    private void setKeyboardVisibility2(EditText editText) {
+
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode == 66 && event.getAction() == 1) {
+                    addTask();
+                }
+                return false;
+            }
+        });
+    }
+
+    private void addTask() {
+        String content = mEditText2.getText().toString().trim();
+        if (content.length() == 0) {
+            // don't add empty strings
+            return;
+        }
+
+        String now = DateFormatHelper.today();
+
+        Task task = new Task.Builder()
+                .content(content)
+                .state(0)
+                .startedAt(now)
+                .build();
+
+        if (D) {
+            Log.d(TAG, "adding a task");
+            // this task has an id of 0, can't just add it to mTasks
+            Log.d(TAG, "id: " + task.getId());
+            Log.d(TAG, "content: " + task.getContent());
+            Log.d(TAG, "state: " + task.getState());
+            Log.d(TAG, "startedAt: " + task.getStartedAt());
+            Log.d(TAG, "finishedAt: " + task.getFinishedAt());
+        }
+
+        // update db
+        mController.onTaskAdd(task, mTaskList.getName());
     }
 
     @Override

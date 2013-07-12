@@ -31,8 +31,44 @@
     <ListView
         android:id="@+id/listViewTasks"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1" >
+        android:layout_height="wrap_content" >
     </ListView>
+
+
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            >
+
+        <!-- invisible checkbox so that EditText lines up with row items -->
+        <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="invisible">
+            <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true" />
+        </RelativeLayout>
+
+        <EditText
+                android:id="@+id/editTextTask2"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="8dp"
+                android:inputType="text"
+                android:hint="@string/add_item"
+                android:maxLines="1"
+                android:ellipsize="end">
+        </EditText>
+
+    </LinearLayout>
 
 </LinearLayout>
