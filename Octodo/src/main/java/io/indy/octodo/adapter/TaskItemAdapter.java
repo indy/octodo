@@ -31,20 +31,17 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
 
     private final String TAG = getClass().getSimpleName();
 
-    private static final boolean D = true;
+    private static final boolean D = false;
 
     private final Context mContext;
 
     private MainController mController;
-
-    private String mTaskListName;
 
     public TaskItemAdapter(Context context, TaskList taskList, MainController controller) {
         super(context, android.R.layout.simple_list_item_1, taskList.getTasks());
 
         mController = controller;
         mContext = context;
-        mTaskListName = taskList.getName();
     }
 
     @Override
