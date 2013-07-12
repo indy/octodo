@@ -17,13 +17,11 @@
 package io.indy.octodo;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
@@ -37,10 +35,9 @@ import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.ManageListsAdapter;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
-import io.indy.octodo.helper.AnimationHelper;
 import io.indy.octodo.model.TaskList;
 
-public class ManageListsActivity extends DriveBaseActivity implements OnClickListener {
+public class ManageListsActivity extends DriveBaseActivity {
 
     private final String TAG = getClass().getSimpleName();
 
@@ -53,10 +50,6 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
     private MainController mController;
 
     private ListView mListView;
-
-    private LinearLayout mSectionAddList;
-
-    private Button mButtonAddList;
 
     private EditText mEditText;
 
@@ -97,15 +90,12 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
 
         mAdapter = new ManageListsAdapter(this, mTaskLists);
 
-        mSectionAddList = (LinearLayout)findViewById(R.id.sectionAddList);
-        mButtonAddList = (Button)findViewById(R.id.buttonAddList);
-        mEditText = (EditText)findViewById(R.id.editText);
+        mEditText = (EditText)findViewById(R.id.editText2);
+        setKeyboardListener(mEditText);
+
 
         // Bind the Adapter to the List View
         mListView.setAdapter(mAdapter);
-
-        mButtonAddList.setOnClickListener(this);
-
 
         mDriveDatabase.initialise();
     }
@@ -168,9 +158,6 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
                 refreshTaskLists();
                 // send an event to MainActivity?
                 break;
-            case R.id.menu_add_list:
-                toggleAddListView();
-                break;
             case android.R.id.home:
                 finish();
         }
@@ -178,17 +165,29 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onClick(View v) {
-        if (D) {
-            Log.d(TAG, "onClick");
+
+    private void setKeyboardListener(EditText editText) {
+
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode == 66 && event.getAction() == 1) {
+                    addNewList();
+                }
+                return false;
+            }
+        });
+    }
+
+    private void addNewList() {
+        try {
+            String name = mEditText.getText().toString();
+
+            mController.addList(name);
+            refreshTaskLists();
+            mEditText.setText("");
+        } catch(NullPointerException e) {
+            Log.d(TAG, "addNewList exception: " + e);
         }
-        String name = mEditText.getText().toString();
-        mController.addList(name);
-
-        refreshTaskLists();
-
-        mEditText.setText("");
     }
 
     private void refreshTaskLists() {
@@ -197,23 +196,4 @@ public class ManageListsActivity extends DriveBaseActivity implements OnClickLis
         mTaskLists.addAll(taskLists);
         mAdapter.notifyDataSetChanged();
     }
-
-    private void toggleAddListView() {
-        if (D) {
-            Log.d(TAG, "toggleAddListView");
-        }
-
-        Animation anim;
-
-        if (mSectionAddList.getVisibility() == View.GONE) {
-            anim = AnimationHelper.slideDownAnimation();
-            mSectionAddList.startAnimation(anim);
-            mSectionAddList.setVisibility(View.VISIBLE);
-        } else {
-            anim = AnimationHelper.slideUpAnimation();
-            mSectionAddList.startAnimation(anim);
-            mSectionAddList.setVisibility(View.GONE);
-        }
-    }
-
 }

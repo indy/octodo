@@ -1,14 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/menu_add_list"
-        android:icon="@drawable/ic_content_new"
-        android:showAsAction="always"
-        android:title="@string/add_list"
-        android:titleCondensed="@string/add_list">
-    </item>
-
-    <item
         android:id="@+id/menu_discard_lists"
         android:icon="@drawable/ic_discard"
         android:showAsAction="always"
