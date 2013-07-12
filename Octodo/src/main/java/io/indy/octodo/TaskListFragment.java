@@ -24,13 +24,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.tjerkw.slideexpandable.library.SlideExpandableListAdapter;
@@ -43,13 +38,11 @@ import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
-import io.indy.octodo.event.ToggleAddTaskFormEvent;
-import io.indy.octodo.helper.AnimationHelper;
 import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 
-public final class TaskListFragment extends Fragment implements OnClickListener {
+public final class TaskListFragment extends Fragment {
 
     private final String TAG = getClass().getSimpleName();
 
@@ -64,13 +57,8 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     private TaskList mTaskList;
 
     private EditText mEditText;
-    private EditText mEditText2;
 
     private ListView mListView;
-
-    private Button mButtonAddTask;
-
-    private LinearLayout mSectionAddTask;
 
     private Context mContext;
 
@@ -111,13 +99,9 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         View view = inflater.inflate(R.layout.fragment_tasklist, container, false);
 
         mEditText = (EditText)view.findViewById(R.id.editTextTask);
-        mEditText2 = (EditText)view.findViewById(R.id.editTextTask2);
         mListView = (ListView)view.findViewById(R.id.listViewTasks);
-        mButtonAddTask = (Button)view.findViewById(R.id.buttonAddTask);
-        mSectionAddTask = (LinearLayout)view.findViewById(R.id.sectionAddTask);
 
         setKeyboardVisibility(mEditText);
-        setKeyboardVisibility2(mEditText2);
 
         mController = ((MainActivity)mContext).getController();
         if (mTaskList == null) {
@@ -137,9 +121,6 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
 
         // Bind the Array Adapter to the List View
         mListView.setAdapter(mSlideAdapter);
-
-        // invoke this object's onClick method when a task is added
-        mButtonAddTask.setOnClickListener(this);
 
         return view;
     }
@@ -250,75 +231,12 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
             Log.d(TAG, "valid RefreshTaskListEvent received in TaskListFragment");
             refreshUI();
             mEditText.setText("");
-            mEditText2.setText("");
         }
     }
 
     public void onEvent(MoveTaskEvent event) {
         if (isEventRelevant(event.getOldTaskList()) || isEventRelevant(event.getNewTaskList())) {
             refreshUI();
-        }
-    }
-
-    public void onEvent(ToggleAddTaskFormEvent event) {
-        if (isEventRelevant(event.getTaskList())) {
-
-            int h = mSectionAddTask.getMeasuredHeight();
-            float fakeheight = 96.0f;
-            float height = h == 0 ? fakeheight : (float)h;
-
-            Animation anim;
-            if (mSectionAddTask.getVisibility() == View.GONE) {
-                // show the 'add task' field
-                anim = AnimationHelper.slideDownAnimation();
-                mSectionAddTask.startAnimation(anim);
-                mSectionAddTask.setVisibility(View.VISIBLE);
-                anim.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        mEditText.requestFocus();
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-                    }
-                });
-
-                Animation listAnim = AnimationHelper.slideDownAnimation(height);
-                mListView.startAnimation(listAnim);
-
-            } else {
-
-                anim = AnimationHelper.slideUpAnimation();
-                mSectionAddTask.startAnimation(anim);
-                anim.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        mSectionAddTask.setVisibility(View.GONE);
-                        // prevents flicker when mSectionAddTask is hidden
-                        mListView.clearAnimation();
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-                    }
-                });
-
-                Animation listAnim = AnimationHelper.slideUpAnimation(height);
-                mListView.startAnimation(listAnim);
-            }
-        } else { // not the current task list
-            // set as invisible
-            mSectionAddTask.setVisibility(View.GONE);
         }
     }
 
@@ -341,23 +259,6 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     private void setKeyboardVisibility(EditText editText) {
-        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-
-                InputMethodManager imm = (InputMethodManager)mContext
-                        .getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                if (hasFocus) {
-                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-                } else {
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
-            }
-        });
-    }
-
-    private void setKeyboardVisibility2(EditText editText) {
 
         editText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -370,7 +271,7 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
     }
 
     private void addTask() {
-        String content = mEditText2.getText().toString().trim();
+        String content = mEditText.getText().toString().trim();
         if (content.length() == 0) {
             // don't add empty strings
             return;
@@ -397,37 +298,6 @@ public final class TaskListFragment extends Fragment implements OnClickListener 
         // update db
         mController.onTaskAdd(task, mTaskList.getName());
     }
-
-    @Override
-    public void onClick(View v) {
-        String content = mEditText.getText().toString().trim();
-        if (content.length() == 0) {
-            // don't add empty strings
-            return;
-        }
-
-        String now = DateFormatHelper.today();
-
-        Task task = new Task.Builder()
-                        .content(content)
-                        .state(0)
-                        .startedAt(now)
-                        .build();
-
-        if (D) {
-            Log.d(TAG, "adding a task");
-            // this task has an id of 0, can't just add it to mTasks
-            Log.d(TAG, "id: " + task.getId());
-            Log.d(TAG, "content: " + task.getContent());
-            Log.d(TAG, "state: " + task.getState());
-            Log.d(TAG, "startedAt: " + task.getStartedAt());
-            Log.d(TAG, "finishedAt: " + task.getFinishedAt());
-        }
-
-        // update db
-        mController.onTaskAdd(task, mTaskList.getName());
-    }
-
 
     private void updateLocalTaskList() {
         TaskList tasklist = mController.onGetTaskList(mTaskList.getName());

@@ -24,7 +24,6 @@ import de.greenrobot.event.EventBus;
 import io.indy.octodo.R;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
-import io.indy.octodo.event.ToggleAddTaskFormEvent;
 import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.DriveModel;
 import io.indy.octodo.model.Task;
@@ -97,10 +96,6 @@ public class MainController {
         // show Crouton
         String messagePrefix = mActivity.getString(R.string.notification_remove_completed_tasks);
         notifyUser(messagePrefix + " \"" + taskListName + "\"");
-    }
-
-    public void onToggleAddTaskForm(TaskList taskList) {
-        post(new ToggleAddTaskFormEvent(taskList));
     }
 
     public boolean deleteList(String name) {

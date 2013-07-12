@@ -284,12 +284,6 @@ public class MainActivity extends DriveBaseActivity {
                 Toast.makeText(this, "menu settings", Toast.LENGTH_SHORT).show();
                 break;
 
-            case R.id.menu_add_task:
-                // show the 'add task' ui element in the relevant task list
-                // fragment
-                mController.onToggleAddTaskForm(getCurrentTaskList());
-                break;
-
             case R.id.menu_manage_lists:
                 startManageListsActivity();
                 break;
