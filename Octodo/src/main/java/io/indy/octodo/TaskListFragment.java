@@ -101,7 +101,7 @@ public final class TaskListFragment extends Fragment {
         mEditText = (EditText)view.findViewById(R.id.editTextTask);
         mListView = (ListView)view.findViewById(R.id.listViewTasks);
 
-        setKeyboardVisibility(mEditText);
+        setKeyboardListener(mEditText);
 
         mController = ((MainActivity)mContext).getController();
         if (mTaskList == null) {
@@ -258,7 +258,7 @@ public final class TaskListFragment extends Fragment {
         }
     }
 
-    private void setKeyboardVisibility(EditText editText) {
+    private void setKeyboardListener(EditText editText) {
 
         editText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
