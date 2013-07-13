@@ -81,7 +81,6 @@ public class ManageListsActivity extends DriveBaseActivity {
     private void showTrashIcon() {
         if(!mShowTrashIcon) {
             mShowTrashIcon = true;
-//            invalidateOptionsMenu();
             supportInvalidateOptionsMenu();
         }
     }
@@ -89,7 +88,6 @@ public class ManageListsActivity extends DriveBaseActivity {
     private void hideTrashIcon() {
         if(mShowTrashIcon) {
             mShowTrashIcon = false;
-//            invalidateOptionsMenu();
             supportInvalidateOptionsMenu();
         }
     }
@@ -187,13 +185,10 @@ public class ManageListsActivity extends DriveBaseActivity {
         inflater.inflate(R.menu.activity_manage_lists, menu);
 
         if(mShowTrashIcon) {
-            Log.d(TAG, "show trash icon");
-            MenuItem mi = menu.add(0, 0, 0, "Discard Lists");
+            MenuItem mi = menu.add(Menu.NONE, 0, Menu.NONE, R.string.discard_lists);
             mi.setIcon(R.drawable.ic_discard).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             mTrashItemId = mi.getItemId();
-            Log.d(TAG, "trash item id is " + mTrashItemId);
         } else {
-            Log.d(TAG, "hide trash icon");
             menu.removeItem(mTrashItemId);
         }
 
