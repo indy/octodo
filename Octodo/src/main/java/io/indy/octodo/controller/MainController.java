@@ -98,8 +98,8 @@ public class MainController {
         notifyUser(messagePrefix + " \"" + taskListName + "\"");
     }
 
-    public boolean deleteList(String name) {
-        return mDriveModel.deleteList(name);
+    public void deleteSelectedTaskLists() {
+        mDriveModel.deleteSelectedTaskLists();
     }
 
     public void addList(String name) {

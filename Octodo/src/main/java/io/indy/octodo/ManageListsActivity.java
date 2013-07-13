@@ -17,7 +17,6 @@
 package io.indy.octodo;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -35,6 +34,7 @@ import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.ManageListsAdapter;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
+import io.indy.octodo.event.ToggledListSelectionEvent;
 import io.indy.octodo.model.TaskList;
 
 public class ManageListsActivity extends DriveBaseActivity {
@@ -53,11 +53,54 @@ public class ManageListsActivity extends DriveBaseActivity {
 
     private EditText mEditText;
 
+
+    private boolean mShowTrashIcon;
+    private int mTrashItemId;
+
     public void onEvent(HaveCurrentTaskListEvent event) {
         if(D) {
             Log.d(TAG, "received HaveCurrentTaskListEvent");
         }
         refreshTaskLists();
+    }
+
+    // A checkbox next to a list's name has been toggled
+    //
+    public void onEvent(ToggledListSelectionEvent event) {
+        if(D) {
+            Log.d(TAG, "received ToggledListSelectionEvent");
+        }
+
+        if(isAnyTaskListSelected(mTaskLists)) {
+            showTrashIcon();
+        } else {
+            hideTrashIcon();
+        }
+    }
+
+    private void showTrashIcon() {
+        if(!mShowTrashIcon) {
+            mShowTrashIcon = true;
+//            invalidateOptionsMenu();
+            supportInvalidateOptionsMenu();
+        }
+    }
+
+    private void hideTrashIcon() {
+        if(mShowTrashIcon) {
+            mShowTrashIcon = false;
+//            invalidateOptionsMenu();
+            supportInvalidateOptionsMenu();
+        }
+    }
+
+    private boolean isAnyTaskListSelected(List<TaskList> taskLists) {
+        for(TaskList taskList : taskLists) {
+            if(taskList.isSelected()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void onDriveInitialised() {
@@ -142,24 +185,29 @@ public class ManageListsActivity extends DriveBaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.activity_manage_lists, menu);
+
+        if(mShowTrashIcon) {
+            Log.d(TAG, "show trash icon");
+            MenuItem mi = menu.add(0, 0, 0, "Discard Lists");
+            mi.setIcon(R.drawable.ic_discard).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            mTrashItemId = mi.getItemId();
+            Log.d(TAG, "trash item id is " + mTrashItemId);
+        } else {
+            Log.d(TAG, "hide trash icon");
+            menu.removeItem(mTrashItemId);
+        }
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-            case R.id.menu_discard_lists:
-                for (TaskList tl : mTaskLists) {
-                    if (tl.isSelected()) {
-                        mController.deleteList(tl.getName());
-                    }
-                }
-                refreshTaskLists();
-                // send an event to MainActivity?
-                break;
-            case android.R.id.home:
-                finish();
+        if(item.getItemId() == mTrashItemId) {
+            mController.deleteSelectedTaskLists();
+            refreshTaskLists();
+        } else if(item.getItemId() == android.R.id.home) {
+            finish();
         }
 
         return super.onOptionsItemSelected(item);

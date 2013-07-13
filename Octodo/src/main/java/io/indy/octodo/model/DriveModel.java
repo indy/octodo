@@ -209,6 +209,23 @@ public class DriveModel {
         return taskLists;
     }
 
+    public void deleteSelectedTaskLists() {
+        List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
+        List<TaskList> removable = new ArrayList<TaskList>();
+
+        for(TaskList taskList: taskLists) {
+            if(taskList.isSelected()) {
+                removable.add(taskList);
+            }
+        }
+
+        for(TaskList taskList : removable) {
+            taskLists.remove(taskList);
+        }
+
+        mDriveDatabase.saveCurrentTaskLists();
+    }
+
     public List<TaskList> getDeleteableTaskLists() {
         List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
 

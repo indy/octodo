@@ -18,76 +18,40 @@ package io.indy.octodo.adapter;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.TextView;
 
 import java.util.List;
 
-import io.indy.octodo.R;
 import io.indy.octodo.model.TaskList;
+import io.indy.octodo.view.ManageListItemView;
 
-public class ManageListsAdapter extends ArrayAdapter<TaskList> implements OnClickListener {
+public class ManageListsAdapter extends ArrayAdapter<TaskList> {
 
     private final String TAG = getClass().getSimpleName();
 
     private static final boolean D = true;
 
-    private final LayoutInflater mInflater;
-
     public ManageListsAdapter(Context context, List<TaskList> items) {
         super(context, android.R.layout.simple_list_item_1, items);
 
-        String inflater = Context.LAYOUT_INFLATER_SERVICE;
-        mInflater = (LayoutInflater)context.getSystemService(inflater);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View v, ViewGroup parent) {
+
         if (D) {
-            Log.d(TAG, "getView position:" + position);
-        }
-        if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.row_list, parent, false);
-
-            CheckBox delMe = (CheckBox)convertView.findViewById(R.id.deleteMe);
-            delMe.setOnClickListener(this);
-
-            ManageListsViewHolder holder = new ManageListsViewHolder();
-            delMe.setTag(holder);
+            Log.d(TAG, "getView position: " + position);
         }
 
-        TaskList taskList = getItem(position);
+        ManageListItemView manageListItemView = (ManageListItemView)v;
+        if (manageListItemView == null) {
+            manageListItemView = new ManageListItemView(getContext());
+        }
 
-        CheckBox delMe = (CheckBox)convertView.findViewById(R.id.deleteMe);
+        manageListItemView.setup(getItem(position));
 
-        ManageListsViewHolder holder = (ManageListsViewHolder)delMe.getTag();
-        holder.mTaskList = taskList;
-
-        String name = taskList.getName();
-        TextView tv = (TextView)convertView.findViewById(R.id.name);
-        tv.setText(name);
-
-        return convertView;
-    }
-
-    @Override
-    public void onClick(View view) {
-        CheckBox cb = (CheckBox)view;
-        ManageListsViewHolder holder = (ManageListsViewHolder)cb.getTag();
-        TaskList taskList = holder.mTaskList;
-
-        String name = taskList.getName();
-        Log.d(TAG, "clicked on " + name);
-
-        taskList.setSelected(cb.isChecked());
-    }
-
-    public static class ManageListsViewHolder {
-        public TaskList mTaskList;
+        return manageListItemView;
     }
 }
