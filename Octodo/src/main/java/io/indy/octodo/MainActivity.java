@@ -35,6 +35,7 @@ import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.TaskListPagerAdapter;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
+import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.model.TaskList;
 
 public class MainActivity extends DriveBaseActivity {
@@ -52,6 +53,10 @@ public class MainActivity extends DriveBaseActivity {
     private MainController mController;
 
     private List<String> mTaskListNames;
+
+    private boolean mShowTrashIcon;
+
+    private int mTrashItemId;
 
     // TODO: check why this is used now
     public void refreshTaskListsUI() {
@@ -93,9 +98,20 @@ public class MainActivity extends DriveBaseActivity {
         return mController;
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(HaveCurrentTaskListEvent event) {
         Log.d(TAG, "received HaveCurrentTaskListEvent");
         refreshTaskListsUI();
+    }
+
+    // MainActivity only uses this event to determine if
+    // the trash icon should be shown in the ActionBar
+    //
+    @SuppressWarnings({"UnusedDeclaration"})
+    public void onEvent(RefreshTaskListEvent event) {
+        String taskListName = event.getTaskListName();
+        // assume that the given taskList is the one that's being shown on the UI
+        determineTrashIconVisibility(taskListName);
     }
 
     public void onDriveInitialised() {
@@ -127,6 +143,39 @@ public class MainActivity extends DriveBaseActivity {
         }
     }
 
+    private class PageListener extends ViewPager.SimpleOnPageChangeListener {
+        public void onPageSelected(int position) {
+            String currentListName = mTaskListNames.get(position);
+            determineTrashIconVisibility(currentListName);
+        }
+    }
+
+    // only show the trash icon in the action bar if the current TaskList has struck items
+    private void determineTrashIconVisibility(String taskListName) {
+        TaskList taskList = mController.onGetTaskList(taskListName);
+        if(taskList.hasStruckTasks()) {
+            showTrashIcon();
+        } else {
+            hideTrashIcon();
+        }
+    }
+
+    private void showTrashIcon() {
+        Log.d(TAG, "showTrashIcon");
+        if(!mShowTrashIcon) {
+            mShowTrashIcon = true;
+            supportInvalidateOptionsMenu();
+        }
+    }
+
+    private void hideTrashIcon() {
+        Log.d(TAG, "hideTrashIcon");
+        if(mShowTrashIcon) {
+            mShowTrashIcon = false;
+            supportInvalidateOptionsMenu();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,8 +184,6 @@ public class MainActivity extends DriveBaseActivity {
         if (D) {
             Log.d(TAG, "onCreate");
         }
-
-        //EventBus.getDefault().register(this);
 
         mController = new MainController(this, mDriveModel);
 
@@ -149,6 +196,8 @@ public class MainActivity extends DriveBaseActivity {
         mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
 
+        PageListener pageListener = new PageListener();
+        mIndicator.setOnPageChangeListener(pageListener);
 
         mDriveDatabase.initialise();
     }
@@ -267,6 +316,15 @@ public class MainActivity extends DriveBaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.activity_main, menu);
+
+        if(mShowTrashIcon) {
+            MenuItem mi = menu.add(Menu.NONE, 0, Menu.NONE, R.string.discard_lists);
+            mi.setIcon(R.drawable.ic_discard).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            mTrashItemId = mi.getItemId();
+        } else {
+            menu.removeItem(mTrashItemId);
+        }
+
         return true;
     }
 
@@ -274,12 +332,11 @@ public class MainActivity extends DriveBaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "clicked " + item);
 
+        if(item.getItemId() == mTrashItemId) {
+            mController.onRemoveCompletedTasks(getCurrentTaskListName());
+        }
+
         switch (item.getItemId()) {
-            case R.id.menu_remove_completed_tasks:
-
-                mController.onRemoveCompletedTasks(getCurrentTaskListName());
-                break;
-
             case R.id.menu_settings:
                 Toast.makeText(this, "menu settings", Toast.LENGTH_SHORT).show();
                 break;

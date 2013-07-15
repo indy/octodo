@@ -54,6 +54,15 @@ public class TaskList {
     private static final String TASKS = "tasks";
 
 
+    public boolean hasStruckTasks() {
+        for(Task task: mTasks) {
+            if(task.getState() == Task.STATE_STRUCK) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void logTaskList() {
 
         Log.d(TAG, "logTaskList: " + mName);
