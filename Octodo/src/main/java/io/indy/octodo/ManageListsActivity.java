@@ -57,6 +57,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     private boolean mShowTrashIcon;
     private int mTrashItemId;
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(HaveCurrentTaskListEvent event) {
         if(D) {
             Log.d(TAG, "received HaveCurrentTaskListEvent");
@@ -66,6 +67,7 @@ public class ManageListsActivity extends DriveBaseActivity {
 
     // A checkbox next to a list's name has been toggled
     //
+    @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(ToggledListSelectionEvent event) {
         if(D) {
             Log.d(TAG, "received ToggledListSelectionEvent");

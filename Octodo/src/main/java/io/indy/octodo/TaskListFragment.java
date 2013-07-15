@@ -218,6 +218,7 @@ public final class TaskListFragment extends Fragment {
     }
 
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(HaveCurrentTaskListEvent event) {
         Log.d(TAG, "received HaveCurrentTaskListEvent");
         refreshUI();
@@ -225,6 +226,7 @@ public final class TaskListFragment extends Fragment {
 
     // common event fired whenever a task is modified and it's parent tasklist
     // UI needs to be updated
+    @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(RefreshTaskListEvent event) {
         Log.d(TAG, "received RefreshTaskListEvent");
         if (isEventRelevant(event.getTaskListName())) {
@@ -234,6 +236,7 @@ public final class TaskListFragment extends Fragment {
         }
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(MoveTaskEvent event) {
         if (isEventRelevant(event.getOldTaskList()) || isEventRelevant(event.getNewTaskList())) {
             refreshUI();
