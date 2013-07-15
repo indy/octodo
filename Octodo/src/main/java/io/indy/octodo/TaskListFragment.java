@@ -28,8 +28,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.tjerkw.slideexpandable.library.SlideExpandableListAdapter;
-
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -49,8 +47,6 @@ public final class TaskListFragment extends Fragment {
     private static final boolean D = true;
 
     private TaskItemAdapter mTaskItemAdapter;
-
-    private SlideExpandableListAdapter mSlideAdapter;
 
     private MainController mController;
 
@@ -115,12 +111,7 @@ public final class TaskListFragment extends Fragment {
         }
 
         mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList, mController);
-        Log.d(TAG, "mTaskItemAdapter = " + mTaskItemAdapter);
-        mSlideAdapter = new SlideExpandableListAdapter(mTaskItemAdapter, R.id.expandable_trigger,
-                R.id.expandable);
-
-        // Bind the Array Adapter to the List View
-        mListView.setAdapter(mSlideAdapter);
+        mListView.setAdapter(mTaskItemAdapter);
 
         return view;
     }
@@ -319,7 +310,6 @@ public final class TaskListFragment extends Fragment {
 
     // get the list of tasks from the model and display them
     private void refreshUI() {
-        mSlideAdapter.collapseLastOpen();
         updateLocalTaskList();
         mTaskItemAdapter.notifyDataSetChanged();
     }
