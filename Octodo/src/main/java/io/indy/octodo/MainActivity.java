@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -101,6 +102,8 @@ public class MainActivity extends DriveBaseActivity {
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(HaveCurrentTaskListEvent event) {
         Log.d(TAG, "received HaveCurrentTaskListEvent");
+
+        setSupportProgressBarIndeterminateVisibility(false);
         refreshTaskListsUI();
     }
 
@@ -138,6 +141,9 @@ public class MainActivity extends DriveBaseActivity {
             }
             // load tasklists if a previous activity hasn't done so
             // this async task will send a HaveCurrentTaskListEvent
+
+            setSupportProgressBarIndeterminateVisibility(true);
+
             mDriveModel.asyncLoadCurrentTaskLists();
             mDriveModel.asyncLoadHistoricTaskLists();
         }
@@ -179,6 +185,11 @@ public class MainActivity extends DriveBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //This has to be called before setContentView and you must use the
+        //class in com.actionbarsherlock.view and NOT android.view
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
         setContentView(R.layout.activity_main);
 
         if (D) {
