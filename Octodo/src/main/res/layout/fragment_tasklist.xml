@@ -7,8 +7,7 @@
     <ListView
         android:id="@+id/listViewTasks"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1">
+        android:layout_height="wrap_content">
     </ListView>
 
     <LinearLayout
@@ -21,15 +20,10 @@
             >
 
         <!-- invisible checkbox so that EditText lines up with row items -->
-        <RelativeLayout
+        <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:visibility="invisible">
-            <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true" />
-        </RelativeLayout>
+                android:visibility="invisible"/>
 
         <EditText
                 android:id="@+id/editTextTask"
