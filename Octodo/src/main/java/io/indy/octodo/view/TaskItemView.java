@@ -57,6 +57,8 @@ public class TaskItemView extends LinearLayout {
 
     private TextView mContent;
 
+    private LinearLayout mTaskRow;
+
     private Task mTask;
 
     public TaskItemView(Context context) {
@@ -70,12 +72,15 @@ public class TaskItemView extends LinearLayout {
 
         li.inflate(R.layout.row_task, this, true);
 
+
+        mTaskRow = (LinearLayout)findViewById(R.id.taskRow);
         mIsDone = (CheckBox)findViewById(R.id.isDone);
+        mContent = (TextView)findViewById(R.id.content);
+/*
         mEditTask = (ImageButton)findViewById(R.id.edit_task);
         mDeleteTask = (ImageButton)findViewById(R.id.delete_task);
         mMoveTask = (ImageButton)findViewById(R.id.move_task);
-        mContent = (TextView)findViewById(R.id.content);
-
+*/
         addClickListeners();
     }
 
@@ -105,9 +110,28 @@ public class TaskItemView extends LinearLayout {
 
     private void addClickListeners() {
         mIsDone.setOnClickListener(mOnClickListener);
-        mEditTask.setOnClickListener(mOnClickListener);
-        mMoveTask.setOnClickListener(mOnClickListener);
-        mDeleteTask.setOnClickListener(mOnClickListener);
+        //mEditTask.setOnClickListener(mOnClickListener);
+        //mMoveTask.setOnClickListener(mOnClickListener);
+        //mDeleteTask.setOnClickListener(mOnClickListener);
+
+
+        mTaskRow.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Log.d(TAG, "taskRow received long click");
+                return true;
+            }
+        });
+
+        mTaskRow.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "taskRow received normal click");
+
+                mIsDone.setChecked(!mIsDone.isChecked());
+                clickedIsDone(mIsDone);
+            }
+        });
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -117,6 +141,7 @@ public class TaskItemView extends LinearLayout {
                 case R.id.isDone:
                     clickedIsDone(v);
                     break;
+                /*
                 case R.id.edit_task:
                     clickedEditTask(v);
                     break;
@@ -126,6 +151,7 @@ public class TaskItemView extends LinearLayout {
                 case R.id.move_task:
                     clickedMoveTask(v);
                     break;
+                */
             }
         }
     };

@@ -1,95 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:baselineAligned="false"
-        android:orientation="horizontal"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp" >
+            android:id="@+id/taskRow"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp">
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" >
-
-            <CheckBox
+        <CheckBox
                 android:id="@+id/isDone"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true" />
-        </RelativeLayout>
+                android:layout_height="match_parent"/>
 
         <RelativeLayout
-            android:id="@+id/expandable_trigger"
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal" >
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:paddingLeft="8dp"
-                android:text="" />
+                    android:id="@+id/content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:paddingLeft="8dp"
+                    android:text=""/>
         </RelativeLayout>
-    </LinearLayout>
 
-    <!-- this is the expandable view that is initially hidden and will slide out when the more button is pressed -->
-
-    <LinearLayout
-        android:id="@+id/expandable"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFCCCCCC"
-        android:orientation="horizontal" >
-
-        <!-- put whatever you want in the expandable view -->
-
-        <ImageButton
-            android:id="@+id/time_task"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:background="@null"
-            android:contentDescription="@string/content_desc_time_task"
-            android:padding="8dp"
-            android:src="@drawable/device_access_time" />
-
-        <ImageButton
-            android:id="@+id/edit_task"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:background="@null"
-            android:contentDescription="@string/content_desc_edit_task"
-            android:padding="8dp"
-            android:src="@drawable/ic_action_edit" />
-
-        <ImageButton
-            android:id="@+id/move_task"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:background="@null"
-            android:contentDescription="@string/content_desc_move_task"
-            android:padding="8dp"
-            android:src="@drawable/ic_action_move_task" />
-
-        <ImageButton
-            android:id="@+id/delete_task"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:background="@null"
-            android:contentDescription="@string/content_desc_delete_task"
-            android:padding="8dp"
-            android:src="@drawable/ic_action_delete" />
     </LinearLayout>
 
 </LinearLayout>
