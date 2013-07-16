@@ -169,7 +169,7 @@ public class TaskItemView extends LinearLayout {
         }
 
         mController.onTaskUpdateState(mTask, state);
-    };
+    }
 
     private void clickedEditTask(View view) {
         if (D) {
