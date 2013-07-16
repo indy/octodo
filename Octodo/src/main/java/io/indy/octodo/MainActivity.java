@@ -74,6 +74,7 @@ public class MainActivity extends DriveBaseActivity {
                 mTaskListNames.add(taskList.getName());
             }
             mAdapter.notifyDataSetChanged();
+            mIndicator.notifyDataSetChanged();
         }
     }
 
