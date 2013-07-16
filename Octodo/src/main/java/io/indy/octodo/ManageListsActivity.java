@@ -103,10 +103,14 @@ public class ManageListsActivity extends DriveBaseActivity {
         return false;
     }
 
-    public void onDriveInitialised() {
+    public void onDriveDatabaseInitialised() {
+        super.onDriveDatabaseInitialised();
+
         if(D) {
-            Log.d(TAG, "onDriveInitialised");
+            Log.d(TAG, "onDriveDatabaseInitialised");
         }
+
+        mController = new MainController(this, mDriveModel);
 
         if(mDriveModel.hasLoadedTaskLists()) {
             // use already loaded data
@@ -126,8 +130,6 @@ public class ManageListsActivity extends DriveBaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mListView = (ListView)findViewById(R.id.listViewTaskLists);
-
-        mController = new MainController(this, mDriveModel);
 
         mTaskLists = new ArrayList<TaskList>();
 

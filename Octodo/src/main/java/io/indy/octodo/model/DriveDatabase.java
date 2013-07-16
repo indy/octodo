@@ -244,7 +244,7 @@ public class DriveDatabase {
                         mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mActivity.onDriveInitialised();
+                                mActivity.onDriveDatabaseInitialised();
                             }
                         });
                     }
@@ -321,9 +321,7 @@ public class DriveDatabase {
 
             if(hasBothJsonFileIdPreferences()) {
                 Log.d(TAG, "have both json files");
-                // load contents of the 2 json files
-                mActivity.onDriveInitialised();
-
+                mActivity.onDriveDatabaseInitialised();
             } else {
                 ensureJsonFilesExist();
             }

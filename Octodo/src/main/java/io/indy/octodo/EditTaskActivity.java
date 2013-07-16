@@ -32,10 +32,15 @@ public class EditTaskActivity extends DriveBaseActivity {
 
     private MainController mController;
 
-    public void onDriveInitialised() {
+    public void onDriveDatabaseInitialised() {
+        super.onDriveDatabaseInitialised();
+
         if(D) {
-            Log.d(TAG, "onDriveInitialised");
+            Log.d(TAG, "onDriveDatabaseInitialised");
         }
+
+        mController = new MainController(this, mDriveModel);
+
 
         if(mDriveModel.hasLoadedTaskLists()) {
             // use already loaded data
@@ -62,8 +67,6 @@ public class EditTaskActivity extends DriveBaseActivity {
         setContentView(R.layout.activity_edit_task);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        mController = new MainController(this, mDriveModel);
 
         mDriveDatabase.initialise();
     }

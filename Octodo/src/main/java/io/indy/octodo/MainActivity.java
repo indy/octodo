@@ -119,7 +119,11 @@ public class MainActivity extends DriveBaseActivity {
         determineTrashIconVisibility(taskListName);
     }
 
-    public void onDriveInitialised() {
+    @Override
+    public void onDriveDatabaseInitialised() {
+        // create mDriveModel
+        super.onDriveDatabaseInitialised();
+
         /*
          * CURRENT STATE
            - we're on the main thread
@@ -127,8 +131,11 @@ public class MainActivity extends DriveBaseActivity {
            - the 2 json files exist and we have their file ids
          */
 
+
+        mController = new MainController(this, mDriveModel);
+
         if(D) {
-            Log.d(TAG, "onDriveInitialised");
+            Log.d(TAG, "onDriveDatabaseInitialised");
         }
 
         if(mDriveModel.hasLoadedTaskLists()) {
@@ -200,8 +207,6 @@ public class MainActivity extends DriveBaseActivity {
         if (D) {
             Log.d(TAG, "onCreate");
         }
-
-        mController = new MainController(this, mDriveModel);
 
         mTaskListNames = new ArrayList<String>();
         mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskListNames);

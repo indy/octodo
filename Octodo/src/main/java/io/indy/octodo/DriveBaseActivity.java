@@ -28,7 +28,7 @@ import io.indy.octodo.model.DriveDatabase;
 public abstract class DriveBaseActivity extends SherlockFragmentActivity {
 
     private final String TAG = getClass().getSimpleName();
-    private static final boolean D = true;
+    private static final boolean D = false;
 
     protected DriveDatabase mDriveDatabase;
     protected DriveModel mDriveModel;
@@ -42,14 +42,18 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
         }
 
         mDriveDatabase = new DriveDatabase(this);
-        mDriveModel = new DriveModel(mDriveDatabase);
     }
-
-    public abstract void onDriveInitialised();
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         mDriveDatabase.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void onDriveDatabaseInitialised() {
+        if(D) {
+            Log.d(TAG, "onDriveDatabaseInitialised");
+        }
+        mDriveModel = new DriveModel(mDriveDatabase);
     }
 
 }
