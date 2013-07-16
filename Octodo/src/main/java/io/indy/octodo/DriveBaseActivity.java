@@ -31,7 +31,10 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
     private static final boolean D = false;
 
     protected DriveDatabase mDriveDatabase;
+
     protected DriveModel mDriveModel;
+
+    protected boolean mDriveDatabaseInitialised;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,7 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
             Log.d(TAG, "onCreate");
         }
 
+        mDriveDatabaseInitialised = false;
         mDriveDatabase = new DriveDatabase(this);
     }
 
@@ -53,7 +57,12 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
         if(D) {
             Log.d(TAG, "onDriveDatabaseInitialised");
         }
+        mDriveDatabaseInitialised = true;
         mDriveModel = new DriveModel(mDriveDatabase);
+    }
+
+    public boolean isDriveDatabaseInitialised() {
+        return mDriveDatabaseInitialised;
     }
 
 }

@@ -53,9 +53,50 @@ public class ManageListsActivity extends DriveBaseActivity {
 
     private EditText mEditText;
 
-
     private boolean mShowTrashIcon;
+
     private int mTrashItemId;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_manage_lists);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mListView = (ListView)findViewById(R.id.listViewTaskLists);
+
+        mTaskLists = new ArrayList<TaskList>();
+
+        mAdapter = new ManageListsAdapter(this, mTaskLists);
+
+        mEditText = (EditText)findViewById(R.id.editText2);
+        setKeyboardListener(mEditText);
+
+        mListView.setAdapter(mAdapter);
+
+        mDriveDatabase.initialise();
+    }
+
+    @Override
+    public void onDriveDatabaseInitialised() {
+        super.onDriveDatabaseInitialised();
+
+        if(D) {
+            Log.d(TAG, "onDriveDatabaseInitialised");
+        }
+
+        mController = new MainController(this, mDriveModel);
+
+        if(mDriveModel.hasLoadedTaskLists()) {
+            // use already loaded data
+            refreshTaskLists();
+        } else {
+            // load tasklists if a previous activity hasn't done so
+            // this async task will send a HaveCurrentTaskListEvent
+            mDriveModel.asyncLoadCurrentTaskLists();
+        }
+
+    }
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(HaveCurrentTaskListEvent event) {
@@ -78,71 +119,6 @@ public class ManageListsActivity extends DriveBaseActivity {
         } else {
             hideTrashIcon();
         }
-    }
-
-    private void showTrashIcon() {
-        if(!mShowTrashIcon) {
-            mShowTrashIcon = true;
-            supportInvalidateOptionsMenu();
-        }
-    }
-
-    private void hideTrashIcon() {
-        if(mShowTrashIcon) {
-            mShowTrashIcon = false;
-            supportInvalidateOptionsMenu();
-        }
-    }
-
-    private boolean isAnyTaskListSelected(List<TaskList> taskLists) {
-        for(TaskList taskList : taskLists) {
-            if(taskList.isSelected()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void onDriveDatabaseInitialised() {
-        super.onDriveDatabaseInitialised();
-
-        if(D) {
-            Log.d(TAG, "onDriveDatabaseInitialised");
-        }
-
-        mController = new MainController(this, mDriveModel);
-
-        if(mDriveModel.hasLoadedTaskLists()) {
-            // use already loaded data
-            refreshTaskLists();
-        } else {
-            // load tasklists if a previous activity hasn't done so
-            // this async task will send a HaveCurrentTaskListEvent
-            mDriveModel.asyncLoadCurrentTaskLists();
-        }
-
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_lists);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        mListView = (ListView)findViewById(R.id.listViewTaskLists);
-
-        mTaskLists = new ArrayList<TaskList>();
-
-        mAdapter = new ManageListsAdapter(this, mTaskLists);
-
-        mEditText = (EditText)findViewById(R.id.editText2);
-        setKeyboardListener(mEditText);
-
-
-        // Bind the Adapter to the List View
-        mListView.setAdapter(mAdapter);
-
-        mDriveDatabase.initialise();
     }
 
     @Override
@@ -242,5 +218,28 @@ public class ManageListsActivity extends DriveBaseActivity {
         mTaskLists.clear();
         mTaskLists.addAll(taskLists);
         mAdapter.notifyDataSetChanged();
+    }
+
+    private void showTrashIcon() {
+        if(!mShowTrashIcon) {
+            mShowTrashIcon = true;
+            supportInvalidateOptionsMenu();
+        }
+    }
+
+    private void hideTrashIcon() {
+        if(mShowTrashIcon) {
+            mShowTrashIcon = false;
+            supportInvalidateOptionsMenu();
+        }
+    }
+
+    private boolean isAnyTaskListSelected(List<TaskList> taskLists) {
+        for(TaskList taskList : taskLists) {
+            if(taskList.isSelected()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

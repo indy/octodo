@@ -32,6 +32,17 @@ public class EditTaskActivity extends DriveBaseActivity {
 
     private MainController mController;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit_task);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mDriveDatabase.initialise();
+    }
+
+    @Override
     public void onDriveDatabaseInitialised() {
         super.onDriveDatabaseInitialised();
 
@@ -49,7 +60,6 @@ public class EditTaskActivity extends DriveBaseActivity {
             // MainActivity should have managed the data loading into DriveModel
             Log.e(TAG, "DriveModel should have loaded the data");
         }
-
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
@@ -57,18 +67,6 @@ public class EditTaskActivity extends DriveBaseActivity {
         if(D) {
             Log.d(TAG, "received HaveCurrentTaskListEvent");
         }
-    }
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_task);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        mDriveDatabase.initialise();
     }
 
     @Override

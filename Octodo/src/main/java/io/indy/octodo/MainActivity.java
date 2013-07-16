@@ -60,63 +60,37 @@ public class MainActivity extends DriveBaseActivity {
 
     private int mTrashItemId;
 
-    // TODO: check why this is used now
-    public void refreshTaskListsUI() {
+    private NotificationHelper mNotificationHelper;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //This has to be called before setContentView and you must use the
+        //class in com.actionbarsherlock.view and NOT android.view
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
+        setContentView(R.layout.activity_main);
+
         if (D) {
-            Log.d(TAG, "refreshTaskListsUI");
+            Log.d(TAG, "onCreate");
         }
 
-        List<TaskList> lists = mController.onGetTaskLists();
+        mTaskListNames = new ArrayList<String>();
+        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskListNames);
 
-        // re-create the list of tasklist names and notify mAdapter of change
-        if (lists != null) {
-            mTaskListNames.clear();
-            for(TaskList taskList: lists) {
-                mTaskListNames.add(taskList.getName());
-            }
-            mAdapter.notifyDataSetChanged();
-            mIndicator.notifyDataSetChanged();
-        }
-    }
+        mPager = (ViewPager)findViewById(R.id.pager);
+        mPager.setAdapter(mAdapter);
 
-    private void logTaskLists(String message) {
-        Log.d(TAG, message);
-        Log.d(TAG, "mTaskListNames.size() = " + mTaskListNames.size());
-        for(String s : mTaskListNames) {
-            Log.d(TAG, s);
-        }
-        Log.d(TAG, "");
-    }
+        mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
+        mIndicator.setViewPager(mPager);
 
-    public MainController getController() {
-        if (D) {
-            if (mController == null) {
-                Log.d(TAG, "getController null");
-            } else {
-                Log.d(TAG, "getController ok");
-            }
+        PageListener pageListener = new PageListener();
+        mIndicator.setOnPageChangeListener(pageListener);
 
-        }
+        mNotificationHelper = new NotificationHelper(this);
 
-        return mController;
-    }
-
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void onEvent(HaveCurrentTaskListEvent event) {
-        Log.d(TAG, "received HaveCurrentTaskListEvent");
-
-        setSupportProgressBarIndeterminateVisibility(false);
-        refreshTaskListsUI();
-    }
-
-    // MainActivity only uses this event to determine if
-    // the trash icon should be shown in the ActionBar
-    //
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void onEvent(RefreshTaskListEvent event) {
-        String taskListName = event.getTaskListName();
-        // assume that the given taskList is the one that's being shown on the UI
-        determineTrashIconVisibility(taskListName);
+        mDriveDatabase.initialise();
     }
 
     @Override
@@ -159,71 +133,25 @@ public class MainActivity extends DriveBaseActivity {
         }
     }
 
-    private class PageListener extends ViewPager.SimpleOnPageChangeListener {
-        public void onPageSelected(int position) {
-            String currentListName = mTaskListNames.get(position);
-            determineTrashIconVisibility(currentListName);
-        }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    public void onEvent(HaveCurrentTaskListEvent event) {
+        Log.d(TAG, "received HaveCurrentTaskListEvent");
+
+        setSupportProgressBarIndeterminateVisibility(false);
+        refreshTaskListsUI();
     }
 
-    // only show the trash icon in the action bar if the current TaskList has struck items
-    private void determineTrashIconVisibility(String taskListName) {
-        TaskList taskList = mController.onGetTaskList(taskListName);
-        if(taskList.hasStruckTasks()) {
-            showTrashIcon();
-        } else {
-            hideTrashIcon();
-        }
+    // MainActivity only uses this event to determine if
+    // the trash icon should be shown in the ActionBar
+    //
+    @SuppressWarnings({"UnusedDeclaration"})
+    public void onEvent(RefreshTaskListEvent event) {
+        String taskListName = event.getTaskListName();
+        // assume that the given taskList is the one that's being shown on the UI
+        determineTrashIconVisibility(taskListName);
     }
 
-    private void showTrashIcon() {
-        Log.d(TAG, "showTrashIcon");
-        if(!mShowTrashIcon) {
-            mShowTrashIcon = true;
-            supportInvalidateOptionsMenu();
-        }
-    }
-
-    private void hideTrashIcon() {
-        Log.d(TAG, "hideTrashIcon");
-        if(mShowTrashIcon) {
-            mShowTrashIcon = false;
-            supportInvalidateOptionsMenu();
-        }
-    }
-
-    NotificationHelper mNotificationHelper;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        //This has to be called before setContentView and you must use the
-        //class in com.actionbarsherlock.view and NOT android.view
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
-        setContentView(R.layout.activity_main);
-
-        if (D) {
-            Log.d(TAG, "onCreate");
-        }
-
-        mTaskListNames = new ArrayList<String>();
-        mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskListNames);
-
-        mPager = (ViewPager)findViewById(R.id.pager);
-        mPager.setAdapter(mAdapter);
-
-        mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
-        mIndicator.setViewPager(mPager);
-
-        PageListener pageListener = new PageListener();
-        mIndicator.setOnPageChangeListener(pageListener);
-
-        mNotificationHelper = new NotificationHelper(this);
-
-        mDriveDatabase.initialise();
-    }
 
     // Called after onCreate has finished, use to restore UI state
     @Override
@@ -249,10 +177,12 @@ public class MainActivity extends DriveBaseActivity {
             Log.d(TAG, "onRestart");
         }
 
-        // Load changes knowing that the Activity has already
-        // been visible within this process.
-        refreshTaskListsUI();
-        //new TaskListsAsyncTask(mDriveModel).execute();
+        // need this check since onRestart() is called during the initial account setup phase
+        if(isDriveDatabaseInitialised()) {
+            // Load changes knowing that the Activity has already
+            // been visible within this process.
+            refreshTaskListsUI();
+        }
     }
 
     // Called at the start of the visible lifetime.
@@ -394,5 +324,80 @@ public class MainActivity extends DriveBaseActivity {
     private void startAboutActivity() {
         Intent intent = new Intent(this, AboutActivity.class);
         startActivity(intent);
+    }
+
+
+    private class PageListener extends ViewPager.SimpleOnPageChangeListener {
+        public void onPageSelected(int position) {
+            String currentListName = mTaskListNames.get(position);
+            determineTrashIconVisibility(currentListName);
+        }
+    }
+
+    // only show the trash icon in the action bar if the current TaskList has struck items
+    private void determineTrashIconVisibility(String taskListName) {
+        TaskList taskList = mController.onGetTaskList(taskListName);
+        if(taskList.hasStruckTasks()) {
+            showTrashIcon();
+        } else {
+            hideTrashIcon();
+        }
+    }
+
+    private void showTrashIcon() {
+        Log.d(TAG, "showTrashIcon");
+        if(!mShowTrashIcon) {
+            mShowTrashIcon = true;
+            supportInvalidateOptionsMenu();
+        }
+    }
+
+    private void hideTrashIcon() {
+        Log.d(TAG, "hideTrashIcon");
+        if(mShowTrashIcon) {
+            mShowTrashIcon = false;
+            supportInvalidateOptionsMenu();
+        }
+    }
+
+    // TODO: check why this is used now
+    public void refreshTaskListsUI() {
+        if (D) {
+            Log.d(TAG, "refreshTaskListsUI");
+        }
+
+        List<TaskList> lists = mController.onGetTaskLists();
+
+        // re-create the list of tasklist names and notify mAdapter of change
+        if (lists != null) {
+            mTaskListNames.clear();
+            for(TaskList taskList: lists) {
+                mTaskListNames.add(taskList.getName());
+            }
+            mAdapter.notifyDataSetChanged();
+            mIndicator.notifyDataSetChanged();
+        }
+    }
+
+    private void logTaskLists(String message) {
+        Log.d(TAG, message);
+        Log.d(TAG, "mTaskListNames.size() = " + mTaskListNames.size());
+        for(String s : mTaskListNames) {
+            Log.d(TAG, s);
+        }
+        Log.d(TAG, "");
+    }
+
+    public MainController getController() {
+        if (D) {
+            if (mController == null) {
+                Log.d(TAG, "getController null");
+            } else {
+                Log.d(TAG, "getController ok");
+            }
+
+        }
+
+        return mController;
     }
 }
