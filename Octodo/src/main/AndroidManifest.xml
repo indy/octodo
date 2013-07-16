@@ -8,17 +8,16 @@
         android:minSdkVersion="9"
         android:targetSdkVersion="17" />
 
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
     <application
+        android:name="io.indy.octodo.OctodoApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:logo="@drawable/ic_logo"
         android:label="@string/app_name"
-        android:name=".OctodoApplication"
+        android:logo="@drawable/ic_logo"
         android:theme="@style/Theme.Octodo" >
         <activity
             android:name="io.indy.octodo.MainActivity"
@@ -38,6 +37,10 @@
             android:name="io.indy.octodo.ManageListsActivity"
             android:label="@string/title_activity_manage_lists"
             android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
+            android:name="io.indy.octodo.EditTaskActivity"
+            android:label="@string/title_activity_edit_task" >
         </activity>
     </application>
 

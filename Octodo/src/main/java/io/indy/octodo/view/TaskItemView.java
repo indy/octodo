@@ -19,6 +19,7 @@ package io.indy.octodo.view;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import io.indy.octodo.EditTaskActivity;
 import io.indy.octodo.R;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Task;
@@ -119,6 +121,8 @@ public class TaskItemView extends LinearLayout {
             @Override
             public boolean onLongClick(View view) {
                 Log.d(TAG, "taskRow received long click");
+                Intent intent = new Intent(mContext, EditTaskActivity.class);
+                mContext.startActivity(intent);
                 return true;
             }
         });
