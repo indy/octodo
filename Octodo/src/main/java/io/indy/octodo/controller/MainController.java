@@ -78,7 +78,7 @@ public class MainController {
 
         post(new MoveTaskEvent(task, task.getParentName(), destinationTaskList));
 
-        String messagePrefix = mActivity.getString(R.string.notification_moved_task);
+        String messagePrefix = mActivity.getString(R.string.confirmation_moved_task);
         notifyUser(messagePrefix + " \"" + destinationTaskList + "\"");
     }
 
@@ -94,7 +94,7 @@ public class MainController {
         postRefreshEvent(taskListName);
 
         // show Crouton
-        String messagePrefix = mActivity.getString(R.string.notification_remove_completed_tasks);
+        String messagePrefix = mActivity.getString(R.string.confirmation_remove_completed_tasks);
         notifyUser(messagePrefix + " \"" + taskListName + "\"");
     }
 

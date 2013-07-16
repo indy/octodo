@@ -32,18 +32,27 @@ public class NotificationHelper {
 
     private Style mConfirmStyle;
 
+    private Style mInformStyle;
+
     public NotificationHelper(Activity activity) {
         mActivity = activity;
 
         Resources res = activity.getResources();
 
         int octodoGreen = res.getColor(R.color.green);
-        int duration = res.getInteger(R.integer.notification_duration);
 
-        mConfirmStyle = new Builder().setDuration(duration)
-            .setBackgroundColorValue(octodoGreen)
-            .setHeight(LayoutParams.WRAP_CONTENT)
-            .build();
+        int confirmDuration = res.getInteger(R.integer.confirmation_duration);
+        mConfirmStyle = new Builder().setDuration(confirmDuration)
+                .setBackgroundColorValue(octodoGreen)
+                .setHeight(LayoutParams.WRAP_CONTENT)
+                .build();
+
+
+        int informationDuration = res.getInteger(R.integer.information_duration);
+        mInformStyle = new Builder().setDuration(informationDuration)
+                .setBackgroundColorValue(octodoGreen)
+                .setHeight(LayoutParams.WRAP_CONTENT)
+                .build();
     }
 
     public void cancelAllNotifications() {
@@ -52,5 +61,9 @@ public class NotificationHelper {
 
     public void showConfirmation(String message) {
         Crouton.makeText(mActivity, message, mConfirmStyle).show();
+    }
+
+    public void showInformation(String message) {
+        Crouton.makeText(mActivity, message, mInformStyle).show();
     }
 }

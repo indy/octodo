@@ -37,6 +37,7 @@ import io.indy.octodo.adapter.TaskListPagerAdapter;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.HaveCurrentTaskListEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
+import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.TaskList;
 
 public class MainActivity extends DriveBaseActivity {
@@ -143,6 +144,7 @@ public class MainActivity extends DriveBaseActivity {
             // load tasklists if a previous activity hasn't done so
             // this async task will send a HaveCurrentTaskListEvent
 
+            mNotificationHelper.showInformation(getString(R.string.information_syncing_data));
             setSupportProgressBarIndeterminateVisibility(true);
 
             mDriveModel.asyncLoadCurrentTaskLists();
@@ -183,6 +185,8 @@ public class MainActivity extends DriveBaseActivity {
         }
     }
 
+    NotificationHelper mNotificationHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,6 +214,8 @@ public class MainActivity extends DriveBaseActivity {
 
         PageListener pageListener = new PageListener();
         mIndicator.setOnPageChangeListener(pageListener);
+
+        mNotificationHelper = new NotificationHelper(this);
 
         mDriveDatabase.initialise();
     }
