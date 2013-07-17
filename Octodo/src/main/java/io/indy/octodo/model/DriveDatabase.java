@@ -43,9 +43,9 @@ import io.indy.octodo.OctodoApplication;
 import io.indy.octodo.async.UpdateTaskListsAsyncTask;
 
 public class DriveDatabase {
-
-    private static final String TAG = "DriveDatabase";
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = DriveDatabase.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     public static final int REQUEST_ACCOUNT_PICKER = 1;
     public static final int REQUEST_AUTHORIZATION = 2;
@@ -97,10 +97,7 @@ public class DriveDatabase {
     }
 
     public void updateFile(String jsonFile, JSONObject jsonObject) {
-
-        if(D) {
-            Log.d(TAG, "updatefile");
-        }
+        ifd("updatefile");
 
         try {
             String fileId = getJsonFileIdPreference(jsonFile);
@@ -112,11 +109,11 @@ public class DriveDatabase {
             File config = sService.files().update(ff.getId(), ff, content).execute();
 
             if(D) {
-                Log.d(TAG, "updated file");
+                ifd("updated file");
                 logFileMetadata(config, jsonFile);
             }
         } catch(IOException e) {
-            Log.d(TAG, "getJSON IOException: " + e);
+            ifd("getJSON IOException: " + e);
         }
     }
 
@@ -128,17 +125,13 @@ public class DriveDatabase {
             String fileId = getJsonFileIdPreference(driveFilename);
             File ff = DriveJunction.getFileMetadata(sService, fileId);
             String jsonString = DriveJunction.downloadFileAsString(sService, ff);
-
-            if(D) {
-                Log.d(TAG, "content of " + driveFilename + " is " + jsonString);
-            }
+            ifd("content of " + driveFilename + " is " + jsonString);
 
             jsonObject = new JSONObject(jsonString);
-
         } catch (IOException e) {
-            Log.d(TAG, "getJSON IOException: " + e);
+            ifd("getJSON IOException: " + e);
         } catch (JSONException jse) {
-            Log.d(TAG, "getJSON JSONException: " + jse);
+            ifd("getJSON JSONException: " + jse);
         }
 
         return jsonObject;
@@ -147,28 +140,21 @@ public class DriveDatabase {
 
 
     public void ensureJsonFilesExist() {
-        if (D) {
-            Log.d(TAG, "ensureJsonFilesExist");
-        }
+        ifd("ensureJsonFilesExist");
 
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     // LIST FILES
-
                     List<File> files = DriveJunction.listAppDataFiles(sService);
 
-                    if(D) {
-                        Log.d(TAG, "files list length is " + files.size());
-                    }
+                    ifd("files list length is " + files.size());
 
                     boolean foundCurrent = false;
                     boolean foundHistoric = false;
 
                     for(File f : files) {
-
-
                         if(f.getTitle().equals(CURRENT_JSON)) {
 
                             // check that the found json file's id matches the one in shared preferences
@@ -190,7 +176,7 @@ public class DriveDatabase {
                                 treat the drive version as the canonical truth, overwrite the id stored in shared preferences with the one on drive
 
                                  */
-                                Log.d(TAG, "saving pre-existing id for " + CURRENT_JSON);
+                                ifd("saving pre-existing id for " + CURRENT_JSON);
                                 saveJsonFileIdPreference(CURRENT_JSON, f.getId());
                             }
 
@@ -199,7 +185,7 @@ public class DriveDatabase {
                         if(f.getTitle().equals(HISTORIC_JSON)) {
                             String id = getJsonFileIdPreference(HISTORIC_JSON);
                             if(!id.equals(f.getId())) {
-                                Log.d(TAG, "saving pre-existing id for " + HISTORIC_JSON);
+                                ifd("saving pre-existing id for " + HISTORIC_JSON);
                                 saveJsonFileIdPreference(HISTORIC_JSON, f.getId());
                             }
 
@@ -211,35 +197,35 @@ public class DriveDatabase {
                         String json = EMPTY_JSON_OBJECT;
                         File file = DriveJunction.createAppDataJsonFile(sService, CURRENT_JSON, json);
                         if (file != null) {
-                            Log.d(TAG, "saving file id for " + CURRENT_JSON);
+                            ifd("saving file id for " + CURRENT_JSON);
                             // save the file's id in local storage
                             saveJsonFileIdPreference(CURRENT_JSON, file.getId());
                             foundCurrent = true;
                         } else {
-                            Log.d(TAG, "unable to create AppDataJsonFile: " + CURRENT_JSON);
+                            ifd("unable to create AppDataJsonFile: " + CURRENT_JSON);
                         }
                     }
                     if(!foundHistoric) {
                         String json = EMPTY_JSON_OBJECT;
                         File file = DriveJunction.createAppDataJsonFile(sService, HISTORIC_JSON, json);
                         if (file != null) {
-                            Log.d(TAG, "saving file id for " + HISTORIC_JSON);
+                            ifd("saving file id for " + HISTORIC_JSON);
                             saveJsonFileIdPreference(HISTORIC_JSON, file.getId());
                             foundHistoric = true;
                         } else {
-                            Log.d(TAG, "unable to create AppDataJsonFile: " + HISTORIC_JSON);
+                            ifd("unable to create AppDataJsonFile: " + HISTORIC_JSON);
                         }
                     }
 
                     if(!foundCurrent || !foundHistoric) {
-                        Log.d(TAG, "cannot create required json files");
+                        ifd("cannot create required json files");
                         // return an error, ask user to check permissions or launch account picker activity?
                         // exit the application
 
                     } else {
                         // the shared preferences now have the ids of the 2 json files
                         // get their content and pass it into the database
-                        Log.d(TAG, "have file ids for both historic and current");
+                        ifd("have file ids for both historic and current");
 
                         mActivity.runOnUiThread(new Runnable() {
                             @Override
@@ -250,13 +236,13 @@ public class DriveDatabase {
                     }
 
                 } catch (NullPointerException e) {
-                    Log.d(TAG, "null pointer exception");
+                    ifd("null pointer exception");
                     e.printStackTrace();
                 } catch (UserRecoverableAuthIOException e) {
-                    Log.d(TAG, "userrecoverableauthioexception");
+                    ifd("userrecoverableauthioexception");
                     mActivity.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
                 } catch (IOException e) {
-                    Log.d(TAG, "IOException");
+                    ifd("IOException");
                     e.printStackTrace();
                 }
             }
@@ -303,24 +289,24 @@ public class DriveDatabase {
     public void initialise() {
         String scope = "https://www.googleapis.com/auth/drive.appdata";
         mCredential = GoogleAccountCredential.usingOAuth2(mActivity, scope);
-        Log.d(TAG, "mCredential is " + mCredential);
+        ifd("mCredential is " + mCredential);
 
         String accountName = getAccountNamePreference();
         if(accountName.isEmpty()) {
             // get the preferred google account
-            Log.d(TAG, "account name is empty, asking user to choose an account");
+            ifd("account name is empty, asking user to choose an account");
             mActivity.startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
             // after getting the result from the above activity we'll call ensureJsonFileExists
 
         } else {
 
             // check to make sure we have an accountName and 2 json filenames
-            Log.d(TAG, "accountName is " + accountName);
+            ifd("accountName is " + accountName);
             mCredential.setSelectedAccountName(accountName);
             sService = getDriveService(mCredential);
 
             if(hasBothJsonFileIdPreferences()) {
-                Log.d(TAG, "have both json files");
+                ifd("have both json files");
                 mActivity.onDriveDatabaseInitialised();
             } else {
                 ensureJsonFilesExist();
@@ -337,23 +323,23 @@ public class DriveDatabase {
                     if (accountName != null) {
                         // chosen a google account, does it contain the json files?
 
-                        Log.d(TAG, "account name is " + accountName);
+                        ifd("account name is " + accountName);
                         saveAccountNamePreference(accountName);
                         mCredential.setSelectedAccountName(accountName);
                         sService = getDriveService(mCredential);
-                        Log.d(TAG, "REQUEST_ACCOUNT_PICKER result calling ensureJsonFilesExist");
+                        ifd("REQUEST_ACCOUNT_PICKER result calling ensureJsonFilesExist");
                         ensureJsonFilesExist();
                     } else {
-                        Log.d(TAG, "must have a valid account name");
+                        ifd("must have a valid account name");
                         mActivity.finish();
                     }
                 }
                 break;
             case REQUEST_AUTHORIZATION:
-                Log.d(TAG, "onActivityResult: request authorization");
+                ifd("onActivityResult: request authorization");
                 if (resultCode == Activity.RESULT_OK) {
                     // return to ensureJsonFilesExist
-                    Log.d(TAG, "REQUEST_AUTHORIZATION result calling ensureJsonFilesExist");
+                    ifd("REQUEST_AUTHORIZATION result calling ensureJsonFilesExist");
                     ensureJsonFilesExist();
                 } else {
                     mActivity.startActivityForResult(mCredential.newChooseAccountIntent(),
@@ -369,10 +355,10 @@ public class DriveDatabase {
     }
 
     private void logFileMetadata(File file, String label) {
-        Log.d(TAG, "logging metadata for: " + label);
-        Log.d(TAG, "id: " + file.getId());
-        Log.d(TAG, "mimetype: " + file.getMimeType());
-        Log.d(TAG, "title: " + file.getTitle());
+        ifd("logging metadata for: " + label);
+        ifd("id: " + file.getId());
+        ifd("mimetype: " + file.getMimeType());
+        ifd("title: " + file.getTitle());
     }
 
 
@@ -401,7 +387,7 @@ public class DriveDatabase {
 
             if(json.isNull(BODY)) {
                 // empty body so default to empty today and thisweek tasklists
-                Log.d(TAG, "fromJSON: empty body so defaulting to empty today and thisweek tasklists");
+                ifd("fromJSON: empty body so defaulting to empty today and thisweek tasklists");
                 return buildDefaultEmptyTaskLists();
             }
             // ignore header for now, in future this will have version info
@@ -416,8 +402,8 @@ public class DriveDatabase {
             }
 
         } catch (JSONException e) {
-            Log.d(TAG, "fromJSON JSONException: " + e);
-            Log.d(TAG, "defaulting to empty today and thisweek tasklists");
+            ifd("fromJSON JSONException: " + e);
+            ifd("defaulting to empty today and thisweek tasklists");
             tasklists = buildDefaultEmptyTaskLists();
         }
 
@@ -438,7 +424,7 @@ public class DriveDatabase {
             res.put(BODY, array);
 
         } catch (JSONException e) {
-            Log.d(TAG, "JSONException: " + e);
+            ifd("JSONException: " + e);
         }
 
         return res;

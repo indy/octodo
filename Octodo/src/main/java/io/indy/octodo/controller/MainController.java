@@ -17,6 +17,7 @@
 package io.indy.octodo.controller;
 
 import android.app.Activity;
+import android.util.Log;
 
 import java.util.List;
 
@@ -31,8 +32,9 @@ import io.indy.octodo.model.TaskList;
 
 public class MainController {
 
-    private final String TAG = getClass().getSimpleName();
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = MainController.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private Activity mActivity;
 
@@ -75,9 +77,7 @@ public class MainController {
 
     public void onTaskMove(Task task, String destinationTaskList) {
         mDriveModel.moveTask(task, destinationTaskList);
-
         post(new MoveTaskEvent(task, task.getParentName(), destinationTaskList));
-
         String messagePrefix = mActivity.getString(R.string.confirmation_moved_task);
         notifyUser(messagePrefix + " \"" + destinationTaskList + "\"");
     }
@@ -89,11 +89,8 @@ public class MainController {
     }
 
     public void onRemoveCompletedTasks(String taskListName) {
-
         mDriveModel.removeStruckTasks(taskListName);
         postRefreshEvent(taskListName);
-
-        // show Crouton
         String messagePrefix = mActivity.getString(R.string.confirmation_remove_completed_tasks);
         notifyUser(messagePrefix + " \"" + taskListName + "\"");
     }

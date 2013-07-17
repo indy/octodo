@@ -42,9 +42,9 @@ import io.indy.octodo.model.TaskList;
 
 public class MainActivity extends DriveBaseActivity {
 
-    private final String TAG = getClass().getSimpleName();
-
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = MainActivity.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private TaskListPagerAdapter mAdapter;
 
@@ -72,9 +72,7 @@ public class MainActivity extends DriveBaseActivity {
 
         setContentView(R.layout.activity_main);
 
-        if (D) {
-            Log.d(TAG, "onCreate");
-        }
+        ifd("onCreate");
 
         mTaskListNames = new ArrayList<String>();
         mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskListNames);
@@ -108,20 +106,14 @@ public class MainActivity extends DriveBaseActivity {
 
         mController = new MainController(this, mDriveModel);
 
-        if(D) {
-            Log.d(TAG, "onDriveDatabaseInitialised");
-        }
+        ifd("onDriveDatabaseInitialised");
 
         if(mDriveModel.hasLoadedTaskLists()) {
             // use already loaded data
-            if(D) {
-                Log.d(TAG, "already loaded data");
-            }
+            ifd("already loaded data");
             refreshTaskListsUI();
         } else {
-            if(D) {
-                Log.d(TAG, "launching async tasks to load data");
-            }
+            ifd("launching async tasks to load data");
             // load tasklists if a previous activity hasn't done so
             // this async task will send a HaveCurrentTaskListEvent
 
@@ -136,7 +128,7 @@ public class MainActivity extends DriveBaseActivity {
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(HaveCurrentTaskListEvent event) {
-        Log.d(TAG, "received HaveCurrentTaskListEvent");
+        ifd("received HaveCurrentTaskListEvent");
 
         setSupportProgressBarIndeterminateVisibility(false);
         refreshTaskListsUI();
@@ -161,9 +153,7 @@ public class MainActivity extends DriveBaseActivity {
         // This bundle has also been passed to onCreate.
         // Will only be called if the Activity has been
         // killed by the system since it was last visible.
-        if (D) {
-            Log.d(TAG, "onRestoreInstanceState");
-        }
+        ifd("onRestoreInstanceState");
 
         logTaskLists("onRestoreInstanceState");
     }
@@ -173,9 +163,7 @@ public class MainActivity extends DriveBaseActivity {
     @Override
     public void onRestart() {
         super.onRestart();
-        if (D) {
-            Log.d(TAG, "onRestart");
-        }
+        ifd("onRestart");
 
         // need this check since onRestart() is called during the initial account setup phase
         if(isDriveDatabaseInitialised()) {
@@ -189,18 +177,14 @@ public class MainActivity extends DriveBaseActivity {
     @Override
     public void onStart() {
         super.onStart();
-        if (D) {
-            Log.d(TAG, "onStart");
-        }
+        ifd("onStart");
     }
 
     // Called at the start of the active lifetime.
     @Override
     public void onResume() {
         super.onResume();
-        if (D) {
-            Log.d(TAG, "onResume");
-        }
+        ifd("onResume");
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
 
@@ -221,9 +205,7 @@ public class MainActivity extends DriveBaseActivity {
         // onRestoreInstanceState if the process is
         // killed and restarted by the run time.
         super.onSaveInstanceState(savedInstanceState);
-        if (D) {
-            Log.d(TAG, "onSaveInstanceState");
-        }
+        ifd("onSaveInstanceState");
     }
 
     // Called at the end of the active lifetime.
@@ -233,9 +215,7 @@ public class MainActivity extends DriveBaseActivity {
         // that don't need to be updated when the Activity isn't
         // the active foreground Activity.
         super.onPause();
-        if (D) {
-            Log.d(TAG, "onPause");
-        }
+        ifd("onPause");
         EventBus.getDefault().unregister(this);
     }
 
@@ -247,9 +227,7 @@ public class MainActivity extends DriveBaseActivity {
         // Persist all edits or state changes
         // as after this call the process is likely to be killed.
         super.onStop();
-        if (D) {
-            Log.d(TAG, "onStop");
-        }
+        ifd("onStop");
     }
 
     // Sometimes called at the end of the full lifetime.
@@ -258,9 +236,7 @@ public class MainActivity extends DriveBaseActivity {
         // Clean up any resources including ending threads,
         // closing database connections etc.
         super.onDestroy();
-        if (D) {
-            Log.d(TAG, "onDestroy");
-        }
+        ifd("onDestroy");
         //EventBus.getDefault().unregister(this);
         mController.onDestroy();
     }
@@ -283,7 +259,7 @@ public class MainActivity extends DriveBaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG, "clicked " + item);
+        ifd("clicked " + item);
 
         if(item.getItemId() == mTrashItemId) {
             mController.onRemoveCompletedTasks(getCurrentTaskListName());
@@ -345,7 +321,7 @@ public class MainActivity extends DriveBaseActivity {
     }
 
     private void showTrashIcon() {
-        Log.d(TAG, "showTrashIcon");
+        ifd("showTrashIcon");
         if(!mShowTrashIcon) {
             mShowTrashIcon = true;
             supportInvalidateOptionsMenu();
@@ -353,7 +329,7 @@ public class MainActivity extends DriveBaseActivity {
     }
 
     private void hideTrashIcon() {
-        Log.d(TAG, "hideTrashIcon");
+        ifd("hideTrashIcon");
         if(mShowTrashIcon) {
             mShowTrashIcon = false;
             supportInvalidateOptionsMenu();
@@ -362,9 +338,7 @@ public class MainActivity extends DriveBaseActivity {
 
     // TODO: check why this is used now
     public void refreshTaskListsUI() {
-        if (D) {
-            Log.d(TAG, "refreshTaskListsUI");
-        }
+        ifd("refreshTaskListsUI");
 
         List<TaskList> lists = mController.onGetTaskLists();
 
@@ -380,24 +354,20 @@ public class MainActivity extends DriveBaseActivity {
     }
 
     private void logTaskLists(String message) {
-        Log.d(TAG, message);
-        Log.d(TAG, "mTaskListNames.size() = " + mTaskListNames.size());
+        ifd(message);
+        ifd("mTaskListNames.size() = " + mTaskListNames.size());
         for(String s : mTaskListNames) {
-            Log.d(TAG, s);
+            ifd(s);
         }
-        Log.d(TAG, "");
+        ifd("");
     }
 
     public MainController getController() {
-        if (D) {
-            if (mController == null) {
-                Log.d(TAG, "getController null");
-            } else {
-                Log.d(TAG, "getController ok");
-            }
-
+        if (mController == null) {
+            ifd("getController null");
+        } else {
+            ifd("getController ok");
         }
-
         return mController;
     }
 }

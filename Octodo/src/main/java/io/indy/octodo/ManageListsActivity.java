@@ -39,9 +39,9 @@ import io.indy.octodo.model.TaskList;
 
 public class ManageListsActivity extends DriveBaseActivity {
 
-    private final String TAG = getClass().getSimpleName();
-
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = ManageListsActivity.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private List<TaskList> mTaskLists;
 
@@ -81,9 +81,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     public void onDriveDatabaseInitialised() {
         super.onDriveDatabaseInitialised();
 
-        if(D) {
-            Log.d(TAG, "onDriveDatabaseInitialised");
-        }
+        ifd("onDriveDatabaseInitialised");
 
         mController = new MainController(this, mDriveModel);
 
@@ -100,9 +98,7 @@ public class ManageListsActivity extends DriveBaseActivity {
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(HaveCurrentTaskListEvent event) {
-        if(D) {
-            Log.d(TAG, "received HaveCurrentTaskListEvent");
-        }
+        ifd("received HaveCurrentTaskListEvent");
         refreshTaskLists();
     }
 
@@ -110,9 +106,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     //
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(ToggledListSelectionEvent event) {
-        if(D) {
-            Log.d(TAG, "received ToggledListSelectionEvent");
-        }
+        ifd("received ToggledListSelectionEvent");
 
         if(isAnyTaskListSelected(mTaskLists)) {
             showTrashIcon();
@@ -125,7 +119,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     public void onDestroy() {
         super.onDestroy();
         if (D) {
-            Log.d(TAG, "onDestroy");
+            ifd("onDestroy");
         }
         mController.onDestroy();
     }
@@ -135,7 +129,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     public void onResume() {
         super.onResume();
         if (D) {
-            Log.d(TAG, "onResume");
+            ifd("onResume");
         }
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
@@ -153,7 +147,7 @@ public class ManageListsActivity extends DriveBaseActivity {
         // the active foreground Activity.
         super.onPause();
         if (D) {
-            Log.d(TAG, "onPause");
+            ifd("onPause");
         }
         EventBus.getDefault().unregister(this);
     }
@@ -209,7 +203,7 @@ public class ManageListsActivity extends DriveBaseActivity {
             refreshTaskLists();
             mEditText.setText("");
         } catch(NullPointerException e) {
-            Log.d(TAG, "addNewList exception: " + e);
+            ifd("addNewList exception: " + e);
         }
     }
 

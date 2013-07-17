@@ -27,8 +27,9 @@ import java.util.List;
 
 public class TaskList {
 
-    private static final String TAG = "TaskList";
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = TaskList.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private final int mId;
     private final String mName;
@@ -53,7 +54,6 @@ public class TaskList {
     // name given to json array of tasks
     private static final String TASKS = "tasks";
 
-
     public boolean hasStruckTasks() {
         for(Task task: mTasks) {
             if(task.getState() == Task.STATE_STRUCK) {
@@ -65,10 +65,10 @@ public class TaskList {
 
     public void logTaskList() {
 
-        Log.d(TAG, "logTaskList: " + mName);
+        ifd("logTaskList: " + mName);
         for(Task t: mTasks) {
             int id = System.identityHashCode(t);
-            Log.d(TAG, "task: " + id + " " + t.getContent() + " state: " + t.getState());
+            ifd("task: " + id + " " + t.getContent() + " state: " + t.getState());
         }
     }
 
@@ -124,7 +124,7 @@ public class TaskList {
             return taskList;
 
         } catch (JSONException e) {
-            Log.d(TAG, "JSONException: " + e);
+            ifd("JSONException: " + e);
         }
 
         return null;
@@ -153,7 +153,7 @@ public class TaskList {
             res.put(TASKS, array);
 
         } catch (JSONException e) {
-            Log.d(TAG, "JSONException: " + e);
+            ifd("JSONException: " + e);
         }
 
         return res;

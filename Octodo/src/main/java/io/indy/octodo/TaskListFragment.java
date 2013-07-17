@@ -42,9 +42,9 @@ import io.indy.octodo.model.TaskList;
 
 public final class TaskListFragment extends Fragment {
 
-    private final String TAG = getClass().getSimpleName();
-
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = TaskListFragment.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private TaskItemAdapter mTaskItemAdapter;
 
@@ -68,27 +68,19 @@ public final class TaskListFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        if (D) {
-            Log.d(TAG, "onAttach");
-        }
-
+        ifd("onAttach");
         mContext = activity;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (D)
-            Log.d(TAG, "onCreate");
+        ifd("onCreate");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        if (D) {
-            Log.d(TAG, "onCreateView");
-        }
+        ifd("onCreateView");
 
         // Create, or inflate the Fragment's UI, and return it.
         // If this Fragment has no UI then return null.
@@ -101,7 +93,7 @@ public final class TaskListFragment extends Fragment {
 
         mController = ((MainActivity)mContext).getController();
         if (mTaskList == null) {
-            Log.d(TAG, "mTaskList is null - do some re-initialisation with DriveModel?");
+            ifd("mTaskList is null - do some re-initialisation with DriveModel?");
             String taskListName = savedInstanceState.getString("taskListName");
             mTaskList = new TaskList(0, taskListName);
             // TODO: would updateLocalTaskList fail here?
@@ -119,30 +111,24 @@ public final class TaskListFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (D) {
-            Log.d(TAG, "onActivityCreated");
-        }
+        ifd("onActivityCreated");
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (D) {
-            Log.d(TAG, "onStart");
-        }
+        ifd("onStart");
         // Apply any required UI change now that the Activity is visible.
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (D) {
-            Log.d(TAG, "onResume");
-        }
+        ifd("onResume");
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
 
-        Log.d(TAG, "registering: " + System.identityHashCode(this));
+        ifd("registering: " + System.identityHashCode(this));
         EventBus.getDefault().register(this);
 
     }
@@ -153,11 +139,8 @@ public final class TaskListFragment extends Fragment {
         // that don't need to be updated when the Activity isn't
         // the active foreground Activity.
         super.onPause();
-        if (D) {
-            Log.d(TAG, "onPause");
-        }
-
-        Log.d(TAG, "unregistering: " + System.identityHashCode(this));
+        ifd("onPause");
+        ifd("unregistering: " + System.identityHashCode(this));
         EventBus.getDefault().unregister(this);
     }
 
@@ -168,10 +151,7 @@ public final class TaskListFragment extends Fragment {
         // onRestoreInstanceState if the process is
         // killed and restarted by the run time.
         super.onSaveInstanceState(savedInstanceState);
-        if (D) {
-            Log.d(TAG, "onSaveInstanceState");
-        }
-
+        ifd("onSaveInstanceState");
         // save the taskList
         savedInstanceState.putString("taskListName", mTaskList.getName());
     }
@@ -184,9 +164,7 @@ public final class TaskListFragment extends Fragment {
         // Persist all edits or state changes
         // as after this call the process is likely to be killed.
         super.onStop();
-        if (D) {
-            Log.d(TAG, "onStop");
-        }
+        ifd("onStop");
     }
 
     // Sometimes called at the end of the full lifetime.
@@ -195,23 +173,19 @@ public final class TaskListFragment extends Fragment {
         // Clean up any resources including ending threads,
         // closing database connections etc.
         super.onDestroyView();
-        if (D) {
-            Log.d(TAG, "onDestroyView");
-        }
+        ifd("onDestroyView");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (D) {
-            Log.d(TAG, "onDestroy");
-        }
+        ifd("onDestroy");
     }
 
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(HaveCurrentTaskListEvent event) {
-        Log.d(TAG, "received HaveCurrentTaskListEvent");
+        ifd("received HaveCurrentTaskListEvent");
         refreshUI();
     }
 
@@ -219,9 +193,9 @@ public final class TaskListFragment extends Fragment {
     // UI needs to be updated
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(RefreshTaskListEvent event) {
-        Log.d(TAG, "received RefreshTaskListEvent");
+        ifd("received RefreshTaskListEvent");
         if (isEventRelevant(event.getTaskListName())) {
-            Log.d(TAG, "valid RefreshTaskListEvent received in TaskListFragment");
+            ifd("valid RefreshTaskListEvent received in TaskListFragment");
             refreshUI();
             mEditText.setText("");
         }
@@ -247,9 +221,7 @@ public final class TaskListFragment extends Fragment {
         //localTasks.clear();
         //localTasks.addAll(taskList.getTasks());
 
-        if (D) {
-            Log.d(TAG, "mTaskList set to " + taskListName);
-        }
+        ifd("mTaskList set to " + taskListName);
     }
 
     private void setKeyboardListener(EditText editText) {
@@ -280,13 +252,13 @@ public final class TaskListFragment extends Fragment {
                 .build();
 
         if (D) {
-            Log.d(TAG, "adding a task");
+            ifd("adding a task");
             // this task has an id of 0, can't just add it to mTasks
-            Log.d(TAG, "id: " + task.getId());
-            Log.d(TAG, "content: " + task.getContent());
-            Log.d(TAG, "state: " + task.getState());
-            Log.d(TAG, "startedAt: " + task.getStartedAt());
-            Log.d(TAG, "finishedAt: " + task.getFinishedAt());
+            ifd("id: " + task.getId());
+            ifd("content: " + task.getContent());
+            ifd("state: " + task.getState());
+            ifd("startedAt: " + task.getStartedAt());
+            ifd("finishedAt: " + task.getFinishedAt());
         }
 
         // update db
@@ -303,7 +275,7 @@ public final class TaskListFragment extends Fragment {
 
         if(D) {
             for(Task t: localTasks) {
-                Log.d(TAG, "taskContent: " + t.getContent());
+                ifd("taskContent: " + t.getContent());
             }
         }
     }

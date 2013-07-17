@@ -29,21 +29,17 @@ import io.indy.octodo.view.ManageListItemView;
 
 public class ManageListsAdapter extends ArrayAdapter<TaskList> {
 
-    private final String TAG = getClass().getSimpleName();
-
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = ManageListsAdapter.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     public ManageListsAdapter(Context context, List<TaskList> items) {
         super(context, android.R.layout.simple_list_item_1, items);
-
     }
 
     @Override
     public View getView(int position, View v, ViewGroup parent) {
-
-        if (D) {
-            Log.d(TAG, "getView position: " + position);
-        }
+        ifd("getView position: " + position);
 
         ManageListItemView manageListItemView = (ManageListItemView)v;
         if (manageListItemView == null) {

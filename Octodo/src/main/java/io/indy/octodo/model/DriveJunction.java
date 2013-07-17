@@ -35,7 +35,9 @@ import java.util.List;
 
 public class DriveJunction {
 
-    private final static String TAG = "DriveJunction";
+    static private final boolean D = true;
+    static private final String TAG = DriveJunction.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private final static String JSON_MIMETYPE = "application/json";
     private final static String APPDATA_FOLDER = "appdata";
@@ -76,12 +78,12 @@ public class DriveJunction {
 
         File file;
         try {
-            Log.d(TAG, "about to insert file");
+            ifd("about to insert file");
             file = service.files().insert(config, content).execute();
-            Log.d(TAG, "file returned: " + file);
+            ifd("file returned: " + file);
 
         } catch (IOException e) {
-            Log.d(TAG, "createAppDataJsonFile exception: " + e);
+            ifd("createAppDataJsonFile exception: " + e);
             throw e;
         }
         return file;
@@ -94,7 +96,7 @@ public class DriveJunction {
         try {
             file = service.files().update(metadata.getId(), metadata, content).execute();
         } catch (IOException e) {
-            Log.d(TAG, "updateAppDataJsonFile exception: " + e);
+            ifd("updateAppDataJsonFile exception: " + e);
             throw e;
         }
         return file;
@@ -105,7 +107,7 @@ public class DriveJunction {
         try {
             f = service.files().get(fileId).execute();
         } catch (IOException e) {
-            Log.d(TAG, "getFileMetadata exception: " + e);
+            ifd("getFileMetadata exception: " + e);
             throw e;
         }
         return f;
@@ -120,7 +122,7 @@ public class DriveJunction {
                 return resp.getContent();
             } catch (IOException e) {
                 // An error occurred.
-                Log.d(TAG, "downloadFile exception: " + e);
+                ifd("downloadFile exception: " + e);
                 throw e;
             }
         } else {
@@ -152,7 +154,7 @@ public class DriveJunction {
                 res = sb.toString();
             }
         } catch (IOException e) {
-            Log.d(TAG, "downloadFileAsString exception: " + e);
+            ifd("downloadFileAsString exception: " + e);
             throw e;
         }
 

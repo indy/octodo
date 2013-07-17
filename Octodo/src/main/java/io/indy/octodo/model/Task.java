@@ -26,9 +26,9 @@ import io.indy.octodo.helper.DateFormatHelper;
 // Task specific
 //
 public class Task {
-
-    private static final String TAG = "Task";
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = Task.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private int mId;
 

@@ -26,8 +26,9 @@ import io.indy.octodo.async.TaskListsAsyncTask;
 
 public class DriveModel {
 
-    private static final String TAG = "DriveModel";
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = DriveModel.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private DriveDatabase mDriveDatabase;
 
@@ -37,13 +38,13 @@ public class DriveModel {
 
     public void addList(String name) {
         if (name.equals("")) {
-            Log.d(TAG, "attempting to add a tasklist with an empty name");
+            ifd("attempting to add a tasklist with an empty name");
             return;
         }
 
         TaskList existing = getCurrentTaskList(name);
         if(existing != null) {
-            Log.d(TAG, "addList: a list with the name " + name + " already exists");
+            ifd("addList: a list with the name " + name + " already exists");
             return;
         }
 
@@ -54,7 +55,7 @@ public class DriveModel {
     }
 
     public boolean deleteList(String name) {
-        Log.d(TAG, "deleteList " + name);
+        ifd("deleteList " + name);
         TaskList taskList = this.getCurrentTaskList(name);
         if(taskList == null) {
             return false;
@@ -69,9 +70,7 @@ public class DriveModel {
     public void addTask(Task task, String taskListName) {
 
         TaskList taskList = getCurrentTaskList(taskListName);
-        if(D) {
-            Log.d(TAG, "addTask called! on tasklist: " + taskList);
-        }
+        ifd("addTask called! on tasklist: " + taskList);
 
         taskList.add(task);
         task.setParentName(taskListName);
@@ -79,18 +78,14 @@ public class DriveModel {
     }
 
     public void updateTaskContent(Task task, String content) {
-        if (D) {
-            Log.d(TAG, "updateTaskContent old: " + task.getContent() + " new: " + content);
-        }
+        ifd("updateTaskContent old: " + task.getContent() + " new: " + content);
 
         task.setContent(content);
         mDriveDatabase.saveCurrentTaskLists();
     }
 
     public void updateTaskState(Task task, int state) {
-        if (D) {
-            Log.d(TAG, "updateTaskState content:" + task.getContent() + " state: " + state);
-        }
+        ifd("updateTaskState content:" + task.getContent() + " state: " + state);
 
         task.setState(state);
         mDriveDatabase.saveCurrentTaskLists();
@@ -98,9 +93,7 @@ public class DriveModel {
 
     // re-assign a task to a different tasklist
     public void moveTask(Task task, String destination) {
-        if (D) {
-            Log.d(TAG, "moveTask " + task.getContent() + " to: " + destination);
-        }
+        ifd("moveTask " + task.getContent() + " to: " + destination);
 
         TaskList sourceTaskList = getCurrentTaskList(task.getParentName());
         TaskList destinationTaskList = getCurrentTaskList(destination);
@@ -119,9 +112,8 @@ public class DriveModel {
 
     // DELETE the specified task without adding it to the 'completed' tasklists
     public void deleteTask(Task task) {
-        if (D) {
-            Log.d(TAG, "deleteTask: getContent = " + task.getContent());
-        }
+        ifd("deleteTask: getContent = " + task.getContent());
+
         TaskList taskList = getCurrentTaskList(task.getParentName());
         taskList.remove(task);
         mDriveDatabase.saveCurrentTaskLists();
@@ -129,9 +121,7 @@ public class DriveModel {
 
     // mark all struck tasks in the tasklist as closed
     public void removeStruckTasks(String taskListName) {
-        if (D) {
-            Log.d(TAG, "removeStruckTasks: " + taskListName);
-        }
+        ifd("removeStruckTasks: " + taskListName);
 
         TaskList taskList = getCurrentTaskList(taskListName);
 
@@ -157,7 +147,6 @@ public class DriveModel {
     private TaskList getHistoricTaskList(String name) {
         // get the TaskList called name from mHistoricTaskLists
         // if it doesn't exist, create it
-
         List<TaskList> historicTaskLists = mDriveDatabase.getHistoricTaskLists();
 
         TaskList taskList = getTaskList(historicTaskLists, name);
@@ -169,9 +158,8 @@ public class DriveModel {
     }
 
     private TaskList getTaskList(List<TaskList> taskLists, String name) {
-
         if(taskLists == null) {
-            Log.d(TAG, "getTaskList given null taskLists when searching for " + name);
+            ifd("getTaskList given null taskLists when searching for " + name);
             return null;
         }
 
@@ -181,7 +169,7 @@ public class DriveModel {
             }
         }
 
-        Log.d(TAG, "unable to find taskList called: " + name);
+        ifd("unable to find taskList called: " + name);
         return null;
     }
 
@@ -195,10 +183,10 @@ public class DriveModel {
         List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
 
         if(taskLists == null) {
-            Log.d(TAG, "mTaskLists is empty");
+            ifd("mTaskLists is empty");
             return null;
         } else if(index >= taskLists.size()){
-            Log.d(TAG, "getCurrentTaskList index is too large");
+            ifd("getCurrentTaskList index is too large");
             return null;
         }
         return taskLists.get(index);

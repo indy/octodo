@@ -28,25 +28,22 @@ import io.indy.octodo.TaskListFragment;
 
 public class TaskListPagerAdapter extends FragmentStatePagerAdapter {
 
-    private final String TAG = getClass().getSimpleName();
-
-    private static final boolean D = false;
+    static private final boolean D = false;
+    static private final String TAG = TaskListPagerAdapter.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private List<String> mTaskListNames;
 
     public TaskListPagerAdapter(FragmentManager fm, List<String> taskListNames) {
         super(fm);
-        if (D)
-            Log.d(TAG, "Constructor");
+        ifd("Constructor");
 
         mTaskListNames = taskListNames;
     }
 
     @Override
     public Fragment getItem(int position) {
-        if (D) {
-            Log.d(TAG, "getItem " + position);
-        }
+        ifd("getItem " + position);
 
         String taskListName = mTaskListNames.get(position);
         return TaskListFragment.newInstance(taskListName);
@@ -54,18 +51,14 @@ public class TaskListPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        if (D) {
-            Log.d(TAG, "getCount");
-        }
+        ifd("getCount");
 
         return mTaskListNames.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        if (D) {
-            Log.d(TAG, "getPageTitle " + position);
-        }
+        ifd("getPageTitle " + position);
 
         return mTaskListNames.get(position);
     }

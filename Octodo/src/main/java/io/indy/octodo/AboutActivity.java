@@ -35,9 +35,9 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class AboutActivity extends SherlockActivity {
 
-    private final String TAG = getClass().getSimpleName();
-
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = AboutActivity.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +61,7 @@ public class AboutActivity extends SherlockActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (D)
-            Log.d(TAG, "clicked " + item);
+        ifd("clicked " + item);
 
         switch (item.getItemId()) {
             case android.R.id.home:

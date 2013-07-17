@@ -27,8 +27,9 @@ import io.indy.octodo.model.DriveDatabase;
 
 public abstract class DriveBaseActivity extends SherlockFragmentActivity {
 
-    private final String TAG = getClass().getSimpleName();
-    private static final boolean D = false;
+    static private final boolean D = false;
+    static private final String TAG = DriveBaseActivity.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     protected DriveDatabase mDriveDatabase;
 
@@ -40,9 +41,7 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (D) {
-            Log.d(TAG, "onCreate");
-        }
+        ifd("onCreate");
 
         mDriveDatabaseInitialised = false;
         mDriveDatabase = new DriveDatabase(this);
@@ -54,9 +53,8 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
     }
 
     public void onDriveDatabaseInitialised() {
-        if(D) {
-            Log.d(TAG, "onDriveDatabaseInitialised");
-        }
+        ifd("onDriveDatabaseInitialised");
+
         mDriveDatabaseInitialised = true;
         mDriveModel = new DriveModel(mDriveDatabase);
     }

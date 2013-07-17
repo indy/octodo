@@ -26,9 +26,9 @@ import io.indy.octodo.event.HaveCurrentTaskListEvent;
 
 public class EditTaskActivity extends DriveBaseActivity {
 
-    private final String TAG = getClass().getSimpleName();
-
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = EditTaskActivity.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private MainController mController;
 
@@ -46,9 +46,7 @@ public class EditTaskActivity extends DriveBaseActivity {
     public void onDriveDatabaseInitialised() {
         super.onDriveDatabaseInitialised();
 
-        if(D) {
-            Log.d(TAG, "onDriveDatabaseInitialised");
-        }
+        ifd("onDriveDatabaseInitialised");
 
         mController = new MainController(this, mDriveModel);
 
@@ -64,17 +62,14 @@ public class EditTaskActivity extends DriveBaseActivity {
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(HaveCurrentTaskListEvent event) {
-        if(D) {
-            Log.d(TAG, "received HaveCurrentTaskListEvent");
-        }
+        ifd("received HaveCurrentTaskListEvent");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (D) {
-            Log.d(TAG, "onDestroy");
-        }
+        ifd("onDestroy");
+
         mController.onDestroy();
     }
 
