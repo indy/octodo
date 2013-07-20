@@ -48,14 +48,21 @@ public class MainController {
         mDriveModel = driveModel;
     }
 
+    public Task findTask(String listName, String startedAt) {
+        TaskList taskList = mDriveModel.getCurrentTaskList(listName);
+        for(Task t : taskList.getTasks()) {
+            if(startedAt.equals(t.getStartedAt())) {
+                return t;
+            }
+        }
+
+        Log.e(TAG, "unable to find task in " + listName + " with started at value of " + startedAt);
+        return null;
+    }
+
     public void onTaskAdd(Task task, String taskListName) {
         mDriveModel.addTask(task, taskListName);
         postRefreshEvent(taskListName);
-    }
-
-    public void onTaskUpdateContent(Task task, String content) {
-        mDriveModel.updateTaskContent(task, content);
-        postRefreshEvent(task.getParentName());
     }
 
     public void onTaskUpdateState(Task task, int state) {
@@ -75,11 +82,27 @@ public class MainController {
         return mDriveModel.getCurrentTaskLists();
     }
 
+    public void onTaskUpdateContent(Task task, String content) {
+        mDriveModel.updateTaskContent(task, content);
+        postRefreshEvent(task.getParentName());
+    }
+
     public void onTaskMove(Task task, String destinationTaskList) {
         mDriveModel.moveTask(task, destinationTaskList);
         post(new MoveTaskEvent(task, task.getParentName(), destinationTaskList));
         String messagePrefix = mActivity.getString(R.string.confirmation_moved_task);
         notifyUser(messagePrefix + " \"" + destinationTaskList + "\"");
+    }
+
+    // called from EditTaskActivity, returns true if a change to the model is required
+    public boolean onTaskEdited(Task task, String newContent, String newTaskList) {
+
+        if(!newContent.equals(task.getContent()) || !newTaskList.equals(task.getParentName())) {
+            mDriveModel.editedTask(task, newContent, newTaskList);
+            return true;
+        }
+
+        return false;
     }
 
     public void onTaskDelete(Task task) {

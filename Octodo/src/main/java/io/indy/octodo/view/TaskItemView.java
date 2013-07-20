@@ -41,9 +41,9 @@ import io.indy.octodo.model.TaskList;
 
 public class TaskItemView extends LinearLayout {
 
-    private final String TAG = getClass().getSimpleName();
-
-    private static final boolean D = true;
+    static private final boolean D = true;
+    static private final String TAG = TaskItemView.class.getSimpleName();
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     private final Context mContext;
 
@@ -120,8 +120,12 @@ public class TaskItemView extends LinearLayout {
         mTaskRow.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Log.d(TAG, "taskRow received long click");
+                ifd("taskRow received long click");
+
                 Intent intent = new Intent(mContext, EditTaskActivity.class);
+                intent.putExtra(EditTaskActivity.INTENT_EXTRA_LIST_NAME, mTask.getParentName());
+                intent.putExtra(EditTaskActivity.INTENT_EXTRA_START_TIME, mTask.getStartedAt());
+
                 mContext.startActivity(intent);
                 return true;
             }

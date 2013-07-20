@@ -106,6 +106,24 @@ public class DriveModel {
         mDriveDatabase.saveCurrentTaskLists();
     }
 
+    public void editedTask(Task task, String newContent, String newTaskList) {
+
+        if(!newContent.equals(task.getContent())) {
+            task.setContent(newContent);
+        }
+
+        TaskList sourceTaskList = getCurrentTaskList(task.getParentName());
+        TaskList destinationTaskList = getCurrentTaskList(newTaskList);
+
+        if(sourceTaskList != destinationTaskList) {
+            sourceTaskList.remove(task);
+            destinationTaskList.add(task);
+            task.setParentName(newTaskList);
+        }
+
+        mDriveDatabase.saveCurrentTaskLists();
+    }
+
 
     public void updateTask(Task task) {
     }

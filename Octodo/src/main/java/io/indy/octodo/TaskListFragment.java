@@ -125,12 +125,13 @@ public final class TaskListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         ifd("onResume");
+
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
-
         ifd("registering: " + System.identityHashCode(this));
         EventBus.getDefault().register(this);
 
+        refreshUI();
     }
 
     @Override
