@@ -2,6 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:background="#eeeeee"
+              android:paddingTop="8dp"
+              android:paddingRight="8dp"
+              android:paddingLeft="8dp"
               android:orientation="vertical">
 
     <LinearLayout
@@ -10,8 +14,7 @@
             android:layout_height="48dp"
             android:baselineAligned="false"
             android:orientation="horizontal"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp">
+            android:background="#ffffff">
 
         <CheckBox
                 android:id="@+id/isDone"
@@ -29,8 +32,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:paddingLeft="8dp"
-                    android:text=""/>
+                    android:paddingLeft="0dp"
+                    android:text="remove me"/>
         </RelativeLayout>
 
     </LinearLayout>

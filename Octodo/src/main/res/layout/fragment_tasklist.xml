@@ -2,45 +2,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-    android:showDividers="middle"
-    android:divider="?android:dividerHorizontal"
-    android:dividerPadding="8dp"
-
+    android:background="#eeeeee"
     android:orientation="vertical" >
 
     <ListView
         android:id="@+id/listViewTasks"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </ListView>
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            >
-
-        <!-- invisible checkbox so that EditText lines up with row items -->
-        <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:visibility="invisible"/>
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="8dp">
 
         <EditText
                 android:id="@+id/editTextTask"
-                android:layout_width="0dip"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
                 android:paddingLeft="8dp"
+
+                android:background="#ffffff"
                 android:inputType="text"
                 android:hint="@string/add_item"
                 android:maxLines="1"
                 android:ellipsize="end">
         </EditText>
+
 
     </LinearLayout>
 
