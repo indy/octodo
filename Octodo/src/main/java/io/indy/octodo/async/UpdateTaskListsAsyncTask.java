@@ -21,8 +21,8 @@ import android.os.AsyncTask;
 import org.json.JSONObject;
 
 import de.greenrobot.event.EventBus;
-import io.indy.octodo.event.HaveCurrentTaskListEvent;
-import io.indy.octodo.event.SavedTaskListsEvent;
+import io.indy.octodo.event.PersistDataPostEvent;
+import io.indy.octodo.event.PersistDataPreEvent;
 import io.indy.octodo.model.DriveDatabase;
 
 
@@ -38,6 +38,13 @@ public class UpdateTaskListsAsyncTask extends AsyncTask<Void, Void, Void> {
         mDriveDatabase = driveDatabase;
         mJSONObject = jsonObject;
         mJSONFileName = jsonFileName;
+
+        // about to save data to GDrive, fire an event so that the
+        // activity can inform the user (i.e. show a progress anim
+        // in the action bar)
+        //
+        PersistDataPreEvent event = new PersistDataPreEvent(mJSONFileName);
+        EventBus.getDefault().post(event);
     }
 
     @Override
@@ -53,7 +60,7 @@ public class UpdateTaskListsAsyncTask extends AsyncTask<Void, Void, Void> {
         // TODO: check to see if mDriveDatabase has successfully updated the file on GoogleDrive
 
         // send event that the file has been saved
-        SavedTaskListsEvent event = new SavedTaskListsEvent(mJSONFileName);
+        PersistDataPostEvent event = new PersistDataPostEvent(mJSONFileName);
         EventBus.getDefault().post(event);
     }
 }

@@ -33,7 +33,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.TaskItemAdapter;
 import io.indy.octodo.controller.MainController;
-import io.indy.octodo.event.HaveCurrentTaskListEvent;
+import io.indy.octodo.event.LoadedTaskListsEvent;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.helper.DateFormatHelper;
@@ -185,8 +185,8 @@ public final class TaskListFragment extends Fragment {
 
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public void onEvent(HaveCurrentTaskListEvent event) {
-        ifd("received HaveCurrentTaskListEvent");
+    public void onEvent(LoadedTaskListsEvent event) {
+        ifd("received LoadedTaskListsEvent");
         refreshUI();
     }
 

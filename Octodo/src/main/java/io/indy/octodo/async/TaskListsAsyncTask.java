@@ -23,7 +23,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import io.indy.octodo.event.HaveCurrentTaskListEvent;
+import io.indy.octodo.event.LoadedTaskListsEvent;
 import io.indy.octodo.model.DriveDatabase;
 import io.indy.octodo.model.TaskList;
 
@@ -57,7 +57,7 @@ public class TaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
         mDriveDatabase.setCurrentTaskLists(result);
 
         // fire event to update the UI
-        HaveCurrentTaskListEvent event = new HaveCurrentTaskListEvent();
+        LoadedTaskListsEvent event = new LoadedTaskListsEvent();
         EventBus.getDefault().post(event);
 
     }

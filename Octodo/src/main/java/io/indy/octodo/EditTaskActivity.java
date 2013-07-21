@@ -38,8 +38,8 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.controller.MainController;
-import io.indy.octodo.event.HaveCurrentTaskListEvent;
-import io.indy.octodo.event.SavedTaskListsEvent;
+import io.indy.octodo.event.LoadedTaskListsEvent;
+import io.indy.octodo.event.PersistDataPostEvent;
 import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
@@ -177,12 +177,12 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public void onEvent(HaveCurrentTaskListEvent event) {
-        d("received HaveCurrentTaskListEvent");
+    public void onEvent(LoadedTaskListsEvent event) {
+        d("received LoadedTaskListsEvent");
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public void onEvent(SavedTaskListsEvent event) {
+    public void onEvent(PersistDataPostEvent event) {
         d("received savedTaskListsEvent");
         setSupportProgressBarIndeterminateVisibility(false);
         finish();
@@ -237,7 +237,7 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
         if(isSaving) {
             setSupportProgressBarIndeterminateVisibility(true);
             mNotification.showInformation(getString(R.string.information_saving_task_changes));
-            // now wait for the SavedTaskListsEvent
+            // now wait for the PersistDataPostEvent
         } else {
             finish();
         }

@@ -25,6 +25,7 @@ import de.greenrobot.event.EventBus;
 import io.indy.octodo.R;
 import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
+import io.indy.octodo.event.ToggledTaskStateEvent;
 import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.DriveModel;
 import io.indy.octodo.model.Task;
@@ -67,7 +68,8 @@ public class MainController {
 
     public void onTaskUpdateState(Task task, int state) {
         mDriveModel.updateTaskState(task, state);
-        postRefreshEvent(task.getParentName());
+        // post a ToggledTaskStateEvent so that the activity can show/hide trashcan icon
+        post(new ToggledTaskStateEvent(task.getParentName()));
     }
 
     public TaskList onGetTaskList(String name) {

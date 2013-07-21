@@ -16,15 +16,8 @@
 
 package io.indy.octodo.event;
 
-public class SavedTaskListsEvent {
+public class LoadedTaskListsEvent {
 
-    private String mJSONFilename;
-
-    public SavedTaskListsEvent(String jsonFilename) {
-        mJSONFilename = jsonFilename;
-    }
-
-    public String getJSONFilename() {
-        return mJSONFilename;
+    public LoadedTaskListsEvent() {
     }
 }

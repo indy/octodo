@@ -16,8 +16,15 @@
 
 package io.indy.octodo.event;
 
-public class HaveCurrentTaskListEvent {
+public class PersistDataPostEvent {
 
-    public HaveCurrentTaskListEvent() {
+    private String mJSONFilename;
+
+    public PersistDataPostEvent(String jsonFilename) {
+        mJSONFilename = jsonFilename;
+    }
+
+    public String getJSONFilename() {
+        return mJSONFilename;
     }
 }

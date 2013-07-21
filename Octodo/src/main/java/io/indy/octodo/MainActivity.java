@@ -35,8 +35,11 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.TaskListPagerAdapter;
 import io.indy.octodo.controller.MainController;
-import io.indy.octodo.event.HaveCurrentTaskListEvent;
+import io.indy.octodo.event.LoadedTaskListsEvent;
+import io.indy.octodo.event.PersistDataPostEvent;
+import io.indy.octodo.event.PersistDataPreEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
+import io.indy.octodo.event.ToggledTaskStateEvent;
 import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.TaskList;
 
@@ -115,7 +118,7 @@ public class MainActivity extends DriveBaseActivity {
         } else {
             ifd("launching async tasks to load data");
             // load tasklists if a previous activity hasn't done so
-            // this async task will send a HaveCurrentTaskListEvent
+            // this async task will send a LoadedTaskListsEvent
 
             mNotificationHelper.showInformation(getString(R.string.information_syncing_data));
             setSupportProgressBarIndeterminateVisibility(true);
@@ -125,11 +128,21 @@ public class MainActivity extends DriveBaseActivity {
         }
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
+    public void onEvent(PersistDataPreEvent event) {
+        ifd("received PersistDataPreEvent");
+        setSupportProgressBarIndeterminateVisibility(true);
+    }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public void onEvent(HaveCurrentTaskListEvent event) {
-        ifd("received HaveCurrentTaskListEvent");
+    public void onEvent(PersistDataPostEvent event) {
+        ifd("received PersistDataPostEvent");
+        setSupportProgressBarIndeterminateVisibility(false);
+    }
 
+    @SuppressWarnings({"UnusedDeclaration"})
+    public void onEvent(LoadedTaskListsEvent event) {
+        ifd("received LoadedTaskListsEvent");
         setSupportProgressBarIndeterminateVisibility(false);
         refreshTaskListsUI();
     }
@@ -141,6 +154,12 @@ public class MainActivity extends DriveBaseActivity {
     public void onEvent(RefreshTaskListEvent event) {
         String taskListName = event.getTaskListName();
         // assume that the given taskList is the one that's being shown on the UI
+        determineTrashIconVisibility(taskListName);
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    public void onEvent(ToggledTaskStateEvent event) {
+        String taskListName = event.getTaskListName();
         determineTrashIconVisibility(taskListName);
     }
 

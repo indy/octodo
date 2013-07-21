@@ -33,7 +33,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.ManageListsAdapter;
 import io.indy.octodo.controller.MainController;
-import io.indy.octodo.event.HaveCurrentTaskListEvent;
+import io.indy.octodo.event.LoadedTaskListsEvent;
 import io.indy.octodo.event.ToggledListSelectionEvent;
 import io.indy.octodo.model.TaskList;
 
@@ -90,15 +90,15 @@ public class ManageListsActivity extends DriveBaseActivity {
             refreshTaskLists();
         } else {
             // load tasklists if a previous activity hasn't done so
-            // this async task will send a HaveCurrentTaskListEvent
+            // this async task will send a LoadedTaskListsEvent
             mDriveModel.asyncLoadCurrentTaskLists();
         }
 
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public void onEvent(HaveCurrentTaskListEvent event) {
-        ifd("received HaveCurrentTaskListEvent");
+    public void onEvent(LoadedTaskListsEvent event) {
+        ifd("received LoadedTaskListsEvent");
         refreshTaskLists();
     }
 
