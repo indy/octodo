@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Octodo</string>
-    <string name="add_item">Add Item</string>
+    <string name="add_item">Add Item...</string>
 
     <string name="about">About</string>
     <string name="title_activity_about">About</string>
