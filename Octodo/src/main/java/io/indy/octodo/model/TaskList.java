@@ -31,7 +31,6 @@ public class TaskList {
     static private final String TAG = TaskList.class.getSimpleName();
     static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
-    private final int mId;
     private final String mName;
     private List<Task> mTasks;
 
@@ -43,7 +42,6 @@ public class TaskList {
 
     public static final int STATE_INACTIVE = 1;
 
-    private static final String ID = "id";
     private static final String NAME = "name";
     private static final String STATE = "state";
     private static final String HAS_TASK_LIFETIME = "has_task_lifetime";
@@ -64,7 +62,6 @@ public class TaskList {
     }
 
     public void logTaskList() {
-
         ifd("logTaskList: " + mName);
         for(Task t: mTasks) {
             int id = System.identityHashCode(t);
@@ -73,8 +70,7 @@ public class TaskList {
     }
 
     // use a builder similar to the Task one
-    public TaskList(int id, String name) {
-        mId = id;
+    public TaskList(String name) {
         mName = name;
         mTasks = new ArrayList<Task>();
 
@@ -108,10 +104,9 @@ public class TaskList {
     public static TaskList fromJson(JSONObject jsonObject) {
 
         try {
-            int id = jsonObject.getInt(ID);
             String name = jsonObject.getString(NAME);
 
-            TaskList taskList = new TaskList(id, name);
+            TaskList taskList = new TaskList(name);
 
             JSONArray jsonTasks = jsonObject.getJSONArray(TASKS);
             for(int i=0;i<jsonTasks.length();i++) {
@@ -133,7 +128,6 @@ public class TaskList {
         JSONObject res = new JSONObject();
 
         try {
-            res.put(ID, mId);
             res.put(NAME, mName);
             res.put(STATE, 0);
             res.put(HAS_TASK_LIFETIME, 0);
@@ -156,11 +150,6 @@ public class TaskList {
         }
 
         return res;
-    }
-
-
-    public int getId() {
-        return mId;
     }
 
     public String getName() {

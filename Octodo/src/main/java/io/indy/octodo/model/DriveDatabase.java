@@ -365,11 +365,11 @@ public class DriveDatabase {
     private static List<TaskList> buildDefaultEmptyTaskLists() {
         List<TaskList> tasklists = new ArrayList<TaskList>();
 
-        TaskList today = new TaskList(0, "today");
+        TaskList today = new TaskList("today");
         today.setDeleteable(false);
         tasklists.add(today);
 
-        TaskList thisWeek = new TaskList(0, "this week");
+        TaskList thisWeek = new TaskList("this week");
         thisWeek.setDeleteable(false);
         tasklists.add(thisWeek);
 

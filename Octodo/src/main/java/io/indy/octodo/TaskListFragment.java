@@ -95,7 +95,7 @@ public final class TaskListFragment extends Fragment {
         if (mTaskList == null) {
             ifd("mTaskList is null - do some re-initialisation with DriveModel?");
             String taskListName = savedInstanceState.getString("taskListName");
-            mTaskList = new TaskList(0, taskListName);
+            mTaskList = new TaskList(taskListName);
             // TODO: would updateLocalTaskList fail here?
         } else {
             // already have a mTaskList from setInstance
@@ -216,7 +216,7 @@ public final class TaskListFragment extends Fragment {
         // this.mTaskList will provide data to this fragment's ui
 
         //mTaskList = new TaskList(taskList.getId(), taskList.getName());
-        mTaskList = new TaskList(0, taskListName);
+        mTaskList = new TaskList(taskListName);
 
         //List<Task> localTasks = mTaskList.getTasks();
         //localTasks.clear();

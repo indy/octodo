@@ -48,7 +48,7 @@ public class DriveModel {
             return;
         }
 
-        TaskList taskList = new TaskList(0, name);
+        TaskList taskList = new TaskList(name);
         List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
         taskLists.add(taskList);
         mDriveDatabase.saveCurrentTaskLists();
@@ -165,7 +165,7 @@ public class DriveModel {
 
         TaskList taskList = getTaskList(historicTaskLists, name);
         if(taskList == null) {
-            taskList = new TaskList(0, name);
+            taskList = new TaskList(name);
             historicTaskLists.add(taskList);
         }
         return taskList;
