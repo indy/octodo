@@ -30,8 +30,6 @@ public class Task {
     static private final String TAG = Task.class.getSimpleName();
     static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
-    private int mId;
-
     private String mParentName;
 
     private String mContent;
@@ -54,7 +52,6 @@ public class Task {
     private static final String FINISHED_AT = "finished_at";
 
     private Task(Builder builder) {
-        mId = builder.mId;
         mContent = builder.mContent;
         mState = builder.mState;
         mStartedAt = builder.mStartedAt;
@@ -123,10 +120,6 @@ public class Task {
         return res;
     }
 
-    public int getId() {
-        return mId;
-    }
-
     public String getContent() {
         return mContent;
     }
@@ -149,8 +142,6 @@ public class Task {
     }
 
     public static class Builder {
-        private int mId = 0;
-
         private String mContent = "";
 
         private int mState = 0;
@@ -160,12 +151,6 @@ public class Task {
         private String mFinishedAt = "";
 
         public Builder() {
-
-        }
-
-        public Builder id(int val) {
-            mId = val;
-            return this;
         }
 
         public Builder content(String val) {

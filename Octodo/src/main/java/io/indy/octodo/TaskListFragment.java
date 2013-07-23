@@ -255,7 +255,6 @@ public final class TaskListFragment extends Fragment {
         if (D) {
             ifd("adding a task");
             // this task has an id of 0, can't just add it to mTasks
-            ifd("id: " + task.getId());
             ifd("content: " + task.getContent());
             ifd("state: " + task.getState());
             ifd("startedAt: " + task.getStartedAt());
