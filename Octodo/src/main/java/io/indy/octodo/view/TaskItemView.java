@@ -16,28 +16,20 @@
 
 package io.indy.octodo.view;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.util.List;
 
 import io.indy.octodo.EditTaskActivity;
 import io.indy.octodo.R;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Task;
-import io.indy.octodo.model.TaskList;
 
 public class TaskItemView extends LinearLayout {
 
@@ -50,12 +42,6 @@ public class TaskItemView extends LinearLayout {
     private MainController mController;
 
     private CheckBox mIsDone;
-
-    private ImageButton mEditTask;
-
-    private ImageButton mDeleteTask;
-
-    private ImageButton mMoveTask;
 
     private TextView mContent;
 
@@ -74,24 +60,16 @@ public class TaskItemView extends LinearLayout {
 
         li.inflate(R.layout.row_task, this, true);
 
-
         mTaskRow = (LinearLayout)findViewById(R.id.taskRow);
         mIsDone = (CheckBox)findViewById(R.id.isDone);
         mContent = (TextView)findViewById(R.id.content);
-/*
-        mEditTask = (ImageButton)findViewById(R.id.edit_task);
-        mDeleteTask = (ImageButton)findViewById(R.id.delete_task);
-        mMoveTask = (ImageButton)findViewById(R.id.move_task);
-*/
+
         addClickListeners();
     }
 
     public void setupWithTask(Task task) {
 
         mTask = task;
-
-        // Integer taskId = Integer.valueOf(mTaskId);
-        // mIsDone.setTag(taskId);
 
         String taskString = task.getContent();
         mContent.setText(taskString);
@@ -111,23 +89,12 @@ public class TaskItemView extends LinearLayout {
     }
 
     private void addClickListeners() {
-        mIsDone.setOnClickListener(mOnClickListener);
-        //mEditTask.setOnClickListener(mOnClickListener);
-        //mMoveTask.setOnClickListener(mOnClickListener);
-        //mDeleteTask.setOnClickListener(mOnClickListener);
-
-
-        mTaskRow.setOnLongClickListener(new OnLongClickListener() {
+        mIsDone.setOnClickListener(new OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
-                ifd("taskRow received long click");
+            public void onClick(View view) {
+                ifd("mIsDone checkbox received normal click");
 
-                Intent intent = new Intent(mContext, EditTaskActivity.class);
-                intent.putExtra(EditTaskActivity.INTENT_EXTRA_LIST_NAME, mTask.getParentName());
-                intent.putExtra(EditTaskActivity.INTENT_EXTRA_START_TIME, mTask.getStartedAt());
-
-                mContext.startActivity(intent);
-                return true;
+                clickedIsDone();
             }
         });
 
@@ -137,38 +104,29 @@ public class TaskItemView extends LinearLayout {
                 Log.d(TAG, "taskRow received normal click");
 
                 mIsDone.setChecked(!mIsDone.isChecked());
-                clickedIsDone(mIsDone);
+                clickedIsDone();
+            }
+        });
+
+        mTaskRow.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                ifd("taskRow received long click");
+
+                Intent intent = new Intent(mContext, EditTaskActivity.class);
+                intent.putExtra(EditTaskActivity.INTENT_EXTRA_LIST_NAME, mTask.getParentName());
+                intent.putExtra(EditTaskActivity.INTENT_EXTRA_START_TIME, mTask.getStartedAt());
+                mContext.startActivity(intent);
+
+                return true;
             }
         });
     }
 
-    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.isDone:
-                    clickedIsDone(v);
-                    break;
-                /*
-                case R.id.edit_task:
-                    clickedEditTask(v);
-                    break;
-                case R.id.delete_task:
-                    clickedDeleteTask(v);
-                    break;
-                case R.id.move_task:
-                    clickedMoveTask(v);
-                    break;
-                */
-            }
-        }
-    };
-
-    private void clickedIsDone(View view) {
-        CheckBox cb = (CheckBox)view;
+    private void clickedIsDone() {
         int state;
 
-        if (cb.isChecked()) {
+        if (mIsDone.isChecked()) {
             setContentAsStruckThru();
             state = Task.STATE_STRUCK;
         } else {
@@ -177,171 +135,6 @@ public class TaskItemView extends LinearLayout {
         }
 
         mController.onTaskUpdateState(mTask, state);
-    }
-
-    private void clickedEditTask(View view) {
-        if (D) {
-            Log.d(TAG, "clickedEditTask");
-        }
-
-        final String content = mTask.getContent();
-
-        AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
-        ad.setTitle(mContext.getString(R.string.edit_task_title));
-
-        final EditText input = new EditText(mContext);
-
-        input.setText(content);
-        input.selectAll();
-
-        ad.setView(input);
-        ad.setPositiveButton(mContext.getString(R.string.edit_task_positive),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int arg1) {
-                        if (D) {
-                            Log.d(TAG, "pressed the positive button");
-                        }
-                        final String newContent = input.getText().toString().trim();
-                        hideSoftKeyboard(input);
-                        mController.onTaskUpdateContent(mTask, newContent);
-                    }
-                });
-        ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int arg1) {
-                        if (D) {
-                            Log.d(TAG, "pressed the cancel button");
-                        }
-                    }
-                });
-
-        ad.show();
-
-    }
-
-    private void hideSoftKeyboard(EditText editText) {
-        InputMethodManager imm = (InputMethodManager)mContext
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-    }
-
-    private void clickedDeleteTask(View view) {
-
-        AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
-        ad.setTitle(mContext.getString(R.string.delete_task_title));
-        ad.setMessage(mContext.getString(R.string.delete_task_message));
-        ad.setPositiveButton(mContext.getString(R.string.delete_task_positive),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int arg1) {
-                        if (D) {
-                            Log.d(TAG, "pressed the delete button");
-                        }
-                        // close the drawer
-                        mController.onTaskDelete(mTask);
-                    }
-                });
-
-        ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int arg1) {
-                        if (D) {
-                            Log.d(TAG, "pressed the cancel button");
-                        }
-                    }
-                });
-
-        ad.setCancelable(true);
-        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                if (D) {
-                    Log.d(TAG, "pressed cancel");
-                }
-            }
-        });
-
-        ad.show();
-    }
-
-    private void clickedMoveTask(View view) {
-        if (D) {
-            Log.d(TAG, "clicked moveTask button");
-        }
-
-        final List<TaskList> taskLists = mController.onGetTaskLists();
-        final int taskListSize = taskLists.size();
-        final CharSequence[] listNames = new CharSequence[taskListSize];
-
-        TaskList taskList;
-        int currentTaskIndex = 0;
-
-        for (int i = 0; i < taskListSize; i++) {
-            taskList = taskLists.get(i);
-
-            listNames[i] = taskList.getName();
-            if (taskList.getId() == mTask.getListId()) {
-                currentTaskIndex = i;
-            }
-        }
-
-        AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
-        ad.setTitle(mContext.getString(R.string.move_task_title));
-        ad.setSingleChoiceItems(listNames, currentTaskIndex, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (D) {
-                    Log.d(TAG, "made a selection " + which);
-                }
-            }
-        });
-        ad.setPositiveButton(mContext.getString(R.string.move_task_positive),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        int s = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
-                        if (D) {
-                            Log.d(TAG, "checked " + s);
-                            Log.d(TAG, "which is " + which);
-                            // get the listId of the selected item
-                            Log.d(TAG, "chosen " + taskLists.get(s).getName());
-                            Log.d(TAG, "chosen " + taskLists.get(s).getId());
-                        }
-
-                        String destinationTaskList = taskLists.get(s).getName();
-                        moveTask(destinationTaskList);
-                    }
-                });
-
-        ad.setNegativeButton(mContext.getString(R.string.dialog_generic_cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int arg1) {
-                        if (D) {
-                            Log.d(TAG, "pressed the cancel button");
-                        }
-                    }
-                });
-
-        ad.setCancelable(true);
-        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                if (D) {
-                    Log.d(TAG, "pressed cancel");
-                }
-            }
-        });
-
-        ad.show();
-
-    }
-
-    private void moveTask(String destinationTaskList) {
-        mController.onTaskMove(mTask, destinationTaskList);
     }
 
     private void setContentAsStruckThru() {
