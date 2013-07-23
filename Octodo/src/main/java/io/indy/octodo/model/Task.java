@@ -32,7 +32,6 @@ public class Task {
 
     private int mId;
 
-    private TaskList mParentTaskList;
     private String mParentName;
 
     private String mContent;
@@ -49,7 +48,6 @@ public class Task {
 
     public static final int STATE_CLOSED = 2;
 
-    private static final String ID = "id";
     private static final String CONTENT = "content";
     private static final String STATE = "state";
     private static final String STARTED_AT = "started_at";
@@ -61,7 +59,6 @@ public class Task {
         mState = builder.mState;
         mStartedAt = builder.mStartedAt;
         mFinishedAt = builder.mFinishedAt;
-        mParentTaskList = builder.mParentTaskList;
     }
 
     public void setParentName(String name) {
@@ -70,10 +67,6 @@ public class Task {
 
     public String getParentName() {
         return mParentName;
-    }
-
-    public void setParentTaskList(TaskList parent) {
-        mParentTaskList = parent;
     }
 
     public void setState(int state) {
@@ -134,17 +127,6 @@ public class Task {
         return mId;
     }
 
-    public TaskList getParentTaskList() {
-        return mParentTaskList;
-    }
-
-    public int getListId() {
-        if(mParentTaskList != null) {
-            return mParentTaskList.getId();
-        }
-        return 0;
-    }
-
     public String getContent() {
         return mContent;
     }
@@ -177,19 +159,12 @@ public class Task {
 
         private String mFinishedAt = "";
 
-        private TaskList mParentTaskList = null;
-
         public Builder() {
 
         }
 
         public Builder id(int val) {
             mId = val;
-            return this;
-        }
-
-        public Builder parentTaskList(TaskList val) {
-            mParentTaskList = val;
             return this;
         }
 

@@ -96,7 +96,7 @@ public class TaskList {
 
     public TaskList add(Task task) {
         mTasks.add(task);
-        task.setParentTaskList(this);
+        task.setParentName(mName);
         return this;
     }
 
@@ -117,7 +117,6 @@ public class TaskList {
             for(int i=0;i<jsonTasks.length();i++) {
                 JSONObject jsonTask = jsonTasks.getJSONObject(i);
                 Task task = Task.fromJson(jsonTask);
-                task.setParentName(name);
                 taskList.add(task);
             }
 

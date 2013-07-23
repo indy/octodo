@@ -73,7 +73,6 @@ public class DriveModel {
         ifd("addTask called! on tasklist: " + taskList);
 
         taskList.add(task);
-        task.setParentName(taskListName);
         mDriveDatabase.saveCurrentTaskLists();
     }
 
@@ -101,8 +100,6 @@ public class DriveModel {
         sourceTaskList.remove(task);
         destinationTaskList.add(task);
 
-        task.setParentName(destination);
-
         mDriveDatabase.saveCurrentTaskLists();
     }
 
@@ -118,7 +115,6 @@ public class DriveModel {
         if(sourceTaskList != destinationTaskList) {
             sourceTaskList.remove(task);
             destinationTaskList.add(task);
-            task.setParentName(newTaskList);
         }
 
         mDriveDatabase.saveCurrentTaskLists();
