@@ -35,6 +35,7 @@ import io.indy.octodo.adapter.ManageListsAdapter;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.LoadedTaskListsEvent;
 import io.indy.octodo.event.ToggledListSelectionEvent;
+import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.TaskList;
 
 public class ManageListsActivity extends DriveBaseActivity {
@@ -48,6 +49,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     private ManageListsAdapter mAdapter;
 
     private MainController mController;
+    private OctodoModel mOctodoModel;
 
     private ListView mListView;
 
@@ -74,7 +76,7 @@ public class ManageListsActivity extends DriveBaseActivity {
 
         mListView.setAdapter(mAdapter);
 
-        mDriveDatabase.initialise();
+        mDriveStorage.initialise();
     }
 
     @Override
@@ -83,15 +85,16 @@ public class ManageListsActivity extends DriveBaseActivity {
 
         ifd("onDriveDatabaseInitialised");
 
-        mController = new MainController(this, mDriveModel);
+        mOctodoModel = new OctodoModel(mDriveStorage);
+        mController = new MainController(this, mOctodoModel);
 
-        if(mDriveModel.hasLoadedTaskLists()) {
+        if(mOctodoModel.hasLoadedTaskLists()) {
             // use already loaded data
             refreshTaskLists();
         } else {
             // load tasklists if a previous activity hasn't done so
             // this async task will send a LoadedTaskListsEvent
-            mDriveModel.asyncLoadCurrentTaskLists();
+            mOctodoModel.asyncLoadCurrentTaskLists();
         }
 
     }

@@ -27,7 +27,7 @@ import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggledTaskStateEvent;
 import io.indy.octodo.helper.NotificationHelper;
-import io.indy.octodo.model.DriveModel;
+import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 
@@ -41,16 +41,16 @@ public class MainController {
 
     private NotificationHelper mNotification;
 
-    private DriveModel mDriveModel;
+    private OctodoModel mOctodoModel;
 
-    public MainController(Activity activity, DriveModel driveModel) {
+    public MainController(Activity activity, OctodoModel octodoModel) {
         mActivity = activity;
         mNotification = new NotificationHelper(activity);
-        mDriveModel = driveModel;
+        mOctodoModel = octodoModel;
     }
 
     public Task findTask(String listName, String startedAt) {
-        TaskList taskList = mDriveModel.getCurrentTaskList(listName);
+        TaskList taskList = mOctodoModel.getCurrentTaskList(listName);
         for(Task t : taskList.getTasks()) {
             if(startedAt.equals(t.getStartedAt())) {
                 return t;
@@ -62,35 +62,35 @@ public class MainController {
     }
 
     public void onTaskAdd(Task task, String taskListName) {
-        mDriveModel.addTask(task, taskListName);
+        mOctodoModel.addTask(task, taskListName);
         postRefreshEvent(taskListName);
     }
 
     public void onTaskUpdateState(Task task, int state) {
-        mDriveModel.updateTaskState(task, state);
+        mOctodoModel.updateTaskState(task, state);
         // post a ToggledTaskStateEvent so that the activity can show/hide trashcan icon
         post(new ToggledTaskStateEvent(task.getParentName()));
     }
 
     public TaskList onGetTaskList(String name) {
-        return mDriveModel.getCurrentTaskList(name);
+        return mOctodoModel.getCurrentTaskList(name);
     }
 
     public TaskList onGetTaskList(int index) {
-        return mDriveModel.getCurrentTaskList(index);
+        return mOctodoModel.getCurrentTaskList(index);
     }
 
     public List<TaskList> onGetTaskLists() {
-        return mDriveModel.getCurrentTaskLists();
+        return mOctodoModel.getCurrentTaskLists();
     }
 
     public void onTaskUpdateContent(Task task, String content) {
-        mDriveModel.updateTaskContent(task, content);
+        mOctodoModel.updateTaskContent(task, content);
         postRefreshEvent(task.getParentName());
     }
 
     public void onTaskMove(Task task, String destinationTaskList) {
-        mDriveModel.moveTask(task, destinationTaskList);
+        mOctodoModel.moveTask(task, destinationTaskList);
         post(new MoveTaskEvent(task, task.getParentName(), destinationTaskList));
         String messagePrefix = mActivity.getString(R.string.confirmation_moved_task);
         notifyUser(messagePrefix + " \"" + destinationTaskList + "\"");
@@ -100,7 +100,7 @@ public class MainController {
     public boolean onTaskEdited(Task task, String newContent, String newTaskList) {
 
         if(!newContent.equals(task.getContent()) || !newTaskList.equals(task.getParentName())) {
-            mDriveModel.editedTask(task, newContent, newTaskList);
+            mOctodoModel.editedTask(task, newContent, newTaskList);
             return true;
         }
 
@@ -109,28 +109,28 @@ public class MainController {
 
     public void onTaskDelete(Task task) {
         String parentName = task.getParentName();
-        mDriveModel.deleteTask(task);
+        mOctodoModel.deleteTask(task);
         postRefreshEvent(parentName);
     }
 
     public void onRemoveCompletedTasks(String taskListName) {
-        mDriveModel.removeStruckTasks(taskListName);
+        mOctodoModel.removeStruckTasks(taskListName);
         postRefreshEvent(taskListName);
         String messagePrefix = mActivity.getString(R.string.confirmation_remove_completed_tasks);
         notifyUser(messagePrefix + " \"" + taskListName + "\"");
     }
 
     public void deleteSelectedTaskLists() {
-        mDriveModel.deleteSelectedTaskLists();
+        mOctodoModel.deleteSelectedTaskLists();
     }
 
     public void addList(String name) {
         // check if a tasklist with this name already exists
-        mDriveModel.addList(name);
+        mOctodoModel.addList(name);
     }
 
     public List<TaskList> getDeleteableTaskLists() {
-        return mDriveModel.getDeleteableTaskLists();
+        return mOctodoModel.getDeleteableTaskLists();
     }
 
     public void onDestroy() {

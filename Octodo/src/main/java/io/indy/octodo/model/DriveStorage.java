@@ -42,9 +42,9 @@ import io.indy.octodo.DriveBaseActivity;
 import io.indy.octodo.OctodoApplication;
 import io.indy.octodo.async.UpdateTaskListsAsyncTask;
 
-public class DriveDatabase {
+public class DriveStorage {
     static private final boolean D = true;
-    static private final String TAG = DriveDatabase.class.getSimpleName();
+    static private final String TAG = DriveStorage.class.getSimpleName();
     static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     public static final int REQUEST_ACCOUNT_PICKER = 1;
@@ -71,7 +71,7 @@ public class DriveDatabase {
     private DriveBaseActivity mActivity;
     private OctodoApplication mApplication;
 
-    public DriveDatabase(DriveBaseActivity activity) {
+    public DriveStorage(DriveBaseActivity activity) {
         mActivity = activity;
         mApplication = (OctodoApplication)mActivity.getApplication();
     }

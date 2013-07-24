@@ -22,7 +22,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-import io.indy.octodo.model.DriveDatabase;
+import io.indy.octodo.model.DriveStorage;
 import io.indy.octodo.model.TaskList;
 
 
@@ -30,18 +30,18 @@ import io.indy.octodo.model.TaskList;
 
 public class HistoricTaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
 
-    private final DriveDatabase mDriveDatabase;
+    private final DriveStorage mDriveStorage;
 
-    public HistoricTaskListsAsyncTask(DriveDatabase driveDatabase) {
-        mDriveDatabase = driveDatabase;
+    public HistoricTaskListsAsyncTask(DriveStorage driveStorage) {
+        mDriveStorage = driveStorage;
     }
 
     @Override
     protected List<TaskList> doInBackground(Void... params) {
         // get the current tasklists from the json files on drive and deserialise them into TaskLists
 
-        JSONObject jsonObject = mDriveDatabase.getJSON(DriveDatabase.HISTORIC_JSON);
-        return DriveDatabase.fromJSON(jsonObject);
+        JSONObject jsonObject = mDriveStorage.getJSON(DriveStorage.HISTORIC_JSON);
+        return DriveStorage.fromJSON(jsonObject);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class HistoricTaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskL
         super.onPostExecute(result);
 
         // populate the current values in drive storage
-        mDriveDatabase.setHistoricTaskLists(result);
+        mDriveStorage.setHistoricTaskLists(result);
     }
 
 }

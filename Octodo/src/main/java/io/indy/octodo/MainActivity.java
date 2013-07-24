@@ -41,6 +41,7 @@ import io.indy.octodo.event.PersistDataPreEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggledTaskStateEvent;
 import io.indy.octodo.helper.NotificationHelper;
+import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.TaskList;
 
 public class MainActivity extends DriveBaseActivity {
@@ -56,6 +57,7 @@ public class MainActivity extends DriveBaseActivity {
     private PageIndicator mIndicator;
 
     private MainController mController;
+    private OctodoModel mOctodoModel;
 
     private List<String> mTaskListNames;
 
@@ -91,12 +93,12 @@ public class MainActivity extends DriveBaseActivity {
 
         mNotificationHelper = new NotificationHelper(this);
 
-        mDriveDatabase.initialise();
+        mDriveStorage.initialise();
     }
 
     @Override
     public void onDriveDatabaseInitialised() {
-        // create mDriveModel
+        // create mOctodoModel
         super.onDriveDatabaseInitialised();
 
         /*
@@ -106,12 +108,12 @@ public class MainActivity extends DriveBaseActivity {
            - the 2 json files exist and we have their file ids
          */
 
-
-        mController = new MainController(this, mDriveModel);
-
         ifd("onDriveDatabaseInitialised");
 
-        if(mDriveModel.hasLoadedTaskLists()) {
+        mOctodoModel = new OctodoModel(mDriveStorage);
+        mController = new MainController(this, mOctodoModel);
+
+        if(mOctodoModel.hasLoadedTaskLists()) {
             // use already loaded data
             ifd("already loaded data");
             refreshTaskListsUI();
@@ -123,8 +125,8 @@ public class MainActivity extends DriveBaseActivity {
             mNotificationHelper.showInformation(getString(R.string.information_syncing_data));
             setSupportProgressBarIndeterminateVisibility(true);
 
-            mDriveModel.asyncLoadCurrentTaskLists();
-            mDriveModel.asyncLoadHistoricTaskLists();
+            mOctodoModel.asyncLoadCurrentTaskLists();
+            mOctodoModel.asyncLoadHistoricTaskLists();
         }
     }
 

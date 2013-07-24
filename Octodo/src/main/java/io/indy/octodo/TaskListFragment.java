@@ -93,7 +93,7 @@ public final class TaskListFragment extends Fragment {
 
         mController = ((MainActivity)mContext).getController();
         if (mTaskList == null) {
-            ifd("mTaskList is null - do some re-initialisation with DriveModel?");
+            ifd("mTaskList is null - do some re-initialisation with OctodoModel?");
             String taskListName = savedInstanceState.getString("taskListName");
             mTaskList = new TaskList(taskListName);
             // TODO: would updateLocalTaskList fail here?

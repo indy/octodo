@@ -22,8 +22,7 @@ import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-import io.indy.octodo.model.DriveDatabase;
-import io.indy.octodo.model.DriveModel;
+import io.indy.octodo.model.DriveStorage;
 
 public abstract class DriveBaseActivity extends SherlockFragmentActivity {
 
@@ -31,9 +30,7 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
     static private final String TAG = DriveBaseActivity.class.getSimpleName();
     static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
-    protected DriveDatabase mDriveDatabase;
-
-    protected DriveModel mDriveModel;
+    protected DriveStorage mDriveStorage;
 
     protected boolean mDriveDatabaseInitialised;
 
@@ -44,19 +41,18 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
         ifd("onCreate");
 
         mDriveDatabaseInitialised = false;
-        mDriveDatabase = new DriveDatabase(this);
+        mDriveStorage = new DriveStorage(this);
     }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        mDriveDatabase.onActivityResult(requestCode, resultCode, data);
+        mDriveStorage.onActivityResult(requestCode, resultCode, data);
     }
 
     public void onDriveDatabaseInitialised() {
         ifd("onDriveDatabaseInitialised");
 
         mDriveDatabaseInitialised = true;
-        mDriveModel = new DriveModel(mDriveDatabase);
     }
 
     public boolean isDriveDatabaseInitialised() {

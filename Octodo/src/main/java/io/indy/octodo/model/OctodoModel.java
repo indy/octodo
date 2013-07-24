@@ -21,19 +21,22 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.indy.octodo.async.CurrentTaskListsAsyncTask;
 import io.indy.octodo.async.HistoricTaskListsAsyncTask;
-import io.indy.octodo.async.TaskListsAsyncTask;
 
-public class DriveModel {
+public class OctodoModel {
 
     static private final boolean D = true;
-    static private final String TAG = DriveModel.class.getSimpleName();
+    static private final String TAG = OctodoModel.class.getSimpleName();
     static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
-    private DriveDatabase mDriveDatabase;
+    private DriveStorage mDriveStorage;
 
-    public DriveModel(DriveDatabase driveDatabase) {
-        mDriveDatabase = driveDatabase;
+    private AtomicStorage mAtomicStorage;
+
+    public OctodoModel(DriveStorage driveStorage) {
+        mDriveStorage = driveStorage;
+        mAtomicStorage = new AtomicStorage();
     }
 
     public void addList(String name) {
@@ -49,9 +52,9 @@ public class DriveModel {
         }
 
         TaskList taskList = new TaskList(name);
-        List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
+        List<TaskList> taskLists = mDriveStorage.getCurrentTaskLists();
         taskLists.add(taskList);
-        mDriveDatabase.saveCurrentTaskLists();
+        mDriveStorage.saveCurrentTaskLists();
     }
 
     public boolean deleteList(String name) {
@@ -61,9 +64,9 @@ public class DriveModel {
             return false;
         }
 
-        List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
+        List<TaskList> taskLists = mDriveStorage.getCurrentTaskLists();
         taskLists.remove(taskList);
-        mDriveDatabase.saveCurrentTaskLists();
+        mDriveStorage.saveCurrentTaskLists();
         return true;
     }
 
@@ -73,21 +76,21 @@ public class DriveModel {
         ifd("addTask called! on tasklist: " + taskList);
 
         taskList.add(task);
-        mDriveDatabase.saveCurrentTaskLists();
+        mDriveStorage.saveCurrentTaskLists();
     }
 
     public void updateTaskContent(Task task, String content) {
         ifd("updateTaskContent old: " + task.getContent() + " new: " + content);
 
         task.setContent(content);
-        mDriveDatabase.saveCurrentTaskLists();
+        mDriveStorage.saveCurrentTaskLists();
     }
 
     public void updateTaskState(Task task, int state) {
         ifd("updateTaskState content:" + task.getContent() + " state: " + state);
 
         task.setState(state);
-        mDriveDatabase.saveCurrentTaskLists();
+        mDriveStorage.saveCurrentTaskLists();
     }
 
     // re-assign a task to a different tasklist
@@ -100,7 +103,7 @@ public class DriveModel {
         sourceTaskList.remove(task);
         destinationTaskList.add(task);
 
-        mDriveDatabase.saveCurrentTaskLists();
+        mDriveStorage.saveCurrentTaskLists();
     }
 
     public void editedTask(Task task, String newContent, String newTaskList) {
@@ -117,7 +120,7 @@ public class DriveModel {
             destinationTaskList.add(task);
         }
 
-        mDriveDatabase.saveCurrentTaskLists();
+        mDriveStorage.saveCurrentTaskLists();
     }
 
 
@@ -130,7 +133,7 @@ public class DriveModel {
 
         TaskList taskList = getCurrentTaskList(task.getParentName());
         taskList.remove(task);
-        mDriveDatabase.saveCurrentTaskLists();
+        mDriveStorage.saveCurrentTaskLists();
     }
 
     // mark all struck tasks in the tasklist as closed
@@ -154,14 +157,14 @@ public class DriveModel {
         taskList.getTasks().removeAll(historicTaskList.getTasks());
 
         // save all
-        mDriveDatabase.saveCurrentTaskLists();
-        mDriveDatabase.saveHistoricTaskLists();
+        mDriveStorage.saveCurrentTaskLists();
+        mDriveStorage.saveHistoricTaskLists();
     }
 
     private TaskList getHistoricTaskList(String name) {
         // get the TaskList called name from mHistoricTaskLists
         // if it doesn't exist, create it
-        List<TaskList> historicTaskLists = mDriveDatabase.getHistoricTaskLists();
+        List<TaskList> historicTaskLists = mDriveStorage.getHistoricTaskLists();
 
         TaskList taskList = getTaskList(historicTaskLists, name);
         if(taskList == null) {
@@ -189,12 +192,12 @@ public class DriveModel {
 
     // return all the tasks associated with the list
     public TaskList getCurrentTaskList(String name) {
-        List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
+        List<TaskList> taskLists = mDriveStorage.getCurrentTaskLists();
         return getTaskList(taskLists, name);
     }
 
     public TaskList getCurrentTaskList(int index) {
-        List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
+        List<TaskList> taskLists = mDriveStorage.getCurrentTaskLists();
 
         if(taskLists == null) {
             ifd("mTaskLists is empty");
@@ -207,12 +210,12 @@ public class DriveModel {
     }
 
     public List<TaskList> getCurrentTaskLists() {
-        List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
+        List<TaskList> taskLists = mDriveStorage.getCurrentTaskLists();
         return taskLists;
     }
 
     public void deleteSelectedTaskLists() {
-        List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
+        List<TaskList> taskLists = mDriveStorage.getCurrentTaskLists();
         List<TaskList> removable = new ArrayList<TaskList>();
 
         for(TaskList taskList: taskLists) {
@@ -225,11 +228,11 @@ public class DriveModel {
             taskLists.remove(taskList);
         }
 
-        mDriveDatabase.saveCurrentTaskLists();
+        mDriveStorage.saveCurrentTaskLists();
     }
 
     public List<TaskList> getDeleteableTaskLists() {
-        List<TaskList> taskLists = mDriveDatabase.getCurrentTaskLists();
+        List<TaskList> taskLists = mDriveStorage.getCurrentTaskLists();
 
         List<TaskList> res = new ArrayList<TaskList>();
         for(TaskList taskList: taskLists) {
@@ -241,15 +244,15 @@ public class DriveModel {
     }
 
     public boolean hasLoadedTaskLists() {
-        return mDriveDatabase.hasLoadedTaskLists();
+        return mDriveStorage.hasLoadedTaskLists();
     }
 
     public void asyncLoadCurrentTaskLists() {
-        new TaskListsAsyncTask(mDriveDatabase).execute();
+        new CurrentTaskListsAsyncTask(mDriveStorage).execute();
     }
 
     public void asyncLoadHistoricTaskLists() {
-        new HistoricTaskListsAsyncTask(mDriveDatabase).execute();
+        new HistoricTaskListsAsyncTask(mDriveStorage).execute();
     }
 
 }

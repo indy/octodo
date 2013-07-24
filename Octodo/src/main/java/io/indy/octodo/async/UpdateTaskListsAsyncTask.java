@@ -23,19 +23,19 @@ import org.json.JSONObject;
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.event.PersistDataPostEvent;
 import io.indy.octodo.event.PersistDataPreEvent;
-import io.indy.octodo.model.DriveDatabase;
+import io.indy.octodo.model.DriveStorage;
 
 
 // save a list of tasklists, fire a saved tasklists event
 
 public class UpdateTaskListsAsyncTask extends AsyncTask<Void, Void, Void> {
 
-    private final DriveDatabase mDriveDatabase;
+    private final DriveStorage mDriveStorage;
     private final JSONObject mJSONObject;
     private final String mJSONFileName;
 
-    public UpdateTaskListsAsyncTask(DriveDatabase driveDatabase, String jsonFileName, JSONObject jsonObject) {
-        mDriveDatabase = driveDatabase;
+    public UpdateTaskListsAsyncTask(DriveStorage driveStorage, String jsonFileName, JSONObject jsonObject) {
+        mDriveStorage = driveStorage;
         mJSONObject = jsonObject;
         mJSONFileName = jsonFileName;
 
@@ -49,7 +49,7 @@ public class UpdateTaskListsAsyncTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        mDriveDatabase.updateFile(mJSONFileName, mJSONObject);
+        mDriveStorage.updateFile(mJSONFileName, mJSONObject);
         return null;
     }
 
@@ -57,7 +57,7 @@ public class UpdateTaskListsAsyncTask extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);
 
-        // TODO: check to see if mDriveDatabase has successfully updated the file on GoogleDrive
+        // TODO: check to see if mDriveStorage has successfully updated the file on GoogleDrive
 
         // send event that the file has been saved
         PersistDataPostEvent event = new PersistDataPostEvent(mJSONFileName);

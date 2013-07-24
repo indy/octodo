@@ -41,6 +41,7 @@ import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.LoadedTaskListsEvent;
 import io.indy.octodo.event.PersistDataPostEvent;
 import io.indy.octodo.helper.NotificationHelper;
+import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 
@@ -55,6 +56,8 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
     static public final String INTENT_EXTRA_START_TIME = "task started at";
 
     private MainController mController;
+    private OctodoModel mOctodoModel;
+
     private NotificationHelper mNotification;
 
     private Task mTask;
@@ -91,7 +94,7 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
             }
         });
 
-        mDriveDatabase.initialise();
+        mDriveStorage.initialise();
     }
 
     private void onClickedDelete() {
@@ -137,9 +140,10 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
         super.onDriveDatabaseInitialised();
         d("onDriveDatabaseInitialised");
 
-        mController = new MainController(this, mDriveModel);
+        mOctodoModel = new OctodoModel(mDriveStorage);
+        mController = new MainController(this, mOctodoModel);
 
-        if(mDriveModel.hasLoadedTaskLists()) {
+        if(mOctodoModel.hasLoadedTaskLists()) {
 
             String listName = getIntent().getStringExtra(INTENT_EXTRA_LIST_NAME);
             String startedAt = getIntent().getStringExtra(INTENT_EXTRA_START_TIME);
@@ -151,8 +155,8 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
 
             refreshUI();
         } else {
-            // MainActivity should have managed the data loading into DriveModel
-            Log.e(TAG, "DriveModel should have loaded the data");
+            // MainActivity should have managed the data loading into OctodoModel
+            Log.e(TAG, "OctodoModel should have loaded the data");
         }
     }
 
