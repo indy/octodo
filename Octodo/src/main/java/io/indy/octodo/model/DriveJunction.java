@@ -107,7 +107,10 @@ public class DriveJunction {
         try {
             f = service.files().get(fileId).execute();
         } catch (IOException e) {
-            ifd("getFileMetadata exception: " + e);
+            ifd("(0/3) getFileMetadata params: fileId=" + fileId);
+            ifd("(1/3) getFileMetadata exception: " + e);
+            ifd("(2/3) getFileMetadata exception: " + e.getLocalizedMessage());
+            ifd("(3/3) getFileMetadata exception: " + e.getMessage());
             throw e;
         }
         return f;
