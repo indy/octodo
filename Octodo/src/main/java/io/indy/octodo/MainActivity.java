@@ -110,7 +110,7 @@ public class MainActivity extends DriveBaseActivity {
 
         ifd("onDriveDatabaseInitialised");
 
-        mOctodoModel = new OctodoModel(mDriveStorage);
+        mOctodoModel = new OctodoModel(this);
         mController = new MainController(this, mOctodoModel);
 
         if(mOctodoModel.hasLoadedTaskLists()) {

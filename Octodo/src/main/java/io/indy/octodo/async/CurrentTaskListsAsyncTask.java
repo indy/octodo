@@ -25,6 +25,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.event.LoadedTaskListsEvent;
 import io.indy.octodo.model.DriveStorage;
+import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.TaskList;
 
 
@@ -32,19 +33,21 @@ import io.indy.octodo.model.TaskList;
 
 public class CurrentTaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
 
-    private final DriveStorage mDriveStorage;
+    private final OctodoModel mOctodoModel;
 
     // TODO: check chris bane's photup app for usage on WeakReferences in AsyncTasks
 
-    public CurrentTaskListsAsyncTask(DriveStorage driveStorage) {
-        mDriveStorage = driveStorage;
+    public CurrentTaskListsAsyncTask(OctodoModel octodoModel) {
+        mOctodoModel = octodoModel;
     }
 
     @Override
     protected List<TaskList> doInBackground(Void... params) {
         // get the current tasklists from the json files on drive and deserialise them into TaskLists
 
-        JSONObject jsonObject = mDriveStorage.getJSON(DriveStorage.CURRENT_JSON);
+        DriveStorage driveStorage = mOctodoModel.getDriveStorage();
+
+        JSONObject jsonObject = driveStorage.getJSON(DriveStorage.CURRENT_JSON);
         return DriveStorage.fromJSON(jsonObject);
     }
 
@@ -53,8 +56,8 @@ public class CurrentTaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskLi
     protected void onPostExecute(List<TaskList> result) {
         super.onPostExecute(result);
 
-        // populate the current values in drive storage
-        mDriveStorage.setCurrentTaskLists(result);
+        // populate the current values in the model
+        mOctodoModel.setCurrentTaskLists(result);
 
         // fire event to update the UI
         LoadedTaskListsEvent event = new LoadedTaskListsEvent();

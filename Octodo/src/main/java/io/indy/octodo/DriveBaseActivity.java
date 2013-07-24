@@ -59,4 +59,8 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
         return mDriveDatabaseInitialised;
     }
 
+    public DriveStorage getDriveStorage() {
+        return mDriveStorage;
+    }
+
 }

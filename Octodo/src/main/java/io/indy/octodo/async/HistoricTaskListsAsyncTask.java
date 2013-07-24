@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import io.indy.octodo.model.DriveStorage;
+import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.TaskList;
 
 
@@ -30,26 +31,26 @@ import io.indy.octodo.model.TaskList;
 
 public class HistoricTaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
 
-    private final DriveStorage mDriveStorage;
+    private final OctodoModel mOctodoModel;
 
-    public HistoricTaskListsAsyncTask(DriveStorage driveStorage) {
-        mDriveStorage = driveStorage;
+    public HistoricTaskListsAsyncTask(OctodoModel octodoModel) {
+        mOctodoModel = octodoModel;
     }
 
     @Override
     protected List<TaskList> doInBackground(Void... params) {
         // get the current tasklists from the json files on drive and deserialise them into TaskLists
 
-        JSONObject jsonObject = mDriveStorage.getJSON(DriveStorage.HISTORIC_JSON);
+        DriveStorage driveStorage = mOctodoModel.getDriveStorage();
+
+        JSONObject jsonObject = driveStorage.getJSON(DriveStorage.HISTORIC_JSON);
         return DriveStorage.fromJSON(jsonObject);
     }
 
     @Override
     protected void onPostExecute(List<TaskList> result) {
         super.onPostExecute(result);
-
-        // populate the current values in drive storage
-        mDriveStorage.setHistoricTaskLists(result);
+        mOctodoModel.setHistoricTaskLists(result);
     }
 
 }

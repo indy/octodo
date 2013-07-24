@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.indy.octodo.DriveBaseActivity;
-import io.indy.octodo.OctodoApplication;
 import io.indy.octodo.async.UpdateTaskListsAsyncTask;
 
 public class DriveStorage {
@@ -67,33 +66,10 @@ public class DriveStorage {
     private static final String HEADER = "header";
     private static final String BODY = "body";
 
-
     private DriveBaseActivity mActivity;
-    private OctodoApplication mApplication;
 
     public DriveStorage(DriveBaseActivity activity) {
         mActivity = activity;
-        mApplication = (OctodoApplication)mActivity.getApplication();
-    }
-
-    public void setCurrentTaskLists(List<TaskList> taskLists) {
-        mApplication.setCurrentTaskLists(taskLists);
-    }
-
-    public void setHistoricTaskLists(List<TaskList> taskLists) {
-        mApplication.setHistoricTaskLists(taskLists);
-    }
-
-    public List<TaskList> getCurrentTaskLists() {
-        return mApplication.getCurrentTaskLists();
-    }
-
-    public List<TaskList> getHistoricTaskLists() {
-        return mApplication.getHistoricTaskLists();
-    }
-
-    public boolean hasLoadedTaskLists() {
-        return mApplication.hasTaskLists();
     }
 
     public void updateFile(String jsonFile, JSONObject jsonObject) {
@@ -431,14 +407,14 @@ public class DriveStorage {
     }
 
 
-    public void saveCurrentTaskLists() {
+    public void saveCurrentTaskLists(List<TaskList> taskLists) {
         // launch an asyncTask that updates the current json file
-        JSONObject json = toJson(getCurrentTaskLists());
+        JSONObject json = toJson(taskLists);
         new UpdateTaskListsAsyncTask(this, CURRENT_JSON, json).execute();
     }
 
-    public void saveHistoricTaskLists() {
-        JSONObject json = toJson(getHistoricTaskLists());
+    public void saveHistoricTaskLists(List<TaskList> taskLists) {
+        JSONObject json = toJson(taskLists);
         new UpdateTaskListsAsyncTask(this, HISTORIC_JSON, json).execute();
     }
 

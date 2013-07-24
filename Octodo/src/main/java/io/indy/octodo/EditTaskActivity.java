@@ -140,7 +140,7 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
         super.onDriveDatabaseInitialised();
         d("onDriveDatabaseInitialised");
 
-        mOctodoModel = new OctodoModel(mDriveStorage);
+        mOctodoModel = new OctodoModel(this);
         mController = new MainController(this, mOctodoModel);
 
         if(mOctodoModel.hasLoadedTaskLists()) {
