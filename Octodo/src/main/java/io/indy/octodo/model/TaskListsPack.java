@@ -89,7 +89,7 @@ public class TaskListsPack {
         return taskListsPack;
     }
 
-    private static Date parseJSONHeader(JSONObject json) {
+    public static Date parseJSONHeader(JSONObject json) {
 
         String dateString = DateFormatHelper.oldDate();
 
