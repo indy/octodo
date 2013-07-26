@@ -20,16 +20,14 @@ import android.os.AsyncTask;
 
 import org.json.JSONObject;
 
-import java.util.List;
-
 import io.indy.octodo.model.DriveStorage;
 import io.indy.octodo.model.OctodoModel;
-import io.indy.octodo.model.TaskList;
+import io.indy.octodo.model.TaskListsPack;
 
 
 // get the current tasklists from drive
 
-public class HistoricTaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
+public class HistoricTaskListsAsyncTask extends AsyncTask<Void, Void, TaskListsPack> {
 
     private final OctodoModel mOctodoModel;
 
@@ -38,19 +36,19 @@ public class HistoricTaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskL
     }
 
     @Override
-    protected List<TaskList> doInBackground(Void... params) {
+    protected TaskListsPack doInBackground(Void... params) {
         // get the current tasklists from the json files on drive and deserialise them into TaskLists
 
         DriveStorage driveStorage = mOctodoModel.getDriveStorage();
-
         JSONObject jsonObject = driveStorage.getJSON(DriveStorage.HISTORIC_JSON);
-        return DriveStorage.fromJSON(jsonObject);
+
+        return TaskListsPack.fromJSON(jsonObject);
     }
 
     @Override
-    protected void onPostExecute(List<TaskList> result) {
+    protected void onPostExecute(TaskListsPack result) {
         super.onPostExecute(result);
-        mOctodoModel.setHistoricTaskLists(result);
+        mOctodoModel.onLoadedHistoricTaskLists(result, OctodoModel.LOADED_FROM_DRIVE);
     }
 
 }

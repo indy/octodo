@@ -16,15 +16,21 @@
 
 package io.indy.octodo.model;
 
+import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import io.indy.octodo.DriveBaseActivity;
 import io.indy.octodo.OctodoApplication;
 import io.indy.octodo.async.CurrentTaskListsAsyncTask;
 import io.indy.octodo.async.HistoricTaskListsAsyncTask;
+import io.indy.octodo.event.LoadedTaskListsEvent;
 
 public class OctodoModel {
 
@@ -32,31 +38,72 @@ public class OctodoModel {
     static private final String TAG = OctodoModel.class.getSimpleName();
     static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
+    public static final int NOT_LOADED = 0;
+    public static final int LOADED_FROM_FILE = 1;   // Local disk
+    public static final int LOADED_FROM_DRIVE = 2;  // Google Drive
+
+
+    private DriveBaseActivity mContext;
 
     // ram storage
     private OctodoApplication mApplication;
-    // file storage
-    private AtomicStorage mAtomicStorage;
     // server side storage
     private DriveStorage mDriveStorage;
 
 
     public OctodoModel(DriveBaseActivity activity) {
+        mContext = activity;
         mApplication = (OctodoApplication)activity.getApplication();
-        mAtomicStorage = new AtomicStorage();
-        mDriveStorage = activity.getDriveStorage();
+    }
+
+    public void onDriveDatabaseInitialised() {
+        mDriveStorage = mContext.getDriveStorage();
+
+        // asynchronously load from drive (will fire a loadedtasklistsevent)
+        asyncLoadCurrentTaskLists();
+        asyncLoadHistoricTaskLists();
+    }
+
+    public void initFromFile() {
+        // load data from atomic file
+        AtomicStorage atomicStorage = new AtomicStorage(mContext);
+
+        JSONObject json = atomicStorage.getJSON(AtomicStorage.CURRENT_FILENAME);
+        if(json == null) {
+            json = TaskListsPack.buildDefaultTaskListsJSON();
+        }
+        TaskListsPack taskListsPack = TaskListsPack.fromJSON(json);
+        onLoadedCurrentTaskLists(taskListsPack, OctodoModel.LOADED_FROM_FILE);
+
+/*        if(json != null) {
+            TaskListsPack taskListsPack = TaskListsPack.fromJSON(json);
+            onLoadedCurrentTaskLists(taskListsPack);
+        }
+
+        // TODO: make the atomic storage loading of historic tasklists asynchronous
+        json = atomicStorage.getJSON(AtomicStorage.HISTORIC_FILENAME);
+        if(json != null) {
+            TaskListsPack taskListsPack = TaskListsPack.fromJSON(json);
+            onLoadedHistoricTaskLists(taskListsPack);
+        }
+        */
     }
 
     public DriveStorage getDriveStorage() {
         return mDriveStorage;
     }
 
-    public void setCurrentTaskLists(List<TaskList> taskLists) {
-        mApplication.setCurrentTaskLists(taskLists);
+    public void onLoadedCurrentTaskLists(TaskListsPack taskListsPack, int loadSource) {
+
+        mApplication.setCurrentTaskLists(taskListsPack.getTaskLists(), loadSource);
+
+        // fire event to update the UI
+        LoadedTaskListsEvent event = new LoadedTaskListsEvent(loadSource);
+        EventBus.getDefault().post(event);
     }
 
-    public void setHistoricTaskLists(List<TaskList> taskLists) {
-        mApplication.setHistoricTaskLists(taskLists);
+    public void onLoadedHistoricTaskLists(TaskListsPack taskListsPack, int loadSource) {
+        mApplication.setHistoricTaskLists(taskListsPack.getTaskLists(), loadSource);
     }
 
     public List<TaskList> getCurrentTaskLists() {
@@ -69,6 +116,10 @@ public class OctodoModel {
 
     public boolean hasLoadedTaskLists() {
         return mApplication.hasTaskLists();
+    }
+
+    public boolean hasLoadedTaskListFrom(int loadSource) {
+        return mApplication.hasLoadedTaskListFrom(loadSource);
     }
 
     public void addList(String name) {
@@ -90,7 +141,26 @@ public class OctodoModel {
     }
 
     private void saveCurrentTaskListsToDrive() {
-        mDriveStorage.saveCurrentTaskLists(mApplication.getCurrentTaskLists());
+        Date today = new Date();
+        List<TaskList> taskLists = mApplication.getCurrentTaskLists();
+        TaskListsPack taskListsPack = new TaskListsPack(today, taskLists);
+
+        JSONObject json = taskListsPack.toJson();
+
+        AtomicStorage atomicStorage = new AtomicStorage(mContext);
+        atomicStorage.saveJSON(AtomicStorage.CURRENT_FILENAME, json);
+
+        mDriveStorage.saveCurrentTaskLists(json);
+    }
+
+    private void saveHistoricTaskListsToDrive() {
+        Date today = new Date();
+        List<TaskList> taskLists = mApplication.getHistoricTaskLists();
+        TaskListsPack taskListsPack = new TaskListsPack(today, taskLists);
+
+        JSONObject json = taskListsPack.toJson();
+
+        mDriveStorage.saveHistoricTaskLists(json);
     }
 
     public boolean deleteList(String name) {
@@ -159,10 +229,6 @@ public class OctodoModel {
         saveCurrentTaskListsToDrive();
     }
 
-
-    public void updateTask(Task task) {
-    }
-
     // DELETE the specified task without adding it to the 'completed' tasklists
     public void deleteTask(Task task) {
         ifd("deleteTask: getContent = " + task.getContent());
@@ -194,7 +260,7 @@ public class OctodoModel {
 
         // save all
         saveCurrentTaskListsToDrive();
-        mDriveStorage.saveHistoricTaskLists(mApplication.getHistoricTaskLists());
+        saveHistoricTaskListsToDrive();
     }
 
     private TaskList getHistoricTaskList(String name) {

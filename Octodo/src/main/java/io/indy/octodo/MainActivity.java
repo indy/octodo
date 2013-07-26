@@ -30,6 +30,7 @@ import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -40,6 +41,7 @@ import io.indy.octodo.event.PersistDataPostEvent;
 import io.indy.octodo.event.PersistDataPreEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggledTaskStateEvent;
+import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.TaskList;
@@ -93,6 +95,12 @@ public class MainActivity extends DriveBaseActivity {
 
         mNotificationHelper = new NotificationHelper(this);
 
+        mOctodoModel = new OctodoModel(this);
+        mController = new MainController(this, mOctodoModel);
+
+        mOctodoModel.initFromFile();
+        refreshTaskListsUI();
+
         mDriveStorage.initialise();
     }
 
@@ -110,21 +118,19 @@ public class MainActivity extends DriveBaseActivity {
 
         ifd("onDriveDatabaseInitialised");
 
-        mOctodoModel = new OctodoModel(this);
-        mController = new MainController(this, mOctodoModel);
+        mOctodoModel.onDriveDatabaseInitialised();
 
-        if(mOctodoModel.hasLoadedTaskLists()) {
+        if(mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
             // use already loaded data
             ifd("already loaded data");
             refreshTaskListsUI();
         } else {
             ifd("launching async tasks to load data");
-            // load tasklists if a previous activity hasn't done so
-            // this async task will send a LoadedTaskListsEvent
 
-            mNotificationHelper.showInformation(getString(R.string.information_syncing_data));
+            //mNotificationHelper.showInformation(getString(R.string.information_syncing_data));
             setSupportProgressBarIndeterminateVisibility(true);
 
+            // asynchronously load from drive (will fire a loadedtasklistsevent)
             mOctodoModel.asyncLoadCurrentTaskLists();
             mOctodoModel.asyncLoadHistoricTaskLists();
         }
@@ -145,7 +151,9 @@ public class MainActivity extends DriveBaseActivity {
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(LoadedTaskListsEvent event) {
         ifd("received LoadedTaskListsEvent");
-        setSupportProgressBarIndeterminateVisibility(false);
+        if(event.getLoadSource() == OctodoModel.LOADED_FROM_DRIVE) {
+            setSupportProgressBarIndeterminateVisibility(false);
+        }
         refreshTaskListsUI();
     }
 
@@ -214,7 +222,6 @@ public class MainActivity extends DriveBaseActivity {
 
         // Apply any required UI change now that the Activity is visible.
         EventBus.getDefault().register(this);
-
     }
 
     // Called to save UI state changes at the
@@ -296,6 +303,16 @@ public class MainActivity extends DriveBaseActivity {
                 break;
 
             case R.id.menu_about:
+
+                String today = DateFormatHelper.today();
+                String old = DateFormatHelper.oldDate();
+                Log.d(TAG, "today string is " + DateFormatHelper.parseDateString(today));
+                Log.d(TAG, "today is " + DateFormatHelper.parseDateString(today));
+                Log.d(TAG, "old string is " + DateFormatHelper.parseDateString(old));
+                Log.d(TAG, "old is " + DateFormatHelper.parseDateString(old));
+                // Date dtoday = DateFormatHelper.parseDateString(today);
+                // Date dold = DateFormatHelper.parseDateString(old);
+                // dtoday.after(dold)
                 startAboutActivity();
                 break;
         }

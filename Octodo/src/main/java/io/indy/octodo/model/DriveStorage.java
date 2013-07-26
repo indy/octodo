@@ -337,84 +337,12 @@ public class DriveStorage {
         ifd("title: " + file.getTitle());
     }
 
-
-    private static List<TaskList> buildDefaultEmptyTaskLists() {
-        List<TaskList> tasklists = new ArrayList<TaskList>();
-
-        TaskList today = new TaskList("today");
-        today.setDeleteable(false);
-        tasklists.add(today);
-
-        TaskList thisWeek = new TaskList("this week");
-        thisWeek.setDeleteable(false);
-        tasklists.add(thisWeek);
-
-        return tasklists;
-    }
-
-    public static List<TaskList> fromJSON(JSONObject json) {
-
-        List<TaskList> tasklists = new ArrayList<TaskList>();
-
-        try {
-
-            // json has form of:
-            // { header: {}, body: array of tasklists}
-
-            if(json.isNull(BODY)) {
-                // empty body so default to empty today and thisweek tasklists
-                ifd("fromJSON: empty body so defaulting to empty today and thisweek tasklists");
-                return buildDefaultEmptyTaskLists();
-            }
-            // ignore header for now, in future this will have version info
-
-            // parse the body which should be a list of tasklists
-            //
-            JSONArray body = json.getJSONArray(BODY);
-            TaskList tasklist;
-            for(int i=0; i<body.length(); i++) {
-                tasklist = TaskList.fromJson(body.getJSONObject(i));
-                tasklists.add(tasklist);
-            }
-
-        } catch (JSONException e) {
-            ifd("fromJSON JSONException: " + e);
-            ifd("defaulting to empty today and thisweek tasklists");
-            tasklists = buildDefaultEmptyTaskLists();
-        }
-
-        return tasklists;
-    }
-
-    private JSONObject toJson(List<TaskList> tasklists) {
-        JSONObject res = new JSONObject();
-
-        try {
-            res.put(HEADER, JSONObject.NULL);
-
-            JSONArray array = new JSONArray();
-            for(TaskList t : tasklists) {
-                JSONObject obj = t.toJson();
-                array.put(obj);
-            }
-            res.put(BODY, array);
-
-        } catch (JSONException e) {
-            ifd("JSONException: " + e);
-        }
-
-        return res;
-    }
-
-
-    public void saveCurrentTaskLists(List<TaskList> taskLists) {
+    public void saveCurrentTaskLists(JSONObject json) {
         // launch an asyncTask that updates the current json file
-        JSONObject json = toJson(taskLists);
         new UpdateTaskListsAsyncTask(this, CURRENT_JSON, json).execute();
     }
 
-    public void saveHistoricTaskLists(List<TaskList> taskLists) {
-        JSONObject json = toJson(taskLists);
+    public void saveHistoricTaskLists(JSONObject json) {
         new UpdateTaskListsAsyncTask(this, HISTORIC_JSON, json).execute();
     }
 

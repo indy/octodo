@@ -21,6 +21,7 @@ import android.util.Log;
 
 import java.util.List;
 
+import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.TaskList;
 
 public class OctodoApplication extends Application {
@@ -32,20 +33,27 @@ public class OctodoApplication extends Application {
     private List<TaskList> mTaskLists;
     private List<TaskList> mHistoricTaskLists;
 
+    private int mCurrentLoadSource;
+    private int mHistoricLoadSource;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
         mTaskLists = null;
         mHistoricTaskLists = null;
+        mCurrentLoadSource = OctodoModel.NOT_LOADED;
+        mHistoricLoadSource = OctodoModel.NOT_LOADED;
     }
 
-    public void setCurrentTaskLists(List<TaskList> tasklists) {
-        mTaskLists = tasklists;
+    public void setCurrentTaskLists(List<TaskList> taskLists, int loadSource) {
+        mTaskLists = taskLists;
+        mCurrentLoadSource = loadSource;
     }
 
-    public void setHistoricTaskLists(List<TaskList> tasklists) {
-        mHistoricTaskLists = tasklists;
+    public void setHistoricTaskLists(List<TaskList> taskLists, int loadSource) {
+        mHistoricTaskLists = taskLists;
+        mHistoricLoadSource = loadSource;
     }
 
     public List<TaskList> getCurrentTaskLists() {
@@ -58,6 +66,11 @@ public class OctodoApplication extends Application {
 
     public boolean hasTaskLists() {
         return (mTaskLists != null && mHistoricTaskLists != null);
+    }
+
+    public boolean hasLoadedTaskListFrom(int loadSource) {
+        //return mCurrentLoadSource == loadSource && mHistoricLoadSource == loadSource;
+        return mCurrentLoadSource == loadSource;
     }
 
 }

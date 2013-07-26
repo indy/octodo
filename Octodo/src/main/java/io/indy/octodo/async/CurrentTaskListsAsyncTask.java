@@ -20,18 +20,14 @@ import android.os.AsyncTask;
 
 import org.json.JSONObject;
 
-import java.util.List;
-
-import de.greenrobot.event.EventBus;
-import io.indy.octodo.event.LoadedTaskListsEvent;
 import io.indy.octodo.model.DriveStorage;
 import io.indy.octodo.model.OctodoModel;
-import io.indy.octodo.model.TaskList;
+import io.indy.octodo.model.TaskListsPack;
 
 
 // get the current tasklists from drive
 
-public class CurrentTaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskList>> {
+public class CurrentTaskListsAsyncTask extends AsyncTask<Void, Void, TaskListsPack> {
 
     private final OctodoModel mOctodoModel;
 
@@ -42,27 +38,18 @@ public class CurrentTaskListsAsyncTask extends AsyncTask<Void, Void, List<TaskLi
     }
 
     @Override
-    protected List<TaskList> doInBackground(Void... params) {
+    protected TaskListsPack doInBackground(Void... params) {
         // get the current tasklists from the json files on drive and deserialise them into TaskLists
 
         DriveStorage driveStorage = mOctodoModel.getDriveStorage();
-
         JSONObject jsonObject = driveStorage.getJSON(DriveStorage.CURRENT_JSON);
-        return DriveStorage.fromJSON(jsonObject);
+        return TaskListsPack.fromJSON(jsonObject);
     }
 
-
     @Override
-    protected void onPostExecute(List<TaskList> result) {
+    protected void onPostExecute(TaskListsPack result) {
         super.onPostExecute(result);
-
-        // populate the current values in the model
-        mOctodoModel.setCurrentTaskLists(result);
-
-        // fire event to update the UI
-        LoadedTaskListsEvent event = new LoadedTaskListsEvent();
-        EventBus.getDefault().post(event);
-
+        mOctodoModel.onLoadedCurrentTaskLists(result, OctodoModel.LOADED_FROM_DRIVE);
     }
 
 }

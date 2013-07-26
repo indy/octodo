@@ -18,6 +18,13 @@ package io.indy.octodo.event;
 
 public class LoadedTaskListsEvent {
 
-    public LoadedTaskListsEvent() {
+    private int mLoadSource;
+
+    public LoadedTaskListsEvent(int loadSource) {
+        mLoadSource = loadSource;
+    }
+
+    public int getLoadSource() {
+        return mLoadSource;
     }
 }
