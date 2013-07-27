@@ -44,7 +44,7 @@ public final class TaskListFragment extends Fragment {
 
     static private final boolean D = true;
     static private final String TAG = TaskListFragment.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+    void ifd(final String message) { if(D) Log.d(TAG, "[" + System.identityHashCode(this) + "] " + message); }
 
     private TaskItemAdapter mTaskItemAdapter;
 
@@ -91,19 +91,17 @@ public final class TaskListFragment extends Fragment {
 
         setKeyboardListener(mEditText);
 
-        mController = ((MainActivity)mContext).getController();
         if (mTaskList == null) {
-            ifd("mTaskList is null - do some re-initialisation with OctodoModel?");
             String taskListName = savedInstanceState.getString("taskListName");
+            ifd("mTaskList is null for " + taskListName + " - do some re-initialisation with OctodoModel?");
             mTaskList = new TaskList(taskListName);
             // TODO: would updateLocalTaskList fail here?
-        } else {
+        } //else {
             // already have a mTaskList from setInstance
-            updateLocalTaskList();
-        }
+//            updateLocalTaskList();
+       // }
 
-        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList, mController);
-        mListView.setAdapter(mTaskItemAdapter);
+
 
         return view;
     }
@@ -119,6 +117,12 @@ public final class TaskListFragment extends Fragment {
         super.onStart();
         ifd("onStart");
         // Apply any required UI change now that the Activity is visible.
+
+        // Resume any paused UI updates, threads, or processes required
+        // by the Activity but suspended when it was inactive.
+        ifd("registering: " + System.identityHashCode(this));
+        EventBus.getDefault().register(this);
+
     }
 
     @Override
@@ -126,12 +130,12 @@ public final class TaskListFragment extends Fragment {
         super.onResume();
         ifd("onResume");
 
-        // Resume any paused UI updates, threads, or processes required
-        // by the Activity but suspended when it was inactive.
-        ifd("registering: " + System.identityHashCode(this));
-        EventBus.getDefault().register(this);
+        mController = ((MainActivity)mContext).getController();
 
-        refreshUI();
+        updateLocalTaskList();
+
+        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList, mController);
+        mListView.setAdapter(mTaskItemAdapter);
     }
 
     @Override
@@ -141,8 +145,6 @@ public final class TaskListFragment extends Fragment {
         // the active foreground Activity.
         super.onPause();
         ifd("onPause");
-        ifd("unregistering: " + System.identityHashCode(this));
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -166,6 +168,9 @@ public final class TaskListFragment extends Fragment {
         // as after this call the process is likely to be killed.
         super.onStop();
         ifd("onStop");
+
+        ifd("unregistering: " + System.identityHashCode(this));
+        EventBus.getDefault().unregister(this);
     }
 
     // Sometimes called at the end of the full lifetime.
@@ -266,6 +271,8 @@ public final class TaskListFragment extends Fragment {
     }
 
     private void updateLocalTaskList() {
+        ifd("updateLocalTaskList (mController=" + System.identityHashCode(mController) + ")");
+
         TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
         List<Task> tasks = tasklist.getTasks();
 
