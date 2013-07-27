@@ -94,6 +94,12 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
             }
         });
 
+        mOctodoModel = new OctodoModel(this);
+        mController = new MainController(this, mOctodoModel);
+
+        mOctodoModel.initFromFile();
+        init();
+
         mDriveStorage.initialise();
     }
 
@@ -140,24 +146,26 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
         super.onDriveDatabaseInitialised();
         d("onDriveDatabaseInitialised");
 
-        mOctodoModel = new OctodoModel(this);
-        mController = new MainController(this, mOctodoModel);
+        mOctodoModel.onDriveDatabaseInitialised();
 
-        if(mOctodoModel.hasLoadedTaskLists()) {
-
-            String listName = getIntent().getStringExtra(INTENT_EXTRA_LIST_NAME);
-            String startedAt = getIntent().getStringExtra(INTENT_EXTRA_START_TIME);
-            mTask = mController.findTask(listName, startedAt);
-
-            mListNames = getListNames();
-            mSetInitialSpinnerValue = true;
-            populateSpinnerEntries(mListNames);
-
-            refreshUI();
+        if(mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
+            init();
         } else {
             // MainActivity should have managed the data loading into OctodoModel
             Log.e(TAG, "OctodoModel should have loaded the data");
         }
+    }
+
+    private void init() {
+        String listName = getIntent().getStringExtra(INTENT_EXTRA_LIST_NAME);
+        String startedAt = getIntent().getStringExtra(INTENT_EXTRA_START_TIME);
+        mTask = mController.findTask(listName, startedAt);
+
+        mListNames = getListNames();
+        mSetInitialSpinnerValue = true;
+        populateSpinnerEntries(mListNames);
+
+        refreshUI();
     }
 
     private List<String> getListNames() {

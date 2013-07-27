@@ -95,14 +95,28 @@ public class MainActivity extends DriveBaseActivity {
 
         mNotificationHelper = new NotificationHelper(this);
 
+    }
+
+    // Called at the start of the visible lifetime.
+    @Override
+    public void onStart() {
+        super.onStart();
+        ifd("onStart");
+
         mOctodoModel = new OctodoModel(this);
         mController = new MainController(this, mOctodoModel);
+        ifd("mController = " + System.identityHashCode(mController));
+
 
         mOctodoModel.initFromFile();
         refreshTaskListsUI();
 
+        // Apply any required UI change now that the Activity is visible.
+        EventBus.getDefault().register(this);
+
         mDriveStorage.initialise();
     }
+
 
     @Override
     public void onDriveDatabaseInitialised() {
@@ -193,21 +207,16 @@ public class MainActivity extends DriveBaseActivity {
     public void onRestart() {
         super.onRestart();
         ifd("onRestart");
-
+/*
         // need this check since onRestart() is called during the initial account setup phase
         if(isDriveDatabaseInitialised()) {
             // Load changes knowing that the Activity has already
             // been visible within this process.
             refreshTaskListsUI();
         }
+        */
     }
 
-    // Called at the start of the visible lifetime.
-    @Override
-    public void onStart() {
-        super.onStart();
-        ifd("onStart");
-    }
 
     // Called at the start of the active lifetime.
     @Override
@@ -220,8 +229,6 @@ public class MainActivity extends DriveBaseActivity {
         // maybe coming back from a ManageListsActivity in which TaskLists were created/deleted
         //refreshTaskListsUI();
 
-        // Apply any required UI change now that the Activity is visible.
-        EventBus.getDefault().register(this);
     }
 
     // Called to save UI state changes at the
@@ -244,7 +251,6 @@ public class MainActivity extends DriveBaseActivity {
         // the active foreground Activity.
         super.onPause();
         ifd("onPause");
-        EventBus.getDefault().unregister(this);
     }
 
     // Called at the end of the visible lifetime.
@@ -256,6 +262,7 @@ public class MainActivity extends DriveBaseActivity {
         // as after this call the process is likely to be killed.
         super.onStop();
         ifd("onStop");
+        EventBus.getDefault().unregister(this);
     }
 
     // Sometimes called at the end of the full lifetime.
@@ -377,6 +384,7 @@ public class MainActivity extends DriveBaseActivity {
     // TODO: check why this is used now
     public void refreshTaskListsUI() {
         ifd("refreshTaskListsUI");
+        ifd("mController = " + System.identityHashCode(mController));
 
         List<TaskList> lists = mController.onGetTaskLists();
 

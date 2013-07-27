@@ -76,6 +76,12 @@ public class ManageListsActivity extends DriveBaseActivity {
 
         mListView.setAdapter(mAdapter);
 
+        mOctodoModel = new OctodoModel(this);
+        mController = new MainController(this, mOctodoModel);
+
+        mOctodoModel.initFromFile();
+        refreshTaskLists();
+
         mDriveStorage.initialise();
     }
 
@@ -85,10 +91,9 @@ public class ManageListsActivity extends DriveBaseActivity {
 
         ifd("onDriveDatabaseInitialised");
 
-        mOctodoModel = new OctodoModel(this);
-        mController = new MainController(this, mOctodoModel);
+        mOctodoModel.onDriveDatabaseInitialised();
 
-        if(mOctodoModel.hasLoadedTaskLists()) {
+        if(mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
             // use already loaded data
             refreshTaskLists();
         } else {
