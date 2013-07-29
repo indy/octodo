@@ -310,16 +310,6 @@ public class MainActivity extends DriveBaseActivity {
                 break;
 
             case R.id.menu_about:
-
-                String today = DateFormatHelper.today();
-                String old = DateFormatHelper.oldDate();
-                Log.d(TAG, "today string is " + DateFormatHelper.parseDateString(today));
-                Log.d(TAG, "today is " + DateFormatHelper.parseDateString(today));
-                Log.d(TAG, "old string is " + DateFormatHelper.parseDateString(old));
-                Log.d(TAG, "old is " + DateFormatHelper.parseDateString(old));
-                // Date dtoday = DateFormatHelper.parseDateString(today);
-                // Date dold = DateFormatHelper.parseDateString(old);
-                // dtoday.after(dold)
                 startAboutActivity();
                 break;
         }
