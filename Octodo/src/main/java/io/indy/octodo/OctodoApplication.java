@@ -23,6 +23,7 @@ import java.util.List;
 
 import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.TaskList;
+import io.indy.octodo.model.TaskListsPack;
 
 public class OctodoApplication extends Application {
 
@@ -30,42 +31,53 @@ public class OctodoApplication extends Application {
     static private final String TAG = OctodoApplication.class.getSimpleName();
     static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
-    private List<TaskList> mTaskLists;
-    private List<TaskList> mHistoricTaskLists;
-
     private int mCurrentLoadSource;
     private int mHistoricLoadSource;
+
+    private TaskListsPack mCurrent;
+    private TaskListsPack mHistoric;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        mTaskLists = null;
-        mHistoricTaskLists = null;
         mCurrentLoadSource = OctodoModel.NOT_LOADED;
         mHistoricLoadSource = OctodoModel.NOT_LOADED;
+
+        mCurrent = null;
+        mHistoric = null;
+
+        mCurrent = TaskListsPack.buildEmptyTaskListsPack();
+        mHistoric = TaskListsPack.buildEmptyTaskListsPack();
     }
 
-    public void setCurrentTaskLists(List<TaskList> taskLists, int loadSource) {
-        mTaskLists = taskLists;
+    public boolean setCurrentTaskLists(TaskListsPack taskListsPack, int loadSource) {
         mCurrentLoadSource = loadSource;
+
+        if(mCurrent.getModifiedDate().before(taskListsPack.getModifiedDate())) {
+            // overwrite the existing current taskLists with these, more recent ones
+            mCurrent.setModifiedDate(taskListsPack.getModifiedDate());
+            mCurrent.setTaskLists(taskListsPack.getTaskLists());
+            return true;
+        } else {
+            ifd("setCurrentTaskLists: retaining current taskLists");
+        }
+
+        return false;
     }
 
-    public void setHistoricTaskLists(List<TaskList> taskLists, int loadSource) {
-        mHistoricTaskLists = taskLists;
+    public void setHistoricTaskLists(TaskListsPack taskListsPack, int loadSource) {
         mHistoricLoadSource = loadSource;
+
+        mHistoric = taskListsPack;
     }
 
     public List<TaskList> getCurrentTaskLists() {
-        return mTaskLists;
+        return mCurrent.getTaskLists();
     }
 
     public List<TaskList> getHistoricTaskLists() {
-        return mHistoricTaskLists;
-    }
-
-    public boolean hasTaskLists() {
-        return (mTaskLists != null && mHistoricTaskLists != null);
+        return mHistoric.getTaskLists();
     }
 
     public boolean hasLoadedTaskListFrom(int loadSource) {

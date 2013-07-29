@@ -107,7 +107,9 @@ public class ManageListsActivity extends DriveBaseActivity {
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(LoadedTaskListsEvent event) {
         ifd("received LoadedTaskListsEvent");
-        refreshTaskLists();
+        if(event.overwritesExistingTaskLists()) {
+            refreshTaskLists();
+        }
     }
 
     // A checkbox next to a list's name has been toggled

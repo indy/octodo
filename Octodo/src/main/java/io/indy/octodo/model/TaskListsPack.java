@@ -50,12 +50,21 @@ public class TaskListsPack {
         mTaskLists = taskLists;
     }
 
-    Date getModifiedDate() {
+    public Date getModifiedDate() {
         return mModifiedDate;
     }
 
-    List<TaskList> getTaskLists() {
+    public List<TaskList> getTaskLists() {
         return mTaskLists;
+    }
+
+    public void setModifiedDate(Date date) {
+        mModifiedDate = date;
+    }
+
+    public void setTaskLists(List<TaskList> taskLists) {
+        mTaskLists.clear();
+        mTaskLists.addAll(taskLists);
     }
 
     public JSONObject toJson() {
@@ -138,7 +147,7 @@ public class TaskListsPack {
         return tasklists;
     }
 
-    public static List<TaskList> buildDefaultEmptyTaskLists() {
+    private static List<TaskList> buildDefaultEmptyTaskLists() {
         List<TaskList> tasklists = new ArrayList<TaskList>();
 
         TaskList today = new TaskList("today");
@@ -152,10 +161,9 @@ public class TaskListsPack {
         return tasklists;
     }
 
-    public static JSONObject buildDefaultTaskListsJSON() {
+    public static TaskListsPack buildEmptyTaskListsPack() {
         List<TaskList> defaultTaskLists = buildDefaultEmptyTaskLists();
         Date date = new Date(0L);
-        TaskListsPack taskListsPack = new TaskListsPack(date, defaultTaskLists);
-        return taskListsPack.toJson();
+        return new TaskListsPack(date, defaultTaskLists);
     }
 }

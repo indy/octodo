@@ -50,7 +50,7 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
     // debug
     static private final boolean D = true;
     static private final String TAG = EditTaskActivity.class.getSimpleName();
-    static void d(final String message) { if(D) Log.d(TAG, message); }
+    static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
     static public final String INTENT_EXTRA_LIST_NAME = "list name";
     static public final String INTENT_EXTRA_START_TIME = "task started at";
@@ -71,11 +71,14 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ifd("onCreate");
+
         //This has to be called before setContentView and you must use the
         //class in com.actionbarsherlock.view and NOT android.view
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.activity_edit_task);
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -93,18 +96,50 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
                 onClickedDelete();
             }
         });
+    }
+
+
+
+    // Called at the start of the visible lifetime.
+    @Override
+    public void onStart() {
+        super.onStart();
+        ifd("onStart");
+
+        // Apply any required UI change now that the Activity is visible.
+        EventBus.getDefault().register(this);
 
         mOctodoModel = new OctodoModel(this);
         mController = new MainController(this, mOctodoModel);
+        ifd("mController = " + System.identityHashCode(mController));
 
-        mOctodoModel.initFromFile();
+        if(!mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
+            ifd("not loaded data from drive");
+            mOctodoModel.initFromFile();
+        } else {
+            ifd("already loaded data from drive");
+        }
+
         init();
 
         mDriveStorage.initialise();
     }
 
+    // Called at the end of the visible lifetime.
+    @Override
+    public void onStop() {
+        // Suspend remaining UI updates, threads, or processing
+        // that aren't required when the Activity isn't visible.
+        // Persist all edits or state changes
+        // as after this call the process is likely to be killed.
+        super.onStop();
+        ifd("onStop");
+        EventBus.getDefault().unregister(this);
+    }
+
+
     private void onClickedDelete() {
-        d("clicked delete");
+        ifd("clicked delete");
 
         AlertDialog.Builder ad = new AlertDialog.Builder(this);
         ad.setTitle(getString(R.string.delete_task_title));
@@ -113,7 +148,7 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int arg1) {
-                        d("pressed the delete button");
+                        ifd("pressed the delete button");
                         // close the drawer
                         mController.onTaskDelete(mTask);
                         finish();
@@ -124,7 +159,7 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int arg1) {
-                        d("pressed the cancel button");
+                        ifd("pressed the cancel button");
                     }
                 });
 
@@ -132,19 +167,17 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
         ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                d("pressed cancel");
+                ifd("pressed cancel");
             }
         });
 
         ad.show();
     }
 
-
-
     @Override
     public void onDriveDatabaseInitialised() {
         super.onDriveDatabaseInitialised();
-        d("onDriveDatabaseInitialised");
+        ifd("onDriveDatabaseInitialised");
 
         mOctodoModel.onDriveDatabaseInitialised();
 
@@ -190,12 +223,12 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(LoadedTaskListsEvent event) {
-        d("received LoadedTaskListsEvent");
+        ifd("received LoadedTaskListsEvent");
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(PersistDataPostEvent event) {
-        d("received savedTaskListsEvent");
+        ifd("received savedTaskListsEvent");
         setSupportProgressBarIndeterminateVisibility(false);
         finish();
     }
@@ -203,7 +236,7 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
     @Override
     public void onDestroy() {
         super.onDestroy();
-        d("onDestroy");
+        ifd("onDestroy");
 
         mController.onDestroy();
     }
@@ -226,6 +259,7 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
                 finish();
                 break;
             case R.id.menu_accept :
+                ifd("clicked accept");
                 hideKeyboard();
                 saveTask();
                 break;
@@ -245,12 +279,16 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
         String listName = mListNames.get(spinnerPosition);
         String content = mEditText.getText().toString().trim();
 
+        ifd("saveTask: listName: " + listName + ", content: " + content);
+
         boolean isSaving = mController.onTaskEdited(mTask, content, listName);
         if(isSaving) {
+            ifd("isSaving is true");
             setSupportProgressBarIndeterminateVisibility(true);
             mNotification.showInformation(getString(R.string.information_saving_task_changes));
             // now wait for the PersistDataPostEvent
         } else {
+            ifd("isSaving is false");
             finish();
         }
     }
@@ -259,16 +297,14 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
     @Override
     public void onResume() {
         super.onResume();
-        d("onResume");
-        EventBus.getDefault().register(this);
+        ifd("onResume");
     }
 
     // Called at the end of the active lifetime.
     @Override
     public void onPause() {
         super.onPause();
-        d("onPause");
-        EventBus.getDefault().unregister(this);
+        ifd("onPause");
     }
 
     private void refreshUI() {
@@ -296,6 +332,6 @@ public class EditTaskActivity extends DriveBaseActivity implements AdapterView.O
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        d("nothing selected");
+        ifd("nothing selected");
     }
 }

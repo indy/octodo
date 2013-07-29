@@ -192,7 +192,9 @@ public final class TaskListFragment extends Fragment {
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(LoadedTaskListsEvent event) {
         ifd("received LoadedTaskListsEvent");
-        refreshUI();
+        if(event.overwritesExistingTaskLists()) {
+            refreshUI();
+        }
     }
 
     // common event fired whenever a task is modified and it's parent tasklist

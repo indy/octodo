@@ -16,15 +16,26 @@
 
 package io.indy.octodo.event;
 
+// received a TaskListsPack from a data source
+// overwritten: was the data used to overwrite the data in OctodoApplication? (this is done
+//              when the received data is newer than the existing data)
+// loadSource : where did the TaskListsPack come from
+
 public class LoadedTaskListsEvent {
 
+    private boolean mOverwritten;
     private int mLoadSource;
 
-    public LoadedTaskListsEvent(int loadSource) {
+    public LoadedTaskListsEvent(boolean overwritten, int loadSource) {
+        mOverwritten = overwritten;
         mLoadSource = loadSource;
     }
 
     public int getLoadSource() {
         return mLoadSource;
+    }
+
+    public boolean overwritesExistingTaskLists() {
+        return mOverwritten;
     }
 }
