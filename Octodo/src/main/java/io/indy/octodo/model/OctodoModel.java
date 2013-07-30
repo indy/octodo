@@ -185,6 +185,11 @@ public class OctodoModel {
 
         JSONObject json = taskListsPack.toJson();
 
+        ifd("saveHistoricTaskListsToDrive: " + json.toString());
+
+        AtomicStorage atomicStorage = new AtomicStorage(mContext);
+        atomicStorage.saveJSON(AtomicStorage.HISTORIC_FILENAME, json);
+
         mDriveStorage.saveHistoricTaskLists(json);
     }
 
@@ -230,6 +235,7 @@ public class OctodoModel {
 
         TaskList sourceTaskList = getCurrentTaskList(task.getParentName());
         TaskList destinationTaskList = getCurrentTaskList(destination);
+
 
         sourceTaskList.remove(task);
         destinationTaskList.add(task);
