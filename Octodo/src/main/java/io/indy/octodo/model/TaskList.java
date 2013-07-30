@@ -65,7 +65,7 @@ public class TaskList {
         ifd("logTaskList: " + mName);
         for(Task t: mTasks) {
             int id = System.identityHashCode(t);
-            ifd("task: " + id + " " + t.getContent() + " state: " + t.getState());
+            ifd("task: [" + id + "] " + t.getContent());
         }
     }
 
@@ -97,7 +97,16 @@ public class TaskList {
     }
 
     public TaskList remove(Task task) {
-        mTasks.remove(task);
+        boolean isRemoved = mTasks.remove(task);
+
+        if(!isRemoved) {
+            Log.e(TAG, "unable to remove a task from taskList");
+            Log.e(TAG, "TaskList: ");
+            logTaskList();
+            Log.e(TAG, "Task: ");
+            task.debug();
+        }
+
         return this;
     }
 

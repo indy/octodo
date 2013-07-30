@@ -141,6 +141,15 @@ public class Task {
         return mContent;
     }
 
+    public void debug() {
+        Log.d(TAG, "idhc: " + System.identityHashCode(this));
+        Log.d(TAG, "mContent: " + mContent);
+        Log.d(TAG, "mParent: " + mParentName);
+        Log.d(TAG, "mState: " + mState);
+        Log.d(TAG, "mStartedAt: " + mStartedAt);
+        Log.d(TAG, "mFinishedAt: " + mFinishedAt);
+    }
+
     public static class Builder {
         private String mContent = "";
 
