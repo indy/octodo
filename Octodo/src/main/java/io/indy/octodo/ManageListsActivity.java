@@ -76,13 +76,42 @@ public class ManageListsActivity extends DriveBaseActivity {
 
         mListView.setAdapter(mAdapter);
 
+    }
+
+
+    // Called at the start of the visible lifetime.
+    @Override
+    public void onStart() {
+        super.onStart();
+        ifd("onStart");
+
+        EventBus.getDefault().register(this);
+
         mOctodoModel = new OctodoModel(this);
         mController = new MainController(this, mOctodoModel);
 
-        mOctodoModel.initFromFile();
+        if(!mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
+            ifd("not loaded data from drive");
+            mOctodoModel.initFromFile();
+        } else {
+            ifd("already loaded data from drive");
+        }
+
         refreshTaskLists();
 
         mDriveStorage.initialise();
+    }
+
+    // Called at the end of the visible lifetime.
+    @Override
+    public void onStop() {
+        // Suspend remaining UI updates, threads, or processing
+        // that aren't required when the Activity isn't visible.
+        // Persist all edits or state changes
+        // as after this call the process is likely to be killed.
+        super.onStop();
+        ifd("onStop");
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -145,7 +174,6 @@ public class ManageListsActivity extends DriveBaseActivity {
         // by the Activity but suspended when it was inactive.
 
         // Apply any required UI change now that the Activity is visible.
-        EventBus.getDefault().register(this);
 
     }
 
@@ -159,7 +187,6 @@ public class ManageListsActivity extends DriveBaseActivity {
         if (D) {
             ifd("onPause");
         }
-        EventBus.getDefault().unregister(this);
     }
 
 
