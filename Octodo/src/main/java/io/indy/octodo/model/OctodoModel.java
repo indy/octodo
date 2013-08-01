@@ -61,39 +61,30 @@ public class OctodoModel {
 
     public void onDriveDatabaseInitialised() {
         mDriveStorage = mContext.getDriveStorage();
-
-        // asynchronously load from drive (will fire a loadedtasklistsevent)
-        asyncLoadCurrentTaskLists();
-        asyncLoadHistoricTaskLists();
     }
 
     public void initFromFile() {
+        ifd("initFromFile");
+
         // load data from atomic file
         AtomicStorage atomicStorage = new AtomicStorage(mContext);
+        TaskListsPack taskListsPack;
 
         JSONObject json = atomicStorage.getJSON(AtomicStorage.CURRENT_FILENAME);
-
-        TaskListsPack taskListsPack;
         if (json == null) {
             taskListsPack = TaskListsPack.buildEmptyTaskListsPack();
         } else {
             taskListsPack = TaskListsPack.fromJSON(json);
         }
-
         onLoadedCurrentTaskLists(taskListsPack, OctodoModel.LOADED_FROM_FILE);
 
-/*        if(json != null) {
-            TaskListsPack taskListsPack = TaskListsPack.fromJSON(json);
-            onLoadedCurrentTaskLists(taskListsPack);
-        }
-
-        // TODO: make the atomic storage loading of historic tasklists asynchronous
         json = atomicStorage.getJSON(AtomicStorage.HISTORIC_FILENAME);
-        if(json != null) {
-            TaskListsPack taskListsPack = TaskListsPack.fromJSON(json);
-            onLoadedHistoricTaskLists(taskListsPack);
+        if (json == null) {
+            taskListsPack = TaskListsPack.buildEmptyTaskListsPack();
+        } else {
+            taskListsPack = TaskListsPack.fromJSON(json);
         }
-        */
+        onLoadedHistoricTaskLists(taskListsPack, OctodoModel.LOADED_FROM_FILE);
     }
 
     public DriveStorage getDriveStorage() {
@@ -115,6 +106,8 @@ public class OctodoModel {
     }
 
     public void onLoadedHistoricTaskLists(TaskListsPack taskListsPack, int loadSource) {
+        ifd("onLoadedHistoricTaskLists");
+
         mApplication.setHistoricTaskLists(taskListsPack, loadSource);
 
         // if data from Google Drive is more recent, copy it into AtomicStorage

@@ -66,10 +66,20 @@ public class OctodoApplication extends Application {
         return false;
     }
 
-    public void setHistoricTaskLists(TaskListsPack taskListsPack, int loadSource) {
+    public boolean setHistoricTaskLists(TaskListsPack taskListsPack, int loadSource) {
+        ifd("setHistoricTaskLists");
+
         mHistoricLoadSource = loadSource;
 
-        mHistoric = taskListsPack;
+        if (mHistoric.getModifiedDate().before(taskListsPack.getModifiedDate())) {
+            // overwrite the existing current taskLists with these, more recent ones
+            mHistoric.setModifiedDate(taskListsPack.getModifiedDate());
+            mHistoric.setTaskLists(taskListsPack.getTaskLists());
+            return true;
+        } else {
+            ifd("setHistoricTaskLists: retaining current taskLists");
+        }
+        return false;
     }
 
     public List<TaskList> getCurrentTaskLists() {

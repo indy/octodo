@@ -61,9 +61,7 @@ public class AtomicStorage {
                 ifd("getJSON: unable to load contents of " + filename);
                 return null;
             }
-
-            ifd("content of " + filename + " is " + jsonString);
-
+            //ifd("content of " + filename + " is " + jsonString);
             jsonObject = new JSONObject(jsonString);
         } catch (JSONException jse) {
             ifd("getJSON JSONException: " + jse);
@@ -106,7 +104,7 @@ public class AtomicStorage {
         try {
             AtomicFile atomicFile = new AtomicFile(file);
             byte[] byteArray = atomicFile.readFully();
-            ifd("woohoo loadFileAsString loaded: " + filename);
+            //ifd("woohoo loadFileAsString loaded: " + filename);
             return new String(byteArray);
         } catch (IOException e) {
             ifd("IOException " + e);
