@@ -249,15 +249,15 @@ public class OctodoModel {
             task.setContent(newContent);
         }
 
-        ifd("editedTask: " + task.toString());
-        ifd("editedTask: id: " + System.identityHashCode(task));
+//        ifd("editedTask: " + task.toString());
+//        ifd("editedTask: id: " + System.identityHashCode(task));
 
         TaskList sourceTaskList = getCurrentTaskList(task.getParentName());
         TaskList destinationTaskList = getCurrentTaskList(newTaskList);
 
-        for(Task t : sourceTaskList.getTasks()) {
-            ifd("editedTask iterating over " + System.identityHashCode(t) + " content:" + t.toString());
-        }
+//        for(Task t : sourceTaskList.getTasks()) {
+//            ifd("editedTask iterating over " + System.identityHashCode(t) + " content:" + t.toString());
+//        }
 
 
         if(sourceTaskList != destinationTaskList) {

@@ -17,6 +17,7 @@
 package io.indy.octodo.adapter;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,17 +34,20 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
     static private final String TAG = TaskItemAdapter.class.getSimpleName();
     static void ifd(final String message) { if(D) Log.d(TAG, message); }
 
+    private Fragment mFragment;
+
     private final Context mContext;
 
     private MainController mController;
 
-    public TaskItemAdapter(Context context, TaskList taskList, MainController controller) {
+    public TaskItemAdapter(Context context, TaskList taskList, MainController controller, Fragment fragment) {
         super(context, 
               android.R.layout.simple_list_item_1, 
               taskList.getTasks());
 
         mController = controller;
         mContext = context;
+        mFragment = fragment;
     }
 
     @Override
@@ -56,6 +60,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
         if (taskItemView == null) {
             taskItemView = new TaskItemView(mContext);
             taskItemView.setController(mController);
+            taskItemView.setFragment(mFragment);
         }
 
         taskItemView.setupWithTask(task);

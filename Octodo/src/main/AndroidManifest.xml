@@ -38,10 +38,6 @@
             android:label="@string/title_activity_manage_lists"
             android:windowSoftInputMode="stateHidden" >
         </activity>
-        <activity
-            android:name="io.indy.octodo.EditTaskActivity"
-            android:label="@string/title_activity_edit_task" >
-        </activity>
     </application>
 
 </manifest>

@@ -69,6 +69,7 @@ public final class TaskListFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ifd("onAttach");
+        ifd("attaching to activity: " + System.identityHashCode(activity));
         mContext = activity;
     }
 
@@ -120,7 +121,7 @@ public final class TaskListFragment extends Fragment {
 
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
-        ifd("registering: " + System.identityHashCode(this));
+        ifd("registering: " + mTaskList.getName());
         EventBus.getDefault().register(this);
 
     }
@@ -134,7 +135,7 @@ public final class TaskListFragment extends Fragment {
 
         updateLocalTaskList();
 
-        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList, mController);
+        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList, mController, this);
         mListView.setAdapter(mTaskItemAdapter);
     }
 
@@ -169,7 +170,7 @@ public final class TaskListFragment extends Fragment {
         super.onStop();
         ifd("onStop");
 
-        ifd("unregistering: " + System.identityHashCode(this));
+        ifd("unregistering: " + mTaskList.getName());
         EventBus.getDefault().unregister(this);
     }
 
@@ -203,7 +204,7 @@ public final class TaskListFragment extends Fragment {
     public void onEvent(RefreshTaskListEvent event) {
         ifd("received RefreshTaskListEvent");
         if (isEventRelevant(event.getTaskListName())) {
-            ifd("valid RefreshTaskListEvent received in TaskListFragment");
+            ifd("valid RefreshTaskListEvent received for TaskListFragment: " + event.getTaskListName());
             refreshUI();
             mEditText.setText("");
         }

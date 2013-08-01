@@ -16,17 +16,23 @@
 
 package io.indy.octodo.view;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import io.indy.octodo.EditTaskActivity;
+import io.indy.octodo.EditTaskDialogFragment;
 import io.indy.octodo.R;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Task;
@@ -48,6 +54,8 @@ public class TaskItemView extends LinearLayout {
     private LinearLayout mTaskRow;
 
     private Task mTask;
+
+    private Fragment mFragment;
 
     public TaskItemView(Context context) {
         super(context);
@@ -112,16 +120,28 @@ public class TaskItemView extends LinearLayout {
             @Override
             public boolean onLongClick(View view) {
                 ifd("taskRow received long click");
-
-                Intent intent = new Intent(mContext, EditTaskActivity.class);
-                intent.putExtra(EditTaskActivity.INTENT_EXTRA_LIST_NAME, mTask.getParentName());
-                intent.putExtra(EditTaskActivity.INTENT_EXTRA_START_TIME, mTask.getStartedAt());
-                mContext.startActivity(intent);
-
+                showEditTaskDialog();
                 return true;
             }
         });
     }
+
+    public void setFragment(Fragment fragment) {
+        mFragment = fragment;
+    }
+
+    private void showEditTaskDialog() {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new EditTaskDialogFragment(mController, mTask);
+        dialog.show(mFragment.getFragmentManager(), "EditTaskDialogFragment");
+    }
+
+    private void hideSoftKeyboard(EditText editText) {
+        InputMethodManager imm = (InputMethodManager)mContext
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+    }
+
 
     private void clickedIsDone() {
         int state;
