@@ -30,7 +30,6 @@ import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -41,7 +40,6 @@ import io.indy.octodo.event.PersistDataPostEvent;
 import io.indy.octodo.event.PersistDataPreEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggledTaskStateEvent;
-import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.TaskList;
@@ -50,7 +48,10 @@ public class MainActivity extends DriveBaseActivity {
 
     static private final boolean D = true;
     static private final String TAG = MainActivity.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private TaskListPagerAdapter mAdapter;
 
@@ -84,10 +85,10 @@ public class MainActivity extends DriveBaseActivity {
         mTaskListNames = new ArrayList<String>();
         mAdapter = new TaskListPagerAdapter(getSupportFragmentManager(), mTaskListNames);
 
-        mPager = (ViewPager)findViewById(R.id.pager);
+        mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
 
-        mIndicator = (TitlePageIndicator)findViewById(R.id.indicator);
+        mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mIndicator.setViewPager(mPager);
 
         PageListener pageListener = new PageListener();
@@ -134,7 +135,7 @@ public class MainActivity extends DriveBaseActivity {
 
         mOctodoModel.onDriveDatabaseInitialised();
 
-        if(mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
+        if (mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
             // use already loaded data
             ifd("already loaded data");
             refreshTaskListsUI();
@@ -165,7 +166,7 @@ public class MainActivity extends DriveBaseActivity {
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(LoadedTaskListsEvent event) {
         ifd("received LoadedTaskListsEvent");
-        if(event.getLoadSource() == OctodoModel.LOADED_FROM_DRIVE) {
+        if (event.getLoadSource() == OctodoModel.LOADED_FROM_DRIVE) {
             setSupportProgressBarIndeterminateVisibility(false);
         }
         refreshTaskListsUI();
@@ -281,7 +282,7 @@ public class MainActivity extends DriveBaseActivity {
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.activity_main, menu);
 
-        if(mShowTrashIcon) {
+        if (mShowTrashIcon) {
             MenuItem mi = menu.add(Menu.NONE, 0, Menu.NONE, R.string.discard_lists);
             mi.setIcon(R.drawable.ic_discard).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             mTrashItemId = mi.getItemId();
@@ -296,7 +297,7 @@ public class MainActivity extends DriveBaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         ifd("clicked " + item);
 
-        if(item.getItemId() == mTrashItemId) {
+        if (item.getItemId() == mTrashItemId) {
             mController.onRemoveCompletedTasks(getCurrentTaskListName());
         }
 
@@ -324,7 +325,7 @@ public class MainActivity extends DriveBaseActivity {
 
     private String getCurrentTaskListName() {
         int i = mPager.getCurrentItem();
-        return (String)mAdapter.getPageTitle(i);
+        return (String) mAdapter.getPageTitle(i);
     }
 
     private void startManageListsActivity() {
@@ -348,7 +349,7 @@ public class MainActivity extends DriveBaseActivity {
     // only show the trash icon in the action bar if the current TaskList has struck items
     private void determineTrashIconVisibility(String taskListName) {
         TaskList taskList = mController.onGetTaskList(taskListName);
-        if(taskList.hasStruckTasks()) {
+        if (taskList.hasStruckTasks()) {
             showTrashIcon();
         } else {
             hideTrashIcon();
@@ -357,7 +358,7 @@ public class MainActivity extends DriveBaseActivity {
 
     private void showTrashIcon() {
         ifd("showTrashIcon");
-        if(!mShowTrashIcon) {
+        if (!mShowTrashIcon) {
             mShowTrashIcon = true;
             supportInvalidateOptionsMenu();
         }
@@ -365,7 +366,7 @@ public class MainActivity extends DriveBaseActivity {
 
     private void hideTrashIcon() {
         ifd("hideTrashIcon");
-        if(mShowTrashIcon) {
+        if (mShowTrashIcon) {
             mShowTrashIcon = false;
             supportInvalidateOptionsMenu();
         }
@@ -381,7 +382,7 @@ public class MainActivity extends DriveBaseActivity {
         // re-create the list of tasklist names and notify mAdapter of change
         if (lists != null) {
             mTaskListNames.clear();
-            for(TaskList taskList: lists) {
+            for (TaskList taskList : lists) {
                 mTaskListNames.add(taskList.getName());
             }
             mAdapter.notifyDataSetChanged();
@@ -392,7 +393,7 @@ public class MainActivity extends DriveBaseActivity {
     private void logTaskLists(String message) {
         ifd(message);
         ifd("mTaskListNames.size() = " + mTaskListNames.size());
-        for(String s : mTaskListNames) {
+        for (String s : mTaskListNames) {
             ifd(s);
         }
         ifd("");

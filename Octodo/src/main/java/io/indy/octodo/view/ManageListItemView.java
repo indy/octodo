@@ -42,7 +42,7 @@ public class ManageListItemView extends LinearLayout {
 
         String infService = Context.LAYOUT_INFLATER_SERVICE;
         LayoutInflater li;
-        li = (LayoutInflater)getContext().getSystemService(infService);
+        li = (LayoutInflater) getContext().getSystemService(infService);
 
         li.inflate(R.layout.row_list, this, true);
     }
@@ -50,10 +50,10 @@ public class ManageListItemView extends LinearLayout {
     public void setup(TaskList taskList) {
         mTaskList = taskList;
 
-        TextView tv = (TextView)findViewById(R.id.name);
+        TextView tv = (TextView) findViewById(R.id.name);
         tv.setText(mTaskList.getName());
 
-        CheckBox cb = (CheckBox)findViewById(R.id.deleteMe);
+        CheckBox cb = (CheckBox) findViewById(R.id.deleteMe);
         cb.setSelected(false);
         cb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +68,7 @@ public class ManageListItemView extends LinearLayout {
             Log.d(TAG, "clickedDeleteMe");
         }
 
-        CheckBox cb = (CheckBox)view;
+        CheckBox cb = (CheckBox) view;
         mTaskList.setSelected(cb.isChecked());
         postToggleListSelectionEvent();
     }

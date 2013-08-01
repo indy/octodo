@@ -28,7 +28,10 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
 
     static private final boolean D = false;
     static private final String TAG = DriveBaseActivity.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     protected DriveStorage mDriveStorage;
 

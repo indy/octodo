@@ -37,7 +37,10 @@ public class AboutActivity extends SherlockActivity {
 
     static private final boolean D = true;
     static private final String TAG = AboutActivity.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,7 @@ public class AboutActivity extends SherlockActivity {
 
         CharSequence content = buildContent();
 
-        TextView tv = (TextView)findViewById(R.id.about_textview);
+        TextView tv = (TextView) findViewById(R.id.about_textview);
         tv.setText(content, BufferType.SPANNABLE);
         tv.setMovementMethod(LinkMovementMethod.getInstance());
     }

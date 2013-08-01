@@ -26,7 +26,10 @@ import java.util.Date;
 public class DateFormatHelper {
     static private final boolean D = true;
     static private final String TAG = "DateFormatHelper";
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
@@ -45,7 +48,7 @@ public class DateFormatHelper {
             }
             if (date != null) {
                 long time = date.getTime();
-                timeSpan = (String)DateUtils.getRelativeTimeSpanString(time);
+                timeSpan = (String) DateUtils.getRelativeTimeSpanString(time);
                 // Log.d(TAG, "timeSpan is " + timeSpan);
             }
         }
@@ -55,11 +58,11 @@ public class DateFormatHelper {
     public static Date parseDateString(String dateString) {
         SimpleDateFormat iso8601Format = new SimpleDateFormat(DATE_FORMAT);
         Date date = null;
-            try {
-                date = iso8601Format.parse(dateString);
-            } catch (ParseException e) {
-                ifd("ParseException: " + e);
-            }
+        try {
+            date = iso8601Format.parse(dateString);
+        } catch (ParseException e) {
+            ifd("ParseException: " + e);
+        }
 
         return date;
     }

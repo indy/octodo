@@ -37,7 +37,10 @@ public class DriveJunction {
 
     static private final boolean D = true;
     static private final String TAG = DriveJunction.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private final static String JSON_MIMETYPE = "application/json";
     private final static String APPDATA_FOLDER = "appdata";

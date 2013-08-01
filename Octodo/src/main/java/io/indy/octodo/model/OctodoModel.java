@@ -35,7 +35,10 @@ public class OctodoModel {
 
     static private final boolean D = true;
     static private final String TAG = OctodoModel.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     public static final int NOT_LOADED = 0;
     public static final int LOADED_FROM_FILE = 1;   // Local disk
@@ -52,7 +55,7 @@ public class OctodoModel {
 
     public OctodoModel(DriveBaseActivity activity) {
         mContext = activity;
-        mApplication = (OctodoApplication)activity.getApplication();
+        mApplication = (OctodoApplication) activity.getApplication();
         ifd("mApplication is " + System.identityHashCode(mApplication));
     }
 
@@ -71,7 +74,7 @@ public class OctodoModel {
         JSONObject json = atomicStorage.getJSON(AtomicStorage.CURRENT_FILENAME);
 
         TaskListsPack taskListsPack;
-        if(json == null) {
+        if (json == null) {
             taskListsPack = TaskListsPack.buildEmptyTaskListsPack();
         } else {
             taskListsPack = TaskListsPack.fromJSON(json);
@@ -102,20 +105,20 @@ public class OctodoModel {
         boolean overWritten = mApplication.setCurrentTaskLists(taskListsPack, loadSource);
 
         // if data from Google Drive is more recent, copy it into AtomicStorage
-        if(loadSource == OctodoModel.LOADED_FROM_DRIVE) {
+        if (loadSource == OctodoModel.LOADED_FROM_DRIVE) {
             maybeRefreshAtomicWithDrive(taskListsPack, AtomicStorage.CURRENT_FILENAME);
         }
 
-            // fire event to update the UI
-            LoadedTaskListsEvent event = new LoadedTaskListsEvent(overWritten, loadSource);
-            EventBus.getDefault().post(event);
+        // fire event to update the UI
+        LoadedTaskListsEvent event = new LoadedTaskListsEvent(overWritten, loadSource);
+        EventBus.getDefault().post(event);
     }
 
     public void onLoadedHistoricTaskLists(TaskListsPack taskListsPack, int loadSource) {
         mApplication.setHistoricTaskLists(taskListsPack, loadSource);
 
         // if data from Google Drive is more recent, copy it into AtomicStorage
-        if(loadSource == OctodoModel.LOADED_FROM_DRIVE) {
+        if (loadSource == OctodoModel.LOADED_FROM_DRIVE) {
             maybeRefreshAtomicWithDrive(taskListsPack, AtomicStorage.HISTORIC_FILENAME);
         }
     }
@@ -123,9 +126,9 @@ public class OctodoModel {
     private void maybeRefreshAtomicWithDrive(TaskListsPack taskListsPack, String atomicFilename) {
         AtomicStorage atomicStorage = new AtomicStorage(mContext);
         JSONObject json = atomicStorage.getJSON(atomicFilename);
-        if(json != null) {
+        if (json != null) {
             Date localDate = TaskListsPack.parseJSONHeader(json);
-            if(localDate.before(taskListsPack.getModifiedDate())) {
+            if (localDate.before(taskListsPack.getModifiedDate())) {
                 // date from Drive is more recent than on local storage
                 // so overwrite local storage
                 atomicStorage.saveJSON(atomicFilename, taskListsPack.toJson());
@@ -152,7 +155,7 @@ public class OctodoModel {
         }
 
         TaskList existing = getCurrentTaskList(name);
-        if(existing != null) {
+        if (existing != null) {
             ifd("addList: a list with the name " + name + " already exists");
             return;
         }
@@ -196,7 +199,7 @@ public class OctodoModel {
     public boolean deleteList(String name) {
         ifd("deleteList " + name);
         TaskList taskList = this.getCurrentTaskList(name);
-        if(taskList == null) {
+        if (taskList == null) {
             return false;
         }
 
@@ -229,23 +232,9 @@ public class OctodoModel {
         saveCurrentTaskListsToDrive();
     }
 
-    // re-assign a task to a different tasklist
-    public void moveTask(Task task, String destination) {
-        ifd("moveTask " + task.getContent() + " to: " + destination);
-
-        TaskList sourceTaskList = getCurrentTaskList(task.getParentName());
-        TaskList destinationTaskList = getCurrentTaskList(destination);
-
-
-        sourceTaskList.remove(task);
-        destinationTaskList.add(task);
-
-        saveCurrentTaskListsToDrive();
-    }
-
     public void editedTask(Task task, String newContent, String newTaskList) {
 
-        if(!newContent.equals(task.getContent())) {
+        if (!newContent.equals(task.getContent())) {
             task.setContent(newContent);
         }
 
@@ -260,7 +249,7 @@ public class OctodoModel {
 //        }
 
 
-        if(sourceTaskList != destinationTaskList) {
+        if (sourceTaskList != destinationTaskList) {
             sourceTaskList.remove(task);
             destinationTaskList.add(task);
         }
@@ -287,8 +276,8 @@ public class OctodoModel {
         TaskList historicTaskList = getHistoricTaskList(taskListName);
 
         // iterate through tasklist and add into historic
-        for(Task t: taskList.getTasks()) {
-            if(t.getState() == Task.STATE_STRUCK) {
+        for (Task t : taskList.getTasks()) {
+            if (t.getState() == Task.STATE_STRUCK) {
                 t.setState(Task.STATE_CLOSED); // no real need for this in GDrive backend
                 historicTaskList.add(t);
             }
@@ -308,7 +297,7 @@ public class OctodoModel {
         List<TaskList> historicTaskLists = mApplication.getHistoricTaskLists();
 
         TaskList taskList = getTaskList(historicTaskLists, name);
-        if(taskList == null) {
+        if (taskList == null) {
             taskList = new TaskList(name);
             historicTaskLists.add(taskList);
         }
@@ -316,13 +305,13 @@ public class OctodoModel {
     }
 
     private TaskList getTaskList(List<TaskList> taskLists, String name) {
-        if(taskLists == null) {
+        if (taskLists == null) {
             ifd("getTaskList given null taskLists when searching for " + name);
             return null;
         }
 
-        for(TaskList tasklist: taskLists) {
-            if(tasklist.getName().equals(name)) {
+        for (TaskList tasklist : taskLists) {
+            if (tasklist.getName().equals(name)) {
                 return tasklist;
             }
         }
@@ -340,10 +329,10 @@ public class OctodoModel {
     public TaskList getCurrentTaskList(int index) {
         List<TaskList> taskLists = mApplication.getCurrentTaskLists();
 
-        if(taskLists == null) {
+        if (taskLists == null) {
             ifd("mTaskLists is empty");
             return null;
-        } else if(index >= taskLists.size()){
+        } else if (index >= taskLists.size()) {
             ifd("getCurrentTaskList index is too large");
             return null;
         }
@@ -354,13 +343,13 @@ public class OctodoModel {
         List<TaskList> taskLists = mApplication.getCurrentTaskLists();
         List<TaskList> removable = new ArrayList<TaskList>();
 
-        for(TaskList taskList: taskLists) {
-            if(taskList.isSelected()) {
+        for (TaskList taskList : taskLists) {
+            if (taskList.isSelected()) {
                 removable.add(taskList);
             }
         }
 
-        for(TaskList taskList : removable) {
+        for (TaskList taskList : removable) {
             taskLists.remove(taskList);
         }
 
@@ -371,8 +360,8 @@ public class OctodoModel {
         List<TaskList> taskLists = mApplication.getCurrentTaskLists();
 
         List<TaskList> res = new ArrayList<TaskList>();
-        for(TaskList taskList: taskLists) {
-            if(taskList.isDeleteable()) {
+        for (TaskList taskList : taskLists) {
+            if (taskList.isDeleteable()) {
                 res.add(taskList);
             }
         }

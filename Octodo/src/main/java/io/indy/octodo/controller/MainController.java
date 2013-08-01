@@ -23,7 +23,6 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.indy.octodo.R;
-import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggledTaskStateEvent;
 import io.indy.octodo.helper.NotificationHelper;
@@ -35,7 +34,10 @@ public class MainController {
 
     static private final boolean D = true;
     static private final String TAG = MainController.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private Activity mActivity;
 
@@ -51,8 +53,8 @@ public class MainController {
 
     public Task findTask(String listName, String startedAt) {
         TaskList taskList = mOctodoModel.getCurrentTaskList(listName);
-        for(Task t : taskList.getTasks()) {
-            if(startedAt.equals(t.getStartedAt())) {
+        for (Task t : taskList.getTasks()) {
+            if (startedAt.equals(t.getStartedAt())) {
                 return t;
             }
         }
@@ -89,13 +91,6 @@ public class MainController {
         postRefreshEvent(task.getParentName());
     }
 
-    public void onTaskMove(Task task, String destinationTaskList) {
-        mOctodoModel.moveTask(task, destinationTaskList);
-        post(new MoveTaskEvent(task, task.getParentName(), destinationTaskList));
-        String messagePrefix = mActivity.getString(R.string.confirmation_moved_task);
-        notifyUser(messagePrefix + " \"" + destinationTaskList + "\"");
-    }
-
     // called from EditTaskActivity, returns true if a change to the model is required
     public boolean onTaskEdited(Task task, String newContent, String newTaskList) {
         ifd("onTaskEdited");
@@ -105,13 +100,13 @@ public class MainController {
 
         String oldTaskList = task.getParentName();
 
-        if(hasNewContent || isMoved) {
+        if (hasNewContent || isMoved) {
             mOctodoModel.editedTask(task, newContent, newTaskList);
-            if(isMoved) {
+            if (isMoved) {
                 // fire update events to both taskLists
                 postRefreshEvent(oldTaskList);
                 postRefreshEvent(newTaskList);
-            } else if(hasNewContent) {
+            } else if (hasNewContent) {
                 // fire update event
                 postRefreshEvent(task.getParentName());
             }

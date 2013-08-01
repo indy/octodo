@@ -16,10 +16,7 @@
 
 package io.indy.octodo.view;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Paint;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -41,7 +38,10 @@ public class TaskItemView extends LinearLayout {
 
     static private final boolean D = true;
     static private final String TAG = TaskItemView.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private final Context mContext;
 
@@ -64,13 +64,13 @@ public class TaskItemView extends LinearLayout {
 
         String infService = Context.LAYOUT_INFLATER_SERVICE;
         LayoutInflater li;
-        li = (LayoutInflater)getContext().getSystemService(infService);
+        li = (LayoutInflater) getContext().getSystemService(infService);
 
         li.inflate(R.layout.row_task, this, true);
 
-        mTaskRow = (LinearLayout)findViewById(R.id.taskRow);
-        mIsDone = (CheckBox)findViewById(R.id.isDone);
-        mContent = (TextView)findViewById(R.id.content);
+        mTaskRow = (LinearLayout) findViewById(R.id.taskRow);
+        mIsDone = (CheckBox) findViewById(R.id.isDone);
+        mContent = (TextView) findViewById(R.id.content);
 
         addClickListeners();
     }
@@ -137,7 +137,7 @@ public class TaskItemView extends LinearLayout {
     }
 
     private void hideSoftKeyboard(EditText editText) {
-        InputMethodManager imm = (InputMethodManager)mContext
+        InputMethodManager imm = (InputMethodManager) mContext
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
     }

@@ -22,7 +22,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,9 +34,7 @@ import android.widget.Spinner;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import io.indy.octodo.controller.MainController;
-import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 
@@ -45,7 +42,10 @@ public class EditTaskDialogFragment extends DialogFragment implements AdapterVie
 
     static private final boolean D = true;
     static private final String TAG = EditTaskDialogFragment.class.getSimpleName();
-    void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private MainController mController;
     private Task mTask;
@@ -92,12 +92,12 @@ public class EditTaskDialogFragment extends DialogFragment implements AdapterVie
         // Create the AlertDialog object and return it
         AlertDialog alertDialog = builder.create();
 
-        mSpinner = (Spinner)v.findViewById(R.id.spinner);
-        mEditText = (EditText)v.findViewById(R.id.editText);
+        mSpinner = (Spinner) v.findViewById(R.id.spinner);
+        mEditText = (EditText) v.findViewById(R.id.editText);
 
         mSpinner.setOnItemSelectedListener(this);
 
-        Button delete = (Button)v.findViewById(R.id.button);
+        Button delete = (Button) v.findViewById(R.id.button);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -136,7 +136,7 @@ public class EditTaskDialogFragment extends DialogFragment implements AdapterVie
         List<TaskList> taskLists = mController.onGetTaskLists();
         List<String> listNames = new ArrayList<String>();
 
-        for(TaskList taskList : taskLists) {
+        for (TaskList taskList : taskLists) {
             listNames.add(taskList.getName());
         }
 
@@ -175,13 +175,13 @@ public class EditTaskDialogFragment extends DialogFragment implements AdapterVie
     public void onItemSelected(AdapterView<?> parent,
                                View v, int position, long id) {
 
-        if(mSetInitialSpinnerValue) {
+        if (mSetInitialSpinnerValue) {
             mSetInitialSpinnerValue = false;
 
             // set the spinner's initial value to the task's parent name
             String parentName = mTask.getParentName();
-            for(int i=0;i<mListNames.size();i++) {
-                if(parentName.equals(mListNames.get(i))) {
+            for (int i = 0; i < mListNames.size(); i++) {
+                if (parentName.equals(mListNames.get(i))) {
                     mSpinner.setSelection(i);
                 }
             }

@@ -29,7 +29,10 @@ public class OctodoApplication extends Application {
 
     static private final boolean D = true;
     static private final String TAG = OctodoApplication.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private int mCurrentLoadSource;
     private int mHistoricLoadSource;
@@ -44,9 +47,6 @@ public class OctodoApplication extends Application {
         mCurrentLoadSource = OctodoModel.NOT_LOADED;
         mHistoricLoadSource = OctodoModel.NOT_LOADED;
 
-        mCurrent = null;
-        mHistoric = null;
-
         mCurrent = TaskListsPack.buildEmptyTaskListsPack();
         mHistoric = TaskListsPack.buildEmptyTaskListsPack();
     }
@@ -54,7 +54,7 @@ public class OctodoApplication extends Application {
     public boolean setCurrentTaskLists(TaskListsPack taskListsPack, int loadSource) {
         mCurrentLoadSource = loadSource;
 
-        if(mCurrent.getModifiedDate().before(taskListsPack.getModifiedDate())) {
+        if (mCurrent.getModifiedDate().before(taskListsPack.getModifiedDate())) {
             // overwrite the existing current taskLists with these, more recent ones
             mCurrent.setModifiedDate(taskListsPack.getModifiedDate());
             mCurrent.setTaskLists(taskListsPack.getTaskLists());

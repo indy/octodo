@@ -29,7 +29,10 @@ public class TaskListPagerAdapter extends FragmentStatePagerAdapter {
 
     static private final boolean D = false;
     static private final String TAG = TaskListPagerAdapter.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private List<String> mTaskListNames;
 

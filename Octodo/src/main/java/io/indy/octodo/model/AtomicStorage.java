@@ -38,7 +38,10 @@ public class AtomicStorage {
 
     static private final boolean D = true;
     static private final String TAG = AtomicStorage.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     public static final String CURRENT_FILENAME = "current.json";
     public static final String HISTORIC_FILENAME = "historic.json";
@@ -54,7 +57,7 @@ public class AtomicStorage {
 
         try {
             String jsonString = loadFileAsString(filename);
-            if(jsonString == null) {
+            if (jsonString == null) {
                 ifd("getJSON: unable to load contents of " + filename);
                 return null;
             }
@@ -84,9 +87,9 @@ public class AtomicStorage {
             stream.write(jsonBytes);
             atomicFile.finishWrite(stream);
 
-        } catch(IOException e) {
+        } catch (IOException e) {
             ifd("getJSON IOException: " + e);
-            if(stream != null) {
+            if (stream != null) {
                 atomicFile.failWrite(stream);
             }
         }
@@ -95,7 +98,7 @@ public class AtomicStorage {
     private String loadFileAsString(String filename) {
 
         File file = new File(mContext.getFilesDir(), filename);
-        if(!file.exists()) {
+        if (!file.exists()) {
             ifd("loadFileAsString: " + filename + " does not exist");
             return null;
         }

@@ -35,7 +35,10 @@ public class TaskListsPack {
 
     static private final boolean D = true;
     static private final String TAG = "TaskListsPack";
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private static final String HEADER = "header";
     private static final String BODY = "body";
@@ -78,7 +81,7 @@ public class TaskListsPack {
 
             JSONArray array = new JSONArray();
             List<TaskList> taskLists = mTaskLists;
-            for(TaskList t : taskLists) {
+            for (TaskList t : taskLists) {
                 JSONObject obj = t.toJson();
                 array.put(obj);
             }
@@ -103,11 +106,11 @@ public class TaskListsPack {
         String dateString = DateFormatHelper.oldDate();
 
         try {
-            if(json.isNull(HEADER)) {
+            if (json.isNull(HEADER)) {
                 ifd("parseJSONHeader: empty header");
             } else {
                 JSONObject header = json.getJSONObject(HEADER);
-                if(header.has(DATE_MODIFIED)) {
+                if (header.has(DATE_MODIFIED)) {
                     dateString = header.getString(DATE_MODIFIED);
                 }
             }
@@ -124,7 +127,7 @@ public class TaskListsPack {
 
         try {
 
-            if(json.isNull(BODY)) {
+            if (json.isNull(BODY)) {
                 // empty body so default to empty today and thisweek tasklists
                 ifd("parseJSONBody: empty body so defaulting to empty today and thisweek tasklists");
                 return buildDefaultEmptyTaskLists();
@@ -133,7 +136,7 @@ public class TaskListsPack {
             //
             JSONArray body = json.getJSONArray(BODY);
             TaskList tasklist;
-            for(int i=0; i<body.length(); i++) {
+            for (int i = 0; i < body.length(); i++) {
                 tasklist = TaskList.fromJson(body.getJSONObject(i));
                 tasklists.add(tasklist);
             }

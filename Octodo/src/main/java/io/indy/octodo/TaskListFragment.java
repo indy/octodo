@@ -34,7 +34,6 @@ import de.greenrobot.event.EventBus;
 import io.indy.octodo.adapter.TaskItemAdapter;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.LoadedTaskListsEvent;
-import io.indy.octodo.event.MoveTaskEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
@@ -44,7 +43,10 @@ public final class TaskListFragment extends Fragment {
 
     static private final boolean D = true;
     static private final String TAG = TaskListFragment.class.getSimpleName();
-    void ifd(final String message) { if(D) Log.d(TAG, "[" + System.identityHashCode(this) + "] " + message); }
+
+    void ifd(final String message) {
+        if (D) Log.d(TAG, "[" + System.identityHashCode(this) + "] " + message);
+    }
 
     private TaskItemAdapter mTaskItemAdapter;
 
@@ -87,8 +89,8 @@ public final class TaskListFragment extends Fragment {
         // If this Fragment has no UI then return null.
         View view = inflater.inflate(R.layout.fragment_tasklist, container, false);
 
-        mEditText = (EditText)view.findViewById(R.id.editTextTask);
-        mListView = (ListView)view.findViewById(R.id.listViewTasks);
+        mEditText = (EditText) view.findViewById(R.id.editTextTask);
+        mListView = (ListView) view.findViewById(R.id.listViewTasks);
 
         setKeyboardListener(mEditText);
 
@@ -98,10 +100,9 @@ public final class TaskListFragment extends Fragment {
             mTaskList = new TaskList(taskListName);
             // TODO: would updateLocalTaskList fail here?
         } //else {
-            // already have a mTaskList from setInstance
+        // already have a mTaskList from setInstance
 //            updateLocalTaskList();
-       // }
-
+        // }
 
 
         return view;
@@ -131,7 +132,7 @@ public final class TaskListFragment extends Fragment {
         super.onResume();
         ifd("onResume");
 
-        mController = ((MainActivity)mContext).getController();
+        mController = ((MainActivity) mContext).getController();
 
         updateLocalTaskList();
 
@@ -193,7 +194,7 @@ public final class TaskListFragment extends Fragment {
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(LoadedTaskListsEvent event) {
         ifd("received LoadedTaskListsEvent");
-        if(event.overwritesExistingTaskLists()) {
+        if (event.overwritesExistingTaskLists()) {
             refreshUI();
         }
     }
@@ -207,13 +208,6 @@ public final class TaskListFragment extends Fragment {
             ifd("valid RefreshTaskListEvent received for TaskListFragment: " + event.getTaskListName());
             refreshUI();
             mEditText.setText("");
-        }
-    }
-
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void onEvent(MoveTaskEvent event) {
-        if (isEventRelevant(event.getOldTaskList()) || isEventRelevant(event.getNewTaskList())) {
-            refreshUI();
         }
     }
 
@@ -237,7 +231,7 @@ public final class TaskListFragment extends Fragment {
 
         editText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(keyCode == 66 && event.getAction() == 1) {
+                if (keyCode == 66 && event.getAction() == 1) {
                     addTask();
                 }
                 return false;
@@ -283,8 +277,8 @@ public final class TaskListFragment extends Fragment {
         localTasks.clear();
         localTasks.addAll(tasks);
 
-        if(D) {
-            for(Task t: localTasks) {
+        if (D) {
+            for (Task t : localTasks) {
                 ifd("taskContent: " + t.getContent());
             }
         }

@@ -30,12 +30,10 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.indy.octodo.DriveBaseActivity;
@@ -44,7 +42,10 @@ import io.indy.octodo.async.UpdateTaskListsAsyncTask;
 public class DriveStorage {
     static private final boolean D = true;
     static private final String TAG = DriveStorage.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     public static final int REQUEST_ACCOUNT_PICKER = 1;
     public static final int REQUEST_AUTHORIZATION = 2;
@@ -84,11 +85,11 @@ public class DriveStorage {
             ByteArrayContent content = new ByteArrayContent("application/json", json.getBytes());
             File config = sService.files().update(ff.getId(), ff, content).execute();
 
-            if(D) {
+            if (D) {
                 ifd("updated file");
                 logFileMetadata(config, jsonFile);
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             ifd("getJSON IOException: " + e);
         }
     }
@@ -114,7 +115,6 @@ public class DriveStorage {
     }
 
 
-
     public void ensureJsonFilesExist() {
         ifd("ensureJsonFilesExist");
 
@@ -130,12 +130,12 @@ public class DriveStorage {
                     boolean foundCurrent = false;
                     boolean foundHistoric = false;
 
-                    for(File f : files) {
-                        if(f.getTitle().equals(CURRENT_JSON)) {
+                    for (File f : files) {
+                        if (f.getTitle().equals(CURRENT_JSON)) {
 
                             // check that the found json file's id matches the one in shared preferences
                             String id = getJsonFileIdPreference(CURRENT_JSON);
-                            if(!id.equals(f.getId())) {
+                            if (!id.equals(f.getId())) {
                                 /*
                                 Scenarios to get here:
 
@@ -158,9 +158,9 @@ public class DriveStorage {
 
                             foundCurrent = true;
                         }
-                        if(f.getTitle().equals(HISTORIC_JSON)) {
+                        if (f.getTitle().equals(HISTORIC_JSON)) {
                             String id = getJsonFileIdPreference(HISTORIC_JSON);
-                            if(!id.equals(f.getId())) {
+                            if (!id.equals(f.getId())) {
                                 ifd("saving pre-existing id for " + HISTORIC_JSON);
                                 saveJsonFileIdPreference(HISTORIC_JSON, f.getId());
                             }
@@ -169,7 +169,7 @@ public class DriveStorage {
                         }
                     }
 
-                    if(!foundCurrent) {
+                    if (!foundCurrent) {
                         String json = EMPTY_JSON_OBJECT;
                         File file = DriveJunction.createAppDataJsonFile(sService, CURRENT_JSON, json);
                         if (file != null) {
@@ -181,7 +181,7 @@ public class DriveStorage {
                             ifd("unable to create AppDataJsonFile: " + CURRENT_JSON);
                         }
                     }
-                    if(!foundHistoric) {
+                    if (!foundHistoric) {
                         String json = EMPTY_JSON_OBJECT;
                         File file = DriveJunction.createAppDataJsonFile(sService, HISTORIC_JSON, json);
                         if (file != null) {
@@ -193,7 +193,7 @@ public class DriveStorage {
                         }
                     }
 
-                    if(!foundCurrent || !foundHistoric) {
+                    if (!foundCurrent || !foundHistoric) {
                         ifd("cannot create required json files");
                         // return an error, ask user to check permissions or launch account picker activity?
                         // exit the application
@@ -232,7 +232,7 @@ public class DriveStorage {
         return settings.getString(ACCOUNT_NAME, "");
     }
 
-    private void saveAccountNamePreference(String accountName){
+    private void saveAccountNamePreference(String accountName) {
         SharedPreferences settings = mActivity.getSharedPreferences(PREFS_FILENAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(ACCOUNT_NAME, accountName);
@@ -255,7 +255,7 @@ public class DriveStorage {
     private boolean hasBothJsonFileIdPreferences() {
         String current = getJsonFileIdPreference(CURRENT_JSON);
         String historic = getJsonFileIdPreference(HISTORIC_JSON);
-        if(current.isEmpty() || historic.isEmpty()) {
+        if (current.isEmpty() || historic.isEmpty()) {
             return false;
         }
         return true;
@@ -268,7 +268,7 @@ public class DriveStorage {
         ifd("mCredential is " + mCredential);
 
         String accountName = getAccountNamePreference();
-        if(accountName.isEmpty()) {
+        if (accountName.isEmpty()) {
             // get the preferred google account
             ifd("account name is empty, asking user to choose an account");
             mActivity.startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
@@ -281,7 +281,7 @@ public class DriveStorage {
             mCredential.setSelectedAccountName(accountName);
             sService = getDriveService(mCredential);
 
-            if(hasBothJsonFileIdPreferences()) {
+            if (hasBothJsonFileIdPreferences()) {
                 ifd("have both json files");
                 mActivity.onDriveDatabaseInitialised();
             } else {

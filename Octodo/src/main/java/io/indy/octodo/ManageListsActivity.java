@@ -42,7 +42,10 @@ public class ManageListsActivity extends DriveBaseActivity {
 
     static private final boolean D = true;
     static private final String TAG = ManageListsActivity.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private List<TaskList> mTaskLists;
 
@@ -65,13 +68,13 @@ public class ManageListsActivity extends DriveBaseActivity {
         setContentView(R.layout.activity_manage_lists);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mListView = (ListView)findViewById(R.id.listViewTaskLists);
+        mListView = (ListView) findViewById(R.id.listViewTaskLists);
 
         mTaskLists = new ArrayList<TaskList>();
 
         mAdapter = new ManageListsAdapter(this, mTaskLists);
 
-        mEditText = (EditText)findViewById(R.id.editText2);
+        mEditText = (EditText) findViewById(R.id.editText2);
         setKeyboardListener(mEditText);
 
         mListView.setAdapter(mAdapter);
@@ -90,7 +93,7 @@ public class ManageListsActivity extends DriveBaseActivity {
         mOctodoModel = new OctodoModel(this);
         mController = new MainController(this, mOctodoModel);
 
-        if(!mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
+        if (!mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
             ifd("not loaded data from drive");
             mOctodoModel.initFromFile();
         } else {
@@ -122,7 +125,7 @@ public class ManageListsActivity extends DriveBaseActivity {
 
         mOctodoModel.onDriveDatabaseInitialised();
 
-        if(mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
+        if (mOctodoModel.hasLoadedTaskListFrom(OctodoModel.LOADED_FROM_DRIVE)) {
             // use already loaded data
             refreshTaskLists();
         } else {
@@ -136,7 +139,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(LoadedTaskListsEvent event) {
         ifd("received LoadedTaskListsEvent");
-        if(event.overwritesExistingTaskLists()) {
+        if (event.overwritesExistingTaskLists()) {
             refreshTaskLists();
         }
     }
@@ -147,7 +150,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     public void onEvent(ToggledListSelectionEvent event) {
         ifd("received ToggledListSelectionEvent");
 
-        if(isAnyTaskListSelected(mTaskLists)) {
+        if (isAnyTaskListSelected(mTaskLists)) {
             showTrashIcon();
         } else {
             hideTrashIcon();
@@ -195,7 +198,7 @@ public class ManageListsActivity extends DriveBaseActivity {
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.activity_manage_lists, menu);
 
-        if(mShowTrashIcon) {
+        if (mShowTrashIcon) {
             MenuItem mi = menu.add(Menu.NONE, 0, Menu.NONE, R.string.discard_lists);
             mi.setIcon(R.drawable.ic_discard).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             mTrashItemId = mi.getItemId();
@@ -209,10 +212,10 @@ public class ManageListsActivity extends DriveBaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(item.getItemId() == mTrashItemId) {
+        if (item.getItemId() == mTrashItemId) {
             mController.deleteSelectedTaskLists();
             refreshTaskLists();
-        } else if(item.getItemId() == android.R.id.home) {
+        } else if (item.getItemId() == android.R.id.home) {
             finish();
         }
 
@@ -224,7 +227,7 @@ public class ManageListsActivity extends DriveBaseActivity {
 
         editText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(keyCode == 66 && event.getAction() == 1) {
+                if (keyCode == 66 && event.getAction() == 1) {
                     addNewList();
                 }
                 return false;
@@ -239,7 +242,7 @@ public class ManageListsActivity extends DriveBaseActivity {
             mController.addList(name);
             refreshTaskLists();
             mEditText.setText("");
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             ifd("addNewList exception: " + e);
         }
     }
@@ -252,22 +255,22 @@ public class ManageListsActivity extends DriveBaseActivity {
     }
 
     private void showTrashIcon() {
-        if(!mShowTrashIcon) {
+        if (!mShowTrashIcon) {
             mShowTrashIcon = true;
             supportInvalidateOptionsMenu();
         }
     }
 
     private void hideTrashIcon() {
-        if(mShowTrashIcon) {
+        if (mShowTrashIcon) {
             mShowTrashIcon = false;
             supportInvalidateOptionsMenu();
         }
     }
 
     private boolean isAnyTaskListSelected(List<TaskList> taskLists) {
-        for(TaskList taskList : taskLists) {
-            if(taskList.isSelected()) {
+        for (TaskList taskList : taskLists) {
+            if (taskList.isSelected()) {
                 return true;
             }
         }

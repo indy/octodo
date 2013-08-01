@@ -28,7 +28,10 @@ import io.indy.octodo.helper.DateFormatHelper;
 public class Task {
     static private final boolean D = true;
     static private final String TAG = Task.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private String mParentName;
 
@@ -69,9 +72,9 @@ public class Task {
     public void setState(int state) {
         mState = state;
 
-        if(mState == STATE_OPEN) {
+        if (mState == STATE_OPEN) {
             mFinishedAt = "";
-        } else if(mState == STATE_STRUCK) {
+        } else if (mState == STATE_STRUCK) {
             mFinishedAt = DateFormatHelper.today();
         }
     }
@@ -87,10 +90,10 @@ public class Task {
                     .content(jsonObject.getString(CONTENT))
                     .startedAt(jsonObject.getString(STARTED_AT));
 
-            if(jsonObject.has(STATE)) {
+            if (jsonObject.has(STATE)) {
                 builder.state(jsonObject.getInt(STATE));
             }
-            if(jsonObject.has(FINISHED_AT)) {
+            if (jsonObject.has(FINISHED_AT)) {
                 builder.finishedAt(jsonObject.getString(FINISHED_AT));
             }
 
@@ -110,7 +113,7 @@ public class Task {
             res.put(CONTENT, mContent);
             res.put(STATE, mState);
             res.put(STARTED_AT, mStartedAt);
-            if(!mFinishedAt.isEmpty()) {
+            if (!mFinishedAt.isEmpty()) {
                 res.put(FINISHED_AT, mFinishedAt);
             }
         } catch (JSONException e) {

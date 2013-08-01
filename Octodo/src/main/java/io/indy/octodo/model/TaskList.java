@@ -29,7 +29,10 @@ public class TaskList {
 
     static private final boolean D = true;
     static private final String TAG = TaskList.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private final String mName;
     private List<Task> mTasks;
@@ -53,8 +56,8 @@ public class TaskList {
     private static final String TASKS = "tasks";
 
     public boolean hasStruckTasks() {
-        for(Task task: mTasks) {
-            if(task.getState() == Task.STATE_STRUCK) {
+        for (Task task : mTasks) {
+            if (task.getState() == Task.STATE_STRUCK) {
                 return true;
             }
         }
@@ -63,7 +66,7 @@ public class TaskList {
 
     public void logTaskList() {
         ifd("logTaskList: " + mName);
-        for(Task t: mTasks) {
+        for (Task t : mTasks) {
             int id = System.identityHashCode(t);
             ifd("task: [" + id + "] " + t.getContent());
         }
@@ -99,7 +102,7 @@ public class TaskList {
     public TaskList remove(Task task) {
         boolean isRemoved = mTasks.remove(task);
 
-        if(!isRemoved) {
+        if (!isRemoved) {
             Log.e(TAG, "unable to remove a task from taskList");
             Log.e(TAG, "TaskList: ");
             logTaskList();
@@ -118,7 +121,7 @@ public class TaskList {
             TaskList taskList = new TaskList(name);
 
             JSONArray jsonTasks = jsonObject.getJSONArray(TASKS);
-            for(int i=0;i<jsonTasks.length();i++) {
+            for (int i = 0; i < jsonTasks.length(); i++) {
                 JSONObject jsonTask = jsonTasks.getJSONObject(i);
                 Task task = Task.fromJson(jsonTask);
                 taskList.add(task);
@@ -148,7 +151,7 @@ public class TaskList {
             // the list of tasks
 
             JSONArray array = new JSONArray();
-            for(Task t : mTasks) {
+            for (Task t : mTasks) {
                 JSONObject obj = t.toJson();
                 array.put(obj);
             }

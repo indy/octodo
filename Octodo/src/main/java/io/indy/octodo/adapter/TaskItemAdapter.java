@@ -32,7 +32,10 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
 
     static private final boolean D = false;
     static private final String TAG = TaskItemAdapter.class.getSimpleName();
-    static void ifd(final String message) { if(D) Log.d(TAG, message); }
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private Fragment mFragment;
 
@@ -41,9 +44,9 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
     private MainController mController;
 
     public TaskItemAdapter(Context context, TaskList taskList, MainController controller, Fragment fragment) {
-        super(context, 
-              android.R.layout.simple_list_item_1, 
-              taskList.getTasks());
+        super(context,
+                android.R.layout.simple_list_item_1,
+                taskList.getTasks());
 
         mController = controller;
         mContext = context;
@@ -55,7 +58,7 @@ public class TaskItemAdapter extends ArrayAdapter<Task> {
         ifd("getView position: " + position);
 
         Task task = getItem(position);
-        TaskItemView taskItemView = (TaskItemView)v;
+        TaskItemView taskItemView = (TaskItemView) v;
 
         if (taskItemView == null) {
             taskItemView = new TaskItemView(mContext);
