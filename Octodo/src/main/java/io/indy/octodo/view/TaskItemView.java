@@ -23,9 +23,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -135,13 +133,6 @@ public class TaskItemView extends LinearLayout {
         DialogFragment dialog = new EditTaskDialogFragment(mController, mTask);
         dialog.show(mFragment.getFragmentManager(), "EditTaskDialogFragment");
     }
-
-    private void hideSoftKeyboard(EditText editText) {
-        InputMethodManager imm = (InputMethodManager) mContext
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-    }
-
 
     private void clickedIsDone() {
         int state;

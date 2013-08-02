@@ -25,6 +25,7 @@ import de.greenrobot.event.EventBus;
 import io.indy.octodo.R;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggledTaskStateEvent;
+import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.helper.NotificationHelper;
 import io.indy.octodo.model.OctodoModel;
 import io.indy.octodo.model.Task;
@@ -63,7 +64,21 @@ public class MainController {
         return null;
     }
 
-    public void onTaskAdd(Task task, String taskListName) {
+    public void onTaskAdd(String content, String taskListName) {
+        ifd("onTaskAdd [" + taskListName + "] " + content);
+
+        content = content.trim();
+        if (content.length() == 0) {
+            // don't add empty strings
+            return;
+        }
+
+        Task task = new Task.Builder()
+                .content(content)
+                .state(0)
+                .startedAt(DateFormatHelper.today())
+                .build();
+
         mOctodoModel.addTask(task, taskListName);
         postRefreshEvent(taskListName);
     }

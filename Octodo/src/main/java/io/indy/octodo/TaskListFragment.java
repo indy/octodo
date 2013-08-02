@@ -21,21 +21,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import io.indy.octodo.adapter.TaskItemAdapter;
+import io.indy.octodo.adapter.TasksAdapter;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.event.LoadedTaskListsEvent;
 import io.indy.octodo.event.RefreshTaskListEvent;
-import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
 import io.indy.octodo.model.TaskList;
 
@@ -48,13 +45,11 @@ public final class TaskListFragment extends Fragment {
         if (D) Log.d(TAG, "[" + System.identityHashCode(this) + "] " + message);
     }
 
-    private TaskItemAdapter mTaskItemAdapter;
+    private TasksAdapter mTasksAdapter;
 
     private MainController mController;
 
     private TaskList mTaskList;
-
-    private EditText mEditText;
 
     private ListView mListView;
 
@@ -89,10 +84,7 @@ public final class TaskListFragment extends Fragment {
         // If this Fragment has no UI then return null.
         View view = inflater.inflate(R.layout.fragment_tasklist, container, false);
 
-        mEditText = (EditText) view.findViewById(R.id.editTextTask);
         mListView = (ListView) view.findViewById(R.id.listViewTasks);
-
-        setKeyboardListener(mEditText);
 
         if (mTaskList == null) {
             String taskListName = savedInstanceState.getString("taskListName");
@@ -136,8 +128,8 @@ public final class TaskListFragment extends Fragment {
 
         updateLocalTaskList();
 
-        mTaskItemAdapter = new TaskItemAdapter(getActivity(), mTaskList, mController, this);
-        mListView.setAdapter(mTaskItemAdapter);
+        mTasksAdapter = new TasksAdapter(getActivity(), mTaskList, mController, this);
+        mListView.setAdapter(mTasksAdapter);
     }
 
     @Override
@@ -207,7 +199,6 @@ public final class TaskListFragment extends Fragment {
         if (isEventRelevant(event.getTaskListName())) {
             ifd("valid RefreshTaskListEvent received for TaskListFragment: " + event.getTaskListName());
             refreshUI();
-            mEditText.setText("");
         }
     }
 
@@ -225,46 +216,6 @@ public final class TaskListFragment extends Fragment {
         //localTasks.addAll(taskList.getTasks());
 
         ifd("mTaskList set to " + taskListName);
-    }
-
-    private void setKeyboardListener(EditText editText) {
-
-        editText.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == 66 && event.getAction() == 1) {
-                    addTask();
-                }
-                return false;
-            }
-        });
-    }
-
-    private void addTask() {
-        String content = mEditText.getText().toString().trim();
-        if (content.length() == 0) {
-            // don't add empty strings
-            return;
-        }
-
-        String now = DateFormatHelper.today();
-
-        Task task = new Task.Builder()
-                .content(content)
-                .state(0)
-                .startedAt(now)
-                .build();
-
-        if (D) {
-            ifd("adding a task");
-            // this task has an id of 0, can't just add it to mTasks
-            ifd("content: " + task.getContent());
-            ifd("state: " + task.getState());
-            ifd("startedAt: " + task.getStartedAt());
-            ifd("finishedAt: " + task.getFinishedAt());
-        }
-
-        // update db
-        mController.onTaskAdd(task, mTaskList.getName());
     }
 
     private void updateLocalTaskList() {
@@ -287,12 +238,7 @@ public final class TaskListFragment extends Fragment {
     // get the list of tasks from the model and display them
     private void refreshUI() {
         updateLocalTaskList();
-        mTaskItemAdapter.notifyDataSetChanged();
-    }
-
-    // TODO: remove this
-    private boolean isEventRelevant(TaskList taskList) {
-        return mTaskList.getName().equals(taskList.getName());
+        mTasksAdapter.notifyDataSetChanged();
     }
 
     private boolean isEventRelevant(String taskListName) {

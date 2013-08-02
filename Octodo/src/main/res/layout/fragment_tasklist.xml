@@ -12,32 +12,4 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </ListView>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:paddingLeft="32dp"
-        android:paddingRight="8dp">
-
-        <EditText
-                android:id="@+id/editTextTask"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:paddingLeft="8dp"
-
-                android:background="#ffffff"
-                android:inputType="text"
-                android:hint="@string/add_item"
-                android:maxLines="1"
-                android:ellipsize="end">
-        </EditText>
-
-
-    </LinearLayout>
-
 </LinearLayout>
