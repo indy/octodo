@@ -1,9 +1,13 @@
 apply plugin: 'android'
 
+repositories {
+  mavenCentral()
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile 'com.google.android.gms:play-services:3.1.36'
-    compile project(':libraries:ActionBarSherlock')
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile project(':libraries:ViewPagerIndicator')
 }
 
@@ -13,6 +17,6 @@ android {
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 16
+        targetSdkVersion 17
     }
 }
