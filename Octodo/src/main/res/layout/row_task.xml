@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/tasklist_background"
-              android:paddingTop="8dp"
-              android:paddingRight="8dp"
-              android:paddingLeft="8dp"
-              android:orientation="vertical">
 
-    <LinearLayout
-            android:id="@+id/taskRow"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:background="@color/task_background">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="0dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp">
 
-        <CheckBox
-                android:id="@+id/isDone"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+        <LinearLayout android:id="@+id/taskRow"
+                      android:layout_width="match_parent"
+                      android:layout_height="48dp"
+                      android:baselineAligned="false"
+                      android:orientation="horizontal"
+                      android:background="@color/task_background">
 
-        <RelativeLayout
-                android:layout_width="0dip"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-            <TextView
-                    android:id="@+id/content"
+            <CheckBox
+                    android:id="@+id/isDone"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:paddingLeft="0dp"
-                    android:text="remove me"/>
-        </RelativeLayout>
+                    android:layout_height="match_parent"/>
 
-    </LinearLayout>
+            <RelativeLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
 
-</LinearLayout>
+                <TextView
+                        android:id="@+id/content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:paddingLeft="0dp"
+                        android:text="remove me"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    <View   android:layout_below="@id/taskRow"
+            android:layout_width="match_parent"
+            android:layout_height="5dip"
+            android:background="@drawable/drop_shadow">
+    </View>
+
+</RelativeLayout>

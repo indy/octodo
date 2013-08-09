@@ -9,6 +9,7 @@
 
     <color name="tasklist_background">#e5e5e5</color>
 
+    <color name="task_shadow_start">#d5d5d5</color> <!-- slightly darker than tasklist_background -->
     <color name="task_background">#ffffff</color>
 
     <color name="dialog_label">#999999</color>

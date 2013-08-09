@@ -16,13 +16,18 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:paddingTop="8dp"
-              android:paddingLeft="32dp"
-              android:paddingRight="8dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+    <LinearLayout
+            android:id="@+id/addTaskHolder"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"
+            android:paddingLeft="32dp"
+            android:paddingRight="8dp">
 
         <EditText
                 android:id="@+id/editTextTask"
@@ -39,4 +44,15 @@
                 android:maxLines="1"
                 android:ellipsize="end">
         </EditText>
-</LinearLayout>
+    </LinearLayout>
+
+    <View
+            android:layout_below="@id/addTaskHolder"
+            android:layout_width="match_parent"
+            android:layout_height="5dip"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/drop_shadow">
+    </View>
+
+</RelativeLayout>
