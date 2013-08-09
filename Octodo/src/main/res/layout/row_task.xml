@@ -28,6 +28,8 @@
 
                 <TextView
                         android:id="@+id/content"
+                        android:fontFamily="sans-serif-light"
+                        android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
