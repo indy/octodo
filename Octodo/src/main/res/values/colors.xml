@@ -2,4 +2,16 @@
 <resources>
     <color name="green">#dd00eb45</color>
     <color name="blue">#ff4fb4e7</color>
+
+    <color name="tab_background">#e5e5e5</color>
+    <color name="tab_not_current">#FFA0A0A0</color>
+    <color name="tab_current">#FF555555</color>
+
+    <color name="tasklist_background">#e5e5e5</color>
+
+    <color name="task_background">#ffffff</color>
+
+    <color name="dialog_label">#999999</color>
+    <color name="dialog_separator">#B2B2B2</color>
+
 </resources>

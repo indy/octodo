@@ -24,14 +24,14 @@
     <TextView android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:text="Description"
-              android:textColor="#999999"
+              android:textColor="@color/dialog_label"
               android:textSize="15dp"
               android:fontFamily="sans-serif"
               android:textStyle="bold"/>
     <View
             android:layout_width="fill_parent"
             android:layout_height="3dp"
-            android:background="#B2B2B2"
+            android:background="@color/dialog_separator"
             android:layout_marginTop="2dp"/>
 
     <EditText
@@ -45,7 +45,7 @@
     <TextView android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:text="List"
-              android:textColor="#999999"
+              android:textColor="@color/dialog_label"
               android:textSize="15dp"
               android:fontFamily="sans-serif"
               android:textStyle="bold"
@@ -53,7 +53,7 @@
     <View
             android:layout_width="fill_parent"
             android:layout_height="3dp"
-            android:background="#B2B2B2"
+            android:background="@color/dialog_separator"
             android:layout_marginTop="2dp"/>
 
     <Spinner
@@ -66,7 +66,7 @@
     <TextView android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:text=""
-              android:textColor="#999999"
+              android:textColor="@color/dialog_label"
               android:textSize="15dp"
               android:fontFamily="sans-serif"
               android:textStyle="bold"
@@ -74,7 +74,7 @@
     <View
             android:layout_width="fill_parent"
             android:layout_height="3dp"
-            android:background="#B2B2B2"
+            android:background="@color/dialog_separator"
             android:layout_marginTop="2dp"/>
 
     <Button
