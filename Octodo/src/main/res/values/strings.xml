@@ -21,7 +21,7 @@
     <string name="confirmation_remove_completed_tasks">Removed completed tasks from</string>
     <string name="confirmation_moved_task">Moved task to</string>
 
-    <string name="information_syncing_data">Synchronising with Google Drive...</string>
+    <string name="information_syncing_data">Synchronising with Google Drive&#8230;</string>
     <string name="information_saving_task_changes">Saving task changes</string>
 
     <string name="delete_task_title">Delete Task</string>
@@ -35,5 +35,8 @@
     <string name="title_activity_edit_task">Edit Task</string>
 
     <string name="button_task_delete">Delete Task</string>
+
+    <string name="content_description_mini_overflow">Actions for this task</string>
+    <string name="filler">This is placeholder text</string>
 
 </resources>

@@ -8,36 +8,58 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp">
 
-        <LinearLayout android:id="@+id/taskRow"
-                      android:layout_width="match_parent"
-                      android:layout_height="48dp"
-                      android:baselineAligned="false"
-                      android:orientation="horizontal"
-                      android:background="@color/task_background">
+    <LinearLayout android:id="@+id/taskRow"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:baselineAligned="false"
+                  android:orientation="horizontal"
+                  android:background="@color/task_background">
 
-            <CheckBox
-                    android:id="@+id/isDone"
+        <CheckBox
+                android:id="@+id/isDone"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+
+        <RelativeLayout
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+            <TextView
+                    android:id="@+id/content"
+                    android:textSize="16sp"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:paddingLeft="0dp"
+                    android:text="@string/filler"
+                    android:paddingBottom="8dp"
+                    android:fontFamily="sans-serif-light"/>
 
-            <RelativeLayout
-                    android:layout_width="0dip"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Small Text"
+                    android:id="@+id/timingTextView"
+                    android:layout_below="@id/content"
+                    android:layout_alignLeft="@id/content"
+                    />
 
-                <TextView
-                        android:id="@+id/content"
-                        android:fontFamily="sans-serif-light"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:paddingLeft="0dp"
-                        android:text="remove me"/>
-            </RelativeLayout>
+        </RelativeLayout>
 
-        </LinearLayout>
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_mini_overflow_light"
+                android:id="@+id/button"
+                android:contentDescription="@string/content_description_mini_overflow"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"/>
+
+    </LinearLayout>
 
     <View   android:layout_below="@id/taskRow"
             android:layout_width="match_parent"
