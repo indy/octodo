@@ -21,6 +21,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+
 import io.indy.octodo.helper.DateFormatHelper;
 
 // Task specific
@@ -81,6 +83,19 @@ public class Task {
 
     public void setContent(String content) {
         mContent = content;
+    }
+
+    public int ageInDays() {
+        Date today = new Date();
+        Date startDate = DateFormatHelper.parseDateString(mStartedAt);
+
+        Long until = today.getTime();
+        Long from = startDate.getTime();
+
+        // convert ms to days
+        int days = (int)((until - from) / (1000 * 60 * 60 * 24));
+
+        return days;
     }
 
     public static Task fromJson(JSONObject jsonObject) {
