@@ -17,9 +17,13 @@
 package io.indy.octodo.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,9 +31,12 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Date;
+
 import io.indy.octodo.EditTaskDialogFragment;
 import io.indy.octodo.R;
 import io.indy.octodo.controller.MainController;
+import io.indy.octodo.helper.DateFormatHelper;
 import io.indy.octodo.model.Task;
 
 public class TaskItemView extends LinearLayout {
@@ -48,6 +55,8 @@ public class TaskItemView extends LinearLayout {
     private CheckBox mIsDone;
 
     private TextView mContent;
+
+    private TextView mTimingTextView;
 
     private LinearLayout mTaskRow;
 
@@ -69,6 +78,7 @@ public class TaskItemView extends LinearLayout {
         mTaskRow = (LinearLayout) findViewById(R.id.taskRow);
         mIsDone = (CheckBox) findViewById(R.id.isDone);
         mContent = (TextView) findViewById(R.id.content);
+        mTimingTextView = (TextView) findViewById(R.id.timingTextView);
 
         addClickListeners();
     }
@@ -88,6 +98,44 @@ public class TaskItemView extends LinearLayout {
             setContentAsNotStruckThru();
             mIsDone.setChecked(false);
         }
+
+        setTimingInformation();
+    }
+
+    private String getTimingText(Task task) {
+        int days = task.ageInDays();
+
+        String text;
+
+        if(days > 14) {
+            text = "" + (days / 7) + " weeks old";
+        } else {
+            switch(days) {
+                case 0 :
+                    text = "created today";
+                    break;
+                case 1 :
+                    text = "1 day old";
+                    break;
+                default:
+                    text = "" + days + " days old";
+            }
+        }
+
+        return text;
+    }
+
+    private int getTimingColor(Task task) {
+        return (task.ageInDays() < 14) ? Color.rgb(107, 195, 69) : Color.rgb(194, 70, 68);
+    }
+
+    private void setTimingInformation() {
+
+        SpannableString timingSpan = new SpannableString(getTimingText(mTask));
+        ForegroundColorSpan col = new ForegroundColorSpan(getTimingColor(mTask));
+        timingSpan.setSpan(col, 0, timingSpan.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        mTimingTextView.setText(timingSpan);
     }
 
     public void setController(MainController controller) {
