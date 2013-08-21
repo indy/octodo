@@ -18,7 +18,7 @@
     <string name="title_activity_manage_lists">Manage Lists</string>
     <string name="add_list">Add List</string>
     <string name="discard_lists">Discard Lists</string>
-    <string name="confirmation_remove_completed_tasks">Removed completed tasks from</string>
+    <string name="confirmation_remove_completed_tasks">Archived completed tasks from</string>
     <string name="confirmation_moved_task">Moved task to</string>
 
     <string name="information_syncing_data">Synchronising with Google Drive&#8230;</string>

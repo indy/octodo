@@ -64,9 +64,9 @@ public class MainActivity extends DriveBaseActivity {
 
     private List<String> mTaskListNames;
 
-    private boolean mShowTrashIcon;
+    private boolean mShowArchiveIcon;
 
-    private int mTrashItemId;
+    private int mArchiveItemId;
 
     private NotificationHelper mNotificationHelper;
 
@@ -179,13 +179,13 @@ public class MainActivity extends DriveBaseActivity {
     public void onEvent(RefreshTaskListEvent event) {
         String taskListName = event.getTaskListName();
         // assume that the given taskList is the one that's being shown on the UI
-        determineTrashIconVisibility(taskListName);
+        determineArchiveIconVisibility(taskListName);
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(ToggledTaskStateEvent event) {
         String taskListName = event.getTaskListName();
-        determineTrashIconVisibility(taskListName);
+        determineArchiveIconVisibility(taskListName);
     }
 
 
@@ -282,12 +282,13 @@ public class MainActivity extends DriveBaseActivity {
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.activity_main, menu);
 
-        if (mShowTrashIcon) {
+        if (mShowArchiveIcon) {
             MenuItem mi = menu.add(Menu.NONE, 0, Menu.NONE, R.string.discard_lists);
-            mi.setIcon(R.drawable.ic_discard).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-            mTrashItemId = mi.getItemId();
+            //mi.setIcon(R.drawable.ic_discard).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            mi.setIcon(R.drawable.ic_action_archive).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            mArchiveItemId = mi.getItemId();
         } else {
-            menu.removeItem(mTrashItemId);
+            menu.removeItem(mArchiveItemId);
         }
 
         return true;
@@ -297,7 +298,7 @@ public class MainActivity extends DriveBaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         ifd("clicked " + item);
 
-        if (item.getItemId() == mTrashItemId) {
+        if (item.getItemId() == mArchiveItemId) {
             mController.onRemoveCompletedTasks(getCurrentTaskListName());
         }
 
@@ -342,32 +343,32 @@ public class MainActivity extends DriveBaseActivity {
     private class PageListener extends ViewPager.SimpleOnPageChangeListener {
         public void onPageSelected(int position) {
             String currentListName = mTaskListNames.get(position);
-            determineTrashIconVisibility(currentListName);
+            determineArchiveIconVisibility(currentListName);
         }
     }
 
     // only show the trash icon in the action bar if the current TaskList has struck items
-    private void determineTrashIconVisibility(String taskListName) {
+    private void determineArchiveIconVisibility(String taskListName) {
         TaskList taskList = mController.onGetTaskList(taskListName);
         if (taskList.hasStruckTasks()) {
-            showTrashIcon();
+            showArchiveIcon();
         } else {
-            hideTrashIcon();
+            hideArchiveIcon();
         }
     }
 
-    private void showTrashIcon() {
-        ifd("showTrashIcon");
-        if (!mShowTrashIcon) {
-            mShowTrashIcon = true;
+    private void showArchiveIcon() {
+        ifd("showArchiveIcon");
+        if (!mShowArchiveIcon) {
+            mShowArchiveIcon = true;
             supportInvalidateOptionsMenu();
         }
     }
 
-    private void hideTrashIcon() {
-        ifd("hideTrashIcon");
-        if (mShowTrashIcon) {
-            mShowTrashIcon = false;
+    private void hideArchiveIcon() {
+        ifd("hideArchiveIcon");
+        if (mShowArchiveIcon) {
+            mShowArchiveIcon = false;
             supportInvalidateOptionsMenu();
         }
     }
