@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -43,7 +42,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import io.indy.octodo.EditTaskDialogFragment;
 import io.indy.octodo.R;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Task;
@@ -178,17 +176,6 @@ public class TaskItemView extends LinearLayout {
             }
         });
 
-        mRelativeLayout.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                ifd("mRelativeLayout received long click");
-                showEditTaskDialog();
-                return true;
-            }
-        });
-
-
-
         mOverflowButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -228,12 +215,6 @@ public class TaskItemView extends LinearLayout {
 
     public void setFragment(Fragment fragment) {
         mFragment = fragment;
-    }
-
-    private void showEditTaskDialog() {
-        // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new EditTaskDialogFragment(mController, mTask);
-        dialog.show(mFragment.getFragmentManager(), "EditTaskDialogFragment");
     }
 
     private void clickedIsDone() {

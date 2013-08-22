@@ -237,31 +237,6 @@ public class OctodoModel {
         saveCurrentTaskListsToDrive();
     }
 
-    public void editedTask(Task task, String newContent, String newTaskList) {
-
-        if (!newContent.equals(task.getContent())) {
-            task.setContent(newContent);
-        }
-
-//        ifd("editedTask: " + task.toString());
-//        ifd("editedTask: id: " + System.identityHashCode(task));
-
-        TaskList sourceTaskList = getCurrentTaskList(task.getParentName());
-        TaskList destinationTaskList = getCurrentTaskList(newTaskList);
-
-//        for(Task t : sourceTaskList.getTasks()) {
-//            ifd("editedTask iterating over " + System.identityHashCode(t) + " content:" + t.toString());
-//        }
-
-
-        if (sourceTaskList != destinationTaskList) {
-            sourceTaskList.remove(task);
-            destinationTaskList.add(task);
-        }
-
-        saveCurrentTaskListsToDrive();
-    }
-
     // DELETE the specified task without adding it to the 'completed' tasklists
     public void deleteTask(Task task) {
         ifd("deleteTask: getContent = " + task.getContent());

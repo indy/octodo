@@ -113,32 +113,6 @@ public class MainController {
         postRefreshEvent(newTaskList);
     }
 
-    // called from EditTaskActivity, returns true if a change to the model is required
-    public boolean onTaskEdited(Task task, String newContent, String newTaskList) {
-        ifd("onTaskEdited");
-
-        boolean hasNewContent = !newContent.equals(task.getContent());
-        boolean isMoved = !newTaskList.equals(task.getParentName());
-
-        String oldTaskList = task.getParentName();
-
-        if (hasNewContent || isMoved) {
-            mOctodoModel.editedTask(task, newContent, newTaskList);
-            if (isMoved) {
-                // fire update events to both taskLists
-                postRefreshEvent(oldTaskList);
-                postRefreshEvent(newTaskList);
-            } else if (hasNewContent) {
-                // fire update event
-                postRefreshEvent(task.getParentName());
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
     public void onTaskDelete(Task task) {
         String parentName = task.getParentName();
         mOctodoModel.deleteTask(task);
