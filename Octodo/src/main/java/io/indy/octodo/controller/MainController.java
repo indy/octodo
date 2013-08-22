@@ -131,7 +131,12 @@ public class MainController {
     }
 
     public void addList(String name) {
-        // check if a tasklist with this name already exists
+        for(TaskList taskList : mOctodoModel.getCurrentTaskLists()) {
+            if(taskList.getName().equals(name)) {
+                notifyUser("A list called " + name + " already exists");
+                return;
+            }
+        }
         mOctodoModel.addList(name);
     }
 
