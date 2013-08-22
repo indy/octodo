@@ -102,7 +102,7 @@ public class DriveStorage {
             String fileId = getJsonFileIdPreference(driveFilename);
             File ff = DriveJunction.getFileMetadata(sService, fileId);
             String jsonString = DriveJunction.downloadFileAsString(sService, ff);
-            ifd("content of " + driveFilename + " is " + jsonString);
+            //ifd("content of " + driveFilename + " is " + jsonString);
 
             jsonObject = new JSONObject(jsonString);
         } catch (IOException e) {

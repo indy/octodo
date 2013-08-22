@@ -33,6 +33,9 @@
     <string name="edit_task_positive">OK</string>
     <string name="dialog_generic_cancel">Cancel</string>
     <string name="title_activity_edit_task">Edit Task</string>
+    <string name="menu_task_edit">Edit</string>
+    <string name="menu_task_move">Move</string>
+    <string name="menu_task_delete">Delete</string>
 
     <string name="button_task_delete">Delete Task</string>
 

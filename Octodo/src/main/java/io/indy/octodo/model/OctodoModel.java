@@ -225,6 +225,18 @@ public class OctodoModel {
         saveCurrentTaskListsToDrive();
     }
 
+    public void updateTaskParent(Task task, String newTaskList) {
+        TaskList sourceTaskList = getCurrentTaskList(task.getParentName());
+        TaskList destinationTaskList = getCurrentTaskList(newTaskList);
+
+        if (sourceTaskList != destinationTaskList) {
+            sourceTaskList.remove(task);
+            destinationTaskList.add(task);
+        }
+
+        saveCurrentTaskListsToDrive();
+    }
+
     public void editedTask(Task task, String newContent, String newTaskList) {
 
         if (!newContent.equals(task.getContent())) {

@@ -106,6 +106,13 @@ public class MainController {
         postRefreshEvent(task.getParentName());
     }
 
+    public void onTaskMove(Task task, String newTaskList) {
+        String oldTaskList = task.getParentName();
+        mOctodoModel.updateTaskParent(task, newTaskList);
+        postRefreshEvent(oldTaskList);
+        postRefreshEvent(newTaskList);
+    }
+
     // called from EditTaskActivity, returns true if a change to the model is required
     public boolean onTaskEdited(Task task, String newContent, String newTaskList) {
         ifd("onTaskEdited");
