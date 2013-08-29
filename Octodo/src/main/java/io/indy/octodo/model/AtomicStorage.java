@@ -63,8 +63,8 @@ public class AtomicStorage {
             }
             //ifd("content of " + filename + " is " + jsonString);
             jsonObject = new JSONObject(jsonString);
-        } catch (JSONException jse) {
-            ifd("getJSON JSONException: " + jse);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         return jsonObject;
@@ -86,7 +86,7 @@ public class AtomicStorage {
             atomicFile.finishWrite(stream);
 
         } catch (IOException e) {
-            ifd("getJSON IOException: " + e);
+            e.printStackTrace();
             if (stream != null) {
                 atomicFile.failWrite(stream);
             }
@@ -107,7 +107,7 @@ public class AtomicStorage {
             //ifd("woohoo loadFileAsString loaded: " + filename);
             return new String(byteArray);
         } catch (IOException e) {
-            ifd("IOException " + e);
+            e.printStackTrace();
         }
 
         ifd("loadFileAsString: failed to read " + filename);

@@ -90,7 +90,7 @@ public class DriveStorage {
                 logFileMetadata(config, jsonFile);
             }
         } catch (IOException e) {
-            ifd("getJSON IOException: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -106,9 +106,9 @@ public class DriveStorage {
 
             jsonObject = new JSONObject(jsonString);
         } catch (IOException e) {
-            ifd("getJSON IOException: " + e);
-        } catch (JSONException jse) {
-            ifd("getJSON JSONException: " + jse);
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         return jsonObject;
@@ -212,13 +212,11 @@ public class DriveStorage {
                     }
 
                 } catch (NullPointerException e) {
-                    ifd("null pointer exception");
                     e.printStackTrace();
                 } catch (UserRecoverableAuthIOException e) {
-                    ifd("userrecoverableauthioexception");
+                    e.printStackTrace();
                     mActivity.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
                 } catch (IOException e) {
-                    ifd("IOException");
                     e.printStackTrace();
                 }
             }

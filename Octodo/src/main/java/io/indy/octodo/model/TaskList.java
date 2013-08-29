@@ -130,7 +130,7 @@ public class TaskList {
             return taskList;
 
         } catch (JSONException e) {
-            ifd("JSONException: " + e);
+            e.printStackTrace();
         }
 
         return null;
@@ -158,7 +158,7 @@ public class TaskList {
             res.put(TASKS, array);
 
         } catch (JSONException e) {
-            ifd("JSONException: " + e);
+            e.printStackTrace();
         }
 
         return res;

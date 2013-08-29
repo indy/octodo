@@ -115,7 +115,7 @@ public class Task {
             return builder.build();
 
         } catch (JSONException e) {
-            Log.d(TAG, "JSONException: " + e);
+            e.printStackTrace();
         }
 
         return null;
@@ -132,7 +132,7 @@ public class Task {
                 res.put(FINISHED_AT, mFinishedAt);
             }
         } catch (JSONException e) {
-            Log.d(TAG, "JSONException: " + e);
+            e.printStackTrace();
         }
 
         return res;

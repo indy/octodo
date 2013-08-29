@@ -61,7 +61,7 @@ public class DateFormatHelper {
         try {
             date = iso8601Format.parse(dateString);
         } catch (ParseException e) {
-            ifd("ParseException: " + e);
+            e.printStackTrace();
         }
 
         return date;

@@ -88,7 +88,7 @@ public class TaskListsPack {
             res.put(BODY, array);
 
         } catch (JSONException e) {
-            ifd("JSONException: " + e);
+            e.printStackTrace();
         }
 
         return res;
@@ -115,7 +115,7 @@ public class TaskListsPack {
                 }
             }
         } catch (JSONException e) {
-            ifd("parseJSONHeader JSONException: " + e);
+            e.printStackTrace();
         }
 
         return DateFormatHelper.parseDateString(dateString);
@@ -142,6 +142,7 @@ public class TaskListsPack {
             }
 
         } catch (JSONException e) {
+            e.printStackTrace();
             ifd("parseJSONBody JSONException: " + e);
             ifd("defaulting to empty today and thisweek tasklists");
             tasklists = buildDefaultEmptyTaskLists();

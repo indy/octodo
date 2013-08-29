@@ -57,7 +57,7 @@ public class DriveJunction {
                 result.addAll(files.getItems());
                 request.setPageToken(files.getNextPageToken());
             } catch (IOException e) {
-                Log.d("MainActivity", "An error occurred: " + e);
+                e.printStackTrace();
                 request.setPageToken(null);
                 throw e;
             }
@@ -99,7 +99,7 @@ public class DriveJunction {
         try {
             file = service.files().update(metadata.getId(), metadata, content).execute();
         } catch (IOException e) {
-            ifd("updateAppDataJsonFile exception: " + e);
+            e.printStackTrace();
             throw e;
         }
         return file;
@@ -110,6 +110,7 @@ public class DriveJunction {
         try {
             f = service.files().get(fileId).execute();
         } catch (IOException e) {
+            e.printStackTrace();
             ifd("(0/3) getFileMetadata params: fileId=" + fileId);
             ifd("(1/3) getFileMetadata exception: " + e);
             ifd("(2/3) getFileMetadata exception: " + e.getLocalizedMessage());
@@ -127,8 +128,7 @@ public class DriveJunction {
                                 .execute();
                 return resp.getContent();
             } catch (IOException e) {
-                // An error occurred.
-                ifd("downloadFile exception: " + e);
+                e.printStackTrace();
                 throw e;
             }
         } else {
@@ -160,7 +160,7 @@ public class DriveJunction {
                 res = sb.toString();
             }
         } catch (IOException e) {
-            ifd("downloadFileAsString exception: " + e);
+            e.printStackTrace();
             throw e;
         }
 

@@ -243,7 +243,7 @@ public class ManageListsActivity extends DriveBaseActivity {
             refreshTaskLists();
             mEditText.setText("");
         } catch (NullPointerException e) {
-            ifd("addNewList exception: " + e);
+            e.printStackTrace();
         }
     }
 
