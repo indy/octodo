@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
@@ -96,18 +97,19 @@ public class MainActivity extends DriveBaseActivity {
 
         mNotificationHelper = new NotificationHelper(this);
 
+        mDriveStorage.initialise();
     }
 
     // Called at the start of the visible lifetime.
     @Override
     public void onStart() {
         super.onStart();
+
         ifd("onStart");
 
         mOctodoModel = new OctodoModel(this);
         mController = new MainController(this, mOctodoModel);
         ifd("mController = " + System.identityHashCode(mController));
-
 
         mOctodoModel.initFromFile();
         refreshTaskListsUI();
@@ -115,21 +117,23 @@ public class MainActivity extends DriveBaseActivity {
         // Apply any required UI change now that the Activity is visible.
         EventBus.getDefault().register(this);
 
-        mDriveStorage.initialise();
+        onDriveDatabaseInitialised();
     }
-
 
     @Override
     public void onDriveDatabaseInitialised() {
+
+        if(!hasDriveCredentials()) {
+            return;
+        }
+
         // create mOctodoModel
         super.onDriveDatabaseInitialised();
 
-        /*
-         * CURRENT STATE
-           - we're on the main thread
-           - we have access to drive
-           - the 2 json files exist and we have their file ids
-         */
+        // CURRENT STATE
+        //  - we're on the main thread
+        //  - we have access to drive
+        //  - the 2 json files exist and we have their file ids
 
         ifd("onDriveDatabaseInitialised");
 
@@ -149,6 +153,7 @@ public class MainActivity extends DriveBaseActivity {
             mOctodoModel.asyncLoadCurrentTaskLists();
             mOctodoModel.asyncLoadHistoricTaskLists();
         }
+
     }
 
     @SuppressWarnings({"UnusedDeclaration"})

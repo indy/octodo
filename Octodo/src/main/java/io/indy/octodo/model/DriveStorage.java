@@ -74,7 +74,7 @@ public class DriveStorage {
     }
 
     public void updateFile(String jsonFile, JSONObject jsonObject) {
-        ifd("updatefile");
+        ifd("updateFile");
 
         try {
             String fileId = getJsonFileIdPreference(jsonFile);
@@ -86,10 +86,11 @@ public class DriveStorage {
             File config = sService.files().update(ff.getId(), ff, content).execute();
 
             if (D) {
-                ifd("updated file");
+                ifd("updateFile updated file: " + jsonFile);
                 logFileMetadata(config, jsonFile);
             }
         } catch (IOException e) {
+            ifd("updateFile failed trying to write: " + jsonFile);
             e.printStackTrace();
         }
     }
@@ -102,7 +103,8 @@ public class DriveStorage {
             String fileId = getJsonFileIdPreference(driveFilename);
             File ff = DriveJunction.getFileMetadata(sService, fileId);
             String jsonString = DriveJunction.downloadFileAsString(sService, ff);
-            //ifd("content of " + driveFilename + " is " + jsonString);
+
+            ifd("foo content of " + driveFilename + " is " + jsonString);
 
             jsonObject = new JSONObject(jsonString);
         } catch (IOException e) {
@@ -114,18 +116,23 @@ public class DriveStorage {
         return jsonObject;
     }
 
-
-    public void ensureJsonFilesExist() {
-        ifd("ensureJsonFilesExist");
+    // 1. make sure we have permission to read/write Octodo appdata from Google Drive
+    // 2. ensure that there are valid handles to the current and historic json files
+    //
+    public void ensureDriveDatabaseIsInitialised() {
+        ifd("ensureDriveDatabaseIsInitialised");
 
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    // LIST FILES
+                    // note: this will cause an exception if we don't have permission
+                    // to use Octodo storage on Google Drive, this exception is then
+                    // used to start the REQUEST_AUTHORIZATION activity
+                    //
                     List<File> files = DriveJunction.listAppDataFiles(sService);
 
-                    ifd("files list length is " + files.size());
+                    ifd("ensureDriveDatabaseIsInitialised: files list length is " + files.size());
 
                     boolean foundCurrent = false;
                     boolean foundHistoric = false;
@@ -152,7 +159,7 @@ public class DriveStorage {
                                 treat the drive version as the canonical truth, overwrite the id stored in shared preferences with the one on drive
 
                                  */
-                                ifd("saving pre-existing id for " + CURRENT_JSON);
+                                ifd("ensureDriveDatabaseIsInitialised: saving pre-existing id for " + CURRENT_JSON);
                                 saveJsonFileIdPreference(CURRENT_JSON, f.getId());
                             }
 
@@ -161,7 +168,7 @@ public class DriveStorage {
                         if (f.getTitle().equals(HISTORIC_JSON)) {
                             String id = getJsonFileIdPreference(HISTORIC_JSON);
                             if (!id.equals(f.getId())) {
-                                ifd("saving pre-existing id for " + HISTORIC_JSON);
+                                ifd("ensureDriveDatabaseIsInitialised: saving pre-existing id for " + HISTORIC_JSON);
                                 saveJsonFileIdPreference(HISTORIC_JSON, f.getId());
                             }
 
@@ -173,47 +180,54 @@ public class DriveStorage {
                         String json = EMPTY_JSON_OBJECT;
                         File file = DriveJunction.createAppDataJsonFile(sService, CURRENT_JSON, json);
                         if (file != null) {
-                            ifd("saving file id for " + CURRENT_JSON);
+                            ifd("ensureDriveDatabaseIsInitialised: saving file id for " + CURRENT_JSON);
                             // save the file's id in local storage
                             saveJsonFileIdPreference(CURRENT_JSON, file.getId());
                             foundCurrent = true;
                         } else {
-                            ifd("unable to create AppDataJsonFile: " + CURRENT_JSON);
+                            ifd("ensureDriveDatabaseIsInitialised: unable to create AppDataJsonFile: " + CURRENT_JSON);
                         }
                     }
                     if (!foundHistoric) {
                         String json = EMPTY_JSON_OBJECT;
                         File file = DriveJunction.createAppDataJsonFile(sService, HISTORIC_JSON, json);
                         if (file != null) {
-                            ifd("saving file id for " + HISTORIC_JSON);
+                            ifd("ensureDriveDatabaseIsInitialised: saving file id for " + HISTORIC_JSON);
                             saveJsonFileIdPreference(HISTORIC_JSON, file.getId());
                             foundHistoric = true;
                         } else {
-                            ifd("unable to create AppDataJsonFile: " + HISTORIC_JSON);
+                            ifd("ensureDriveDatabaseIsInitialised: unable to create AppDataJsonFile: " + HISTORIC_JSON);
                         }
                     }
 
                     if (!foundCurrent || !foundHistoric) {
-                        ifd("cannot create required json files");
+                        ifd("ensureDriveDatabaseIsInitialised: cannot create required json files");
                         // return an error, ask user to check permissions or launch account picker activity?
                         // exit the application
+                        //
+                        mActivity.finish();
 
                     } else {
                         // the shared preferences now have the ids of the 2 json files
                         // get their content and pass it into the database
-                        ifd("have file ids for both historic and current");
+                        ifd("ensureDriveDatabaseIsInitialised: have file ids for both historic and current");
 
+                        mActivity.driveCredentialsApproved();
+
+                        // finally call onDriveDatabaseInitialised
                         mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 mActivity.onDriveDatabaseInitialised();
                             }
                         });
+
                     }
 
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 } catch (UserRecoverableAuthIOException e) {
+                    ifd("ensureDriveDatabaseIsInitialised:  urauie exception");
                     e.printStackTrace();
                     mActivity.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
                 } catch (IOException e) {
@@ -270,7 +284,6 @@ public class DriveStorage {
             // get the preferred google account
             ifd("account name is empty, asking user to choose an account");
             mActivity.startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
-            // after getting the result from the above activity we'll call ensureJsonFileExists
 
         } else {
 
@@ -280,10 +293,11 @@ public class DriveStorage {
             sService = getDriveService(mCredential);
 
             if (hasBothJsonFileIdPreferences()) {
-                ifd("have both json files");
-                mActivity.onDriveDatabaseInitialised();
+                //ifd("have both json files");
+                mActivity.driveCredentialsApproved();
             } else {
-                ensureJsonFilesExist();
+                ifd("don't have both json file id preferences");
+                ensureDriveDatabaseIsInitialised();
             }
         }
     }
@@ -292,6 +306,7 @@ public class DriveStorage {
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         switch (requestCode) {
             case REQUEST_ACCOUNT_PICKER:
+                ifd("onActivityResult: request account picker resultCode = " + resultCode);
                 if (resultCode == Activity.RESULT_OK && data != null && data.getExtras() != null) {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
@@ -301,8 +316,9 @@ public class DriveStorage {
                         saveAccountNamePreference(accountName);
                         mCredential.setSelectedAccountName(accountName);
                         sService = getDriveService(mCredential);
-                        ifd("REQUEST_ACCOUNT_PICKER result calling ensureJsonFilesExist");
-                        ensureJsonFilesExist();
+                        ifd("REQUEST_ACCOUNT_PICKER result calling ensureDriveDatabaseIsInitialised");
+                        initialise();
+
                     } else {
                         ifd("must have a valid account name");
                         mActivity.finish();
@@ -310,12 +326,13 @@ public class DriveStorage {
                 }
                 break;
             case REQUEST_AUTHORIZATION:
-                ifd("onActivityResult: request authorization");
+                ifd("onActivityResult: request authorization resultCode = " + resultCode);
                 if (resultCode == Activity.RESULT_OK) {
-                    // return to ensureJsonFilesExist
-                    ifd("REQUEST_AUTHORIZATION result calling ensureJsonFilesExist");
-                    ensureJsonFilesExist();
+                    // return to ensureDriveDatabaseIsInitialised
+                    ifd("REQUEST_AUTHORIZATION result calling ensureDriveDatabaseIsInitialised");
+                    ensureDriveDatabaseIsInitialised();
                 } else {
+                    ifd("REQUEST_AUTHORIZATION result starting REQUEST_ACCOUNT_PICKER activity");
                     mActivity.startActivityForResult(mCredential.newChooseAccountIntent(),
                             REQUEST_ACCOUNT_PICKER);
                 }

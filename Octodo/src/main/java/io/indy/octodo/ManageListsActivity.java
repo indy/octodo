@@ -79,6 +79,7 @@ public class ManageListsActivity extends DriveBaseActivity {
 
         mListView.setAdapter(mAdapter);
 
+        mDriveStorage.initialise();
     }
 
 
@@ -102,7 +103,7 @@ public class ManageListsActivity extends DriveBaseActivity {
 
         refreshTaskLists();
 
-        mDriveStorage.initialise();
+        onDriveDatabaseInitialised();
     }
 
     // Called at the end of the visible lifetime.
@@ -119,6 +120,11 @@ public class ManageListsActivity extends DriveBaseActivity {
 
     @Override
     public void onDriveDatabaseInitialised() {
+
+        if(!hasDriveCredentials()) {
+            return;
+        }
+
         super.onDriveDatabaseInitialised();
 
         ifd("onDriveDatabaseInitialised");

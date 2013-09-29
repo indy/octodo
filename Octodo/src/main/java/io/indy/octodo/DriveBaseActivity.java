@@ -37,12 +37,15 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
 
     protected boolean mDriveDatabaseInitialised;
 
+    protected boolean mHasDriveCredentials;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         ifd("onCreate");
 
+        mHasDriveCredentials = false;
         mDriveDatabaseInitialised = false;
         mDriveStorage = new DriveStorage(this);
     }
@@ -52,8 +55,21 @@ public abstract class DriveBaseActivity extends SherlockFragmentActivity {
         mDriveStorage.onActivityResult(requestCode, resultCode, data);
     }
 
+    // need drive credentials before the drive database can be initialised
+    public boolean hasDriveCredentials() {
+        return mHasDriveCredentials;
+    }
+
+    public void driveCredentialsApproved() {
+        mHasDriveCredentials = true;
+    }
+
     public void onDriveDatabaseInitialised() {
         ifd("onDriveDatabaseInitialised");
+
+        if(!mHasDriveCredentials) {
+            // todo: throw an exception
+        }
 
         mDriveDatabaseInitialised = true;
     }
