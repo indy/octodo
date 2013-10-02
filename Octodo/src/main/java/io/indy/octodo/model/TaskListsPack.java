@@ -155,11 +155,9 @@ public class TaskListsPack {
         List<TaskList> tasklists = new ArrayList<TaskList>();
 
         TaskList today = new TaskList("today");
-        today.setDeleteable(false);
         tasklists.add(today);
 
         TaskList thisWeek = new TaskList("this week");
-        thisWeek.setDeleteable(false);
         tasklists.add(thisWeek);
 
         return tasklists;

@@ -341,9 +341,7 @@ public class OctodoModel {
 
         List<TaskList> res = new ArrayList<TaskList>();
         for (TaskList taskList : taskLists) {
-            if (taskList.isDeleteable()) {
-                res.add(taskList);
-            }
+            res.add(taskList);
         }
         return res;
     }
