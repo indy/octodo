@@ -39,19 +39,17 @@ public class TaskList {
 
     // set by ManageListsAdapter
     private boolean mIsSelected;
-    private boolean mIsDeleteable;
 
-    public static final int STATE_ACTIVE = 0;
-
-    public static final int STATE_INACTIVE = 1;
+    // public static final int STATE_ACTIVE = 0;
+    // public static final int STATE_INACTIVE = 1;
 
     private static final String NAME = "name";
-    private static final String STATE = "state";
-    private static final String HAS_TASK_LIFETIME = "has_task_lifetime";
-    private static final String TASK_LIFETIME = "task_lifetime";
-    private static final String IS_DELETEABLE = "is_deleteable";
-    private static final String CREATED_AT = "created_at";
-    private static final String DELETED_AT = "deleted_at";
+    // private static final String STATE = "state";
+    // private static final String HAS_TASK_LIFETIME = "has_task_lifetime";
+    // private static final String TASK_LIFETIME = "task_lifetime";
+    // private static final String CREATED_AT = "created_at";
+    // private static final String DELETED_AT = "deleted_at";
+
     // name given to json array of tasks
     private static final String TASKS = "tasks";
 
@@ -78,15 +76,6 @@ public class TaskList {
         mTasks = new ArrayList<Task>();
 
         mIsSelected = false;
-        mIsDeleteable = true;
-    }
-
-    public void setDeleteable(boolean isDeleteable) {
-        mIsDeleteable = isDeleteable;
-    }
-
-    public boolean isDeleteable() {
-        return mIsDeleteable;
     }
 
     public List<Task> getTasks() {
@@ -141,12 +130,11 @@ public class TaskList {
 
         try {
             res.put(NAME, mName);
-            res.put(STATE, 0);
-            res.put(HAS_TASK_LIFETIME, 0);
-            res.put(TASK_LIFETIME, 0);
-            res.put(IS_DELETEABLE, mIsDeleteable);
-            res.put(CREATED_AT, 0);
-            res.put(DELETED_AT, 0);
+            //res.put(STATE, 0);
+            //res.put(HAS_TASK_LIFETIME, 0);
+            //res.put(TASK_LIFETIME, 0);
+            //res.put(CREATED_AT, 0);
+            //res.put(DELETED_AT, 0);
 
             // the list of tasks
 
