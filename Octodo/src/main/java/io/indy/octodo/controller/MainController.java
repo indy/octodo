@@ -52,18 +52,6 @@ public class MainController {
         mOctodoModel = octodoModel;
     }
 
-    public Task findTask(String listName, String startedAt) {
-        TaskList taskList = mOctodoModel.getCurrentTaskList(listName);
-        for (Task t : taskList.getTasks()) {
-            if (startedAt.equals(t.getStartedAt())) {
-                return t;
-            }
-        }
-
-        Log.e(TAG, "unable to find task in " + listName + " with started at value of " + startedAt);
-        return null;
-    }
-
     public void onTaskAdd(String content, String taskListName) {
         ifd("onTaskAdd [" + taskListName + "] " + content);
 
