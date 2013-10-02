@@ -21,6 +21,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Comparator;
 import java.util.Date;
 
 import io.indy.octodo.helper.DateFormatHelper;
@@ -41,9 +42,9 @@ public class Task {
 
     private int mState;
 
-    private String mStartedAt;
+    private Date mStartedAt;
 
-    private String mFinishedAt;
+    private Date mFinishedAt;
 
     public static final int STATE_OPEN = 0;
 
@@ -75,9 +76,9 @@ public class Task {
         mState = state;
 
         if (mState == STATE_OPEN) {
-            mFinishedAt = "";
+            mFinishedAt = null;
         } else if (mState == STATE_STRUCK) {
-            mFinishedAt = DateFormatHelper.today();
+            mFinishedAt = new Date();
         }
     }
 
@@ -87,10 +88,9 @@ public class Task {
 
     public int ageInDays() {
         Date today = new Date();
-        Date startDate = DateFormatHelper.parseDateString(mStartedAt);
 
         Long until = today.getTime();
-        Long from = startDate.getTime();
+        Long from = mStartedAt.getTime();
 
         // convert ms to days
         int days = (int)((until - from) / (1000 * 60 * 60 * 24));
@@ -101,15 +101,17 @@ public class Task {
     public static Task fromJson(JSONObject jsonObject) {
 
         try {
-            Builder builder = new Builder()
-                    .content(jsonObject.getString(CONTENT))
-                    .startedAt(jsonObject.getString(STARTED_AT));
+            Builder builder = new Builder();
+            builder.content(jsonObject.getString(CONTENT));
+            String start = jsonObject.getString(STARTED_AT);
+            builder.startedAt(DateFormatHelper.parseDateString(start));
 
             if (jsonObject.has(STATE)) {
                 builder.state(jsonObject.getInt(STATE));
             }
             if (jsonObject.has(FINISHED_AT)) {
-                builder.finishedAt(jsonObject.getString(FINISHED_AT));
+                String fin = jsonObject.getString(FINISHED_AT);
+                builder.finishedAt(DateFormatHelper.parseDateString(fin));
             }
 
             return builder.build();
@@ -127,9 +129,9 @@ public class Task {
         try {
             res.put(CONTENT, mContent);
             res.put(STATE, mState);
-            res.put(STARTED_AT, mStartedAt);
-            if (!mFinishedAt.isEmpty()) {
-                res.put(FINISHED_AT, mFinishedAt);
+            res.put(STARTED_AT, DateFormatHelper.dateToString(mStartedAt));
+            if (mFinishedAt != null) {
+                res.put(FINISHED_AT, DateFormatHelper.dateToString(mFinishedAt));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -146,14 +148,6 @@ public class Task {
         return mState;
     }
 
-    public String getStartedAt() {
-        return mStartedAt;
-    }
-
-    public String getFinishedAt() {
-        return mFinishedAt;
-    }
-
     @Override
     public String toString() {
         return mContent;
@@ -168,14 +162,22 @@ public class Task {
         Log.d(TAG, "mFinishedAt: " + mFinishedAt);
     }
 
+    // compare tasks by their age so that TaskLists show the oldest tasks at top
+    //
+    public static class CompareByAge implements Comparator<Task> {
+        public int compare(Task t1, Task t2) {
+            return t1.mStartedAt.compareTo(t2.mStartedAt);
+        }
+    }
+
     public static class Builder {
         private String mContent = "";
 
         private int mState = 0;
 
-        private String mStartedAt = "";
+        private Date mStartedAt = new Date();
 
-        private String mFinishedAt = "";
+        private Date mFinishedAt = null;
 
         public Builder() {
         }
@@ -190,12 +192,12 @@ public class Task {
             return this;
         }
 
-        public Builder startedAt(String val) {
+        public Builder startedAt(Date val) {
             mStartedAt = val;
             return this;
         }
 
-        public Builder finishedAt(String val) {
+        public Builder finishedAt(Date val) {
             mFinishedAt = val;
             return this;
         }

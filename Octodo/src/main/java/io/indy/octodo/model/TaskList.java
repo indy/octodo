@@ -23,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class TaskList {
@@ -85,6 +87,7 @@ public class TaskList {
     public TaskList add(Task task) {
         mTasks.add(task);
         task.setParentName(mName);
+        Collections.sort(mTasks, new Task.CompareByAge());
         return this;
     }
 

@@ -19,6 +19,7 @@ package io.indy.octodo.controller;
 import android.app.Activity;
 import android.util.Log;
 
+import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -64,7 +65,7 @@ public class MainController {
         Task task = new Task.Builder()
                 .content(content)
                 .state(0)
-                .startedAt(DateFormatHelper.today())
+                .startedAt(new Date())
                 .build();
 
         mOctodoModel.addTask(task, taskListName);
