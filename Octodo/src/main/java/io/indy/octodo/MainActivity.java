@@ -232,9 +232,8 @@ public class MainActivity extends DriveBaseActivity {
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
 
-        // maybe coming back from a ManageListsActivity in which TaskLists were created/deleted
-        //refreshTaskListsUI();
-
+        // possibly coming back from a ManageListsActivity in which TaskLists were deleted
+        refreshTaskListsUI();
     }
 
     // Called to save UI state changes at the

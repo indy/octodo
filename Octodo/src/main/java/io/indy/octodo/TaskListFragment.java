@@ -203,17 +203,9 @@ public final class TaskListFragment extends Fragment {
     }
 
     public void setTaskList(String taskListName) {
-        //mTaskList = taskList;
-
         // create a local copy of the taskList
         // this.mTaskList will provide data to this fragment's ui
-
-        //mTaskList = new TaskList(taskList.getId(), taskList.getName());
         mTaskList = new TaskList(taskListName);
-
-        //List<Task> localTasks = mTaskList.getTasks();
-        //localTasks.clear();
-        //localTasks.addAll(taskList.getTasks());
 
         ifd("mTaskList set to " + taskListName);
     }
@@ -221,18 +213,17 @@ public final class TaskListFragment extends Fragment {
     private void updateLocalTaskList() {
         ifd("updateLocalTaskList (mController=" + System.identityHashCode(mController) + ")");
 
-        TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
-        List<Task> tasks = tasklist.getTasks();
-
         List<Task> localTasks = mTaskList.getTasks();
         localTasks.clear();
-        localTasks.addAll(tasks);
 
-        if (D) {
-            for (Task t : localTasks) {
-                ifd("taskContent: " + t.getContent());
-            }
+        TaskList tasklist = mController.onGetTaskList(mTaskList.getName());
+        if(tasklist == null) {
+            // perhaps this tasklist has just been deleted by the manage task lists activity?
+            return;
         }
+
+        List<Task> tasks = tasklist.getTasks();
+        localTasks.addAll(tasks);
     }
 
     // get the list of tasks from the model and display them
