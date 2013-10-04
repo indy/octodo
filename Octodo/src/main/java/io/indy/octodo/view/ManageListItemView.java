@@ -31,9 +31,13 @@ import io.indy.octodo.model.TaskList;
 
 public class ManageListItemView extends LinearLayout {
 
-    private final String TAG = getClass().getSimpleName();
+    private static final String TAG = ManageListItemView.class.getSimpleName();
 
     private static final boolean D = true;
+
+    static void ifd(final String message) {
+        if (D) Log.d(TAG, message);
+    }
 
     private TaskList mTaskList;
 
@@ -65,9 +69,7 @@ public class ManageListItemView extends LinearLayout {
     }
 
     private void clickedDeleteMe(View view) {
-        if (D) {
-            Log.d(TAG, "clickedDeleteMe");
-        }
+        ifd("clickedDeleteMe");
 
         CheckBox cb = (CheckBox) view;
         mTaskList.setSelected(cb.isChecked());
