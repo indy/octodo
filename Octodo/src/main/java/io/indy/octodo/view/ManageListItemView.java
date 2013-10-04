@@ -54,7 +54,8 @@ public class ManageListItemView extends LinearLayout {
         tv.setText(mTaskList.getName());
 
         CheckBox cb = (CheckBox) findViewById(R.id.deleteMe);
-        cb.setSelected(false);
+        cb.setChecked(mTaskList.isSelected());
+
         cb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
