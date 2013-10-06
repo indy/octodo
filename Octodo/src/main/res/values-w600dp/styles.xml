@@ -1,0 +1,9 @@
+<resources>
+
+  <!-- e.g. Nexus 7 (2013) in landscape mode -->
+  <style name="MarginPoint">
+    <item name="android:layout_width">600dp</item>
+    <item name="android:layout_gravity">center_horizontal</item>
+  </style>
+
+</resources>

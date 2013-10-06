@@ -31,5 +31,8 @@
         <item name="android:background">@color/blue</item>
     </style>    
 
+    <style name="MarginPoint">
+      <item name="android:layout_width">match_parent</item>      
+    </style>
 
 </resources>
