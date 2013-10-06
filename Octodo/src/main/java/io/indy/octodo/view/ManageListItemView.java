@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import de.greenrobot.event.EventBus;
+import io.indy.octodo.AppConfig;
 import io.indy.octodo.R;
 import io.indy.octodo.event.ToggledListSelectionEvent;
 import io.indy.octodo.model.TaskList;
@@ -36,7 +37,7 @@ public class ManageListItemView extends LinearLayout {
     private static final boolean D = true;
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private TaskList mTaskList;

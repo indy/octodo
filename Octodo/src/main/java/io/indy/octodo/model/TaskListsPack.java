@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.indy.octodo.AppConfig;
 import io.indy.octodo.helper.DateFormatHelper;
 
 /*
@@ -37,7 +38,7 @@ public class TaskListsPack {
     static private final String TAG = "TaskListsPack";
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private static final String HEADER = "header";

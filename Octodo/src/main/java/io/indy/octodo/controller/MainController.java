@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import io.indy.octodo.AppConfig;
 import io.indy.octodo.R;
 import io.indy.octodo.event.RefreshTaskListEvent;
 import io.indy.octodo.event.ToggledTaskStateEvent;
@@ -38,7 +39,7 @@ public class MainController {
     static private final String TAG = MainController.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private Activity mActivity;

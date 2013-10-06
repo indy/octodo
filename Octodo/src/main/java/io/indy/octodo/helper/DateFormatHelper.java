@@ -23,12 +23,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import io.indy.octodo.AppConfig;
+
 public class DateFormatHelper {
     static private final boolean D = true;
     static private final String TAG = "DateFormatHelper";
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";

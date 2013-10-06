@@ -44,7 +44,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     static private final String TAG = ManageListsActivity.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private List<TaskList> mTaskLists;
@@ -166,9 +166,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (D) {
-            ifd("onDestroy");
-        }
+        ifd("onDestroy");
         mController.onDestroy();
     }
 
@@ -176,9 +174,7 @@ public class ManageListsActivity extends DriveBaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (D) {
-            ifd("onResume");
-        }
+        ifd("onResume");
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
 
@@ -193,9 +189,7 @@ public class ManageListsActivity extends DriveBaseActivity {
         // that don't need to be updated when the Activity isn't
         // the active foreground Activity.
         super.onPause();
-        if (D) {
-            ifd("onPause");
-        }
+        ifd("onPause");
     }
 
 

@@ -23,6 +23,7 @@ import android.util.Log;
 
 import java.util.List;
 
+import io.indy.octodo.AppConfig;
 import io.indy.octodo.TaskListFragment;
 
 public class TaskListPagerAdapter extends FragmentStatePagerAdapter {
@@ -31,7 +32,7 @@ public class TaskListPagerAdapter extends FragmentStatePagerAdapter {
     static private final String TAG = TaskListPagerAdapter.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private List<String> mTaskListNames;

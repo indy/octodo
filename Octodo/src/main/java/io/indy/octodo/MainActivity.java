@@ -16,7 +16,9 @@
 
 package io.indy.octodo;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -51,7 +53,7 @@ public class MainActivity extends DriveBaseActivity {
     static private final String TAG = MainActivity.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private TaskListPagerAdapter mAdapter;
@@ -98,6 +100,19 @@ public class MainActivity extends DriveBaseActivity {
         mNotificationHelper = new NotificationHelper(this);
 
         mDriveStorage.initialise();
+
+
+
+        Context context = this.getBaseContext();
+        try {
+            String name = context.getPackageManager().getPackageInfo(context.getPackageName(),0).versionName;
+            int code = context.getPackageManager().getPackageInfo(context.getPackageName(),0).versionCode;
+
+            ifd("package name: " + name);
+            ifd("package code: " + code);
+        } catch (PackageManager.NameNotFoundException e) {
+
+        }
     }
 
     // Called at the start of the visible lifetime.

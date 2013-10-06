@@ -42,6 +42,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import io.indy.octodo.AppConfig;
 import io.indy.octodo.R;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Task;
@@ -53,7 +54,7 @@ public class TaskItemView extends LinearLayout {
     static private final String TAG = TaskItemView.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private final Context mContext;
@@ -233,9 +234,7 @@ public class TaskItemView extends LinearLayout {
 
 
     private void clickedEditTask() {
-        if (D) {
-            Log.d(TAG, "clickedEditTask");
-        }
+        ifd("clickedEditTask");
 
         final String content = mTask.getContent();
 
@@ -252,9 +251,8 @@ public class TaskItemView extends LinearLayout {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int arg1) {
-                        if (D) {
-                            Log.d(TAG, "pressed the positive button");
-                        }
+                        ifd("pressed the positive button");
+
                         final String newContent = input.getText().toString().trim();
                         hideSoftKeyboard(input);
                         mController.onTaskUpdateContent(mTask, newContent);
@@ -264,9 +262,7 @@ public class TaskItemView extends LinearLayout {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int arg1) {
-                        if (D) {
-                            Log.d(TAG, "pressed the cancel button");
-                        }
+                        ifd("pressed the cancel button");
                     }
                 });
 
@@ -289,9 +285,7 @@ public class TaskItemView extends LinearLayout {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int arg1) {
-                        if (D) {
-                            Log.d(TAG, "pressed the delete button");
-                        }
+                        ifd("pressed the delete button");
                         // close the drawer
                         mController.onTaskDelete(mTask);
                     }
@@ -301,9 +295,7 @@ public class TaskItemView extends LinearLayout {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int arg1) {
-                        if (D) {
-                            Log.d(TAG, "pressed the cancel button");
-                        }
+                        ifd("pressed the cancel button");
                     }
                 });
 
@@ -311,9 +303,7 @@ public class TaskItemView extends LinearLayout {
         ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                if (D) {
-                    Log.d(TAG, "pressed cancel");
-                }
+                ifd("pressed cancel");
             }
         });
 
@@ -321,9 +311,7 @@ public class TaskItemView extends LinearLayout {
     }
 
     private void clickedMoveTask() {
-        if (D) {
-            Log.d(TAG, "clicked moveTask button");
-        }
+        ifd("clicked moveTask button");
 
         final List<TaskList> taskLists = mController.onGetTaskLists();
         final int taskListSize = taskLists.size();
@@ -346,9 +334,7 @@ public class TaskItemView extends LinearLayout {
         ad.setSingleChoiceItems(listNames, currentTaskIndex, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (D) {
-                    Log.d(TAG, "made a selection " + which);
-                }
+                ifd("made a selection " + which);
             }
         });
         ad.setPositiveButton(mContext.getString(R.string.move_task_positive),
@@ -356,12 +342,10 @@ public class TaskItemView extends LinearLayout {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         int s = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
-                        if (D) {
-                            Log.d(TAG, "checked " + s);
-                            Log.d(TAG, "which is " + which);
+                            ifd("checked " + s);
+                            ifd("which is " + which);
                             // get the listId of the selected item
-                            Log.d(TAG, "chosen " + taskLists.get(s).getName());
-                        }
+                            ifd("chosen " + taskLists.get(s).getName());
 
                         String destinationTaskList = taskLists.get(s).getName();
                         mController.onTaskMove(mTask, destinationTaskList);
@@ -373,9 +357,7 @@ public class TaskItemView extends LinearLayout {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int arg1) {
-                        if (D) {
-                            Log.d(TAG, "pressed the cancel button");
-                        }
+                        ifd("pressed the cancel button");
                     }
                 });
 
@@ -383,9 +365,7 @@ public class TaskItemView extends LinearLayout {
         ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                if (D) {
-                    Log.d(TAG, "pressed cancel");
-                }
+                ifd("pressed cancel");
             }
         });
 

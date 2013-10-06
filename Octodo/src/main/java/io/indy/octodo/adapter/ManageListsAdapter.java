@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
+import io.indy.octodo.AppConfig;
 import io.indy.octodo.model.TaskList;
 import io.indy.octodo.view.ManageListItemView;
 
@@ -33,7 +34,7 @@ public class ManageListsAdapter extends ArrayAdapter<TaskList> {
     static private final String TAG = ManageListsAdapter.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     public ManageListsAdapter(Context context, List<TaskList> items) {

@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import java.util.Comparator;
 import java.util.Date;
 
+import io.indy.octodo.AppConfig;
 import io.indy.octodo.helper.DateFormatHelper;
 
 // Task specific
@@ -33,7 +34,7 @@ public class Task {
     static private final String TAG = Task.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private String mParentName;

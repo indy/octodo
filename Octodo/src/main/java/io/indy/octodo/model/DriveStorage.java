@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
+import io.indy.octodo.AppConfig;
 import io.indy.octodo.DriveBaseActivity;
 import io.indy.octodo.async.UpdateTaskListsAsyncTask;
 
@@ -44,7 +45,7 @@ public class DriveStorage {
     static private final String TAG = DriveStorage.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     public static final int REQUEST_ACCOUNT_PICKER = 1;
@@ -85,7 +86,7 @@ public class DriveStorage {
             ByteArrayContent content = new ByteArrayContent("application/json", json.getBytes());
             File config = sService.files().update(ff.getId(), ff, content).execute();
 
-            if (D) {
+            if (AppConfig.DEBUG && D) {
                 ifd("updateFile updated file: " + jsonFile);
                 logFileMetadata(config, jsonFile);
             }

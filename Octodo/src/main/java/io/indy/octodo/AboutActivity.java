@@ -39,7 +39,7 @@ public class AboutActivity extends SherlockActivity {
     static private final String TAG = AboutActivity.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     @Override

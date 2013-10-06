@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import io.indy.octodo.AppConfig;
+
 /*
     When the app starts there's a noticeable delay as data from Google Drive is fetched
     over the network, worse if there's no network access then nothing will be displayed
@@ -40,7 +42,7 @@ public class AtomicStorage {
     static private final String TAG = AtomicStorage.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     public static final String CURRENT_FILENAME = "current.json";

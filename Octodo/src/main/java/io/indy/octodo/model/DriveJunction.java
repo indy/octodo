@@ -33,13 +33,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.indy.octodo.AppConfig;
+
 public class DriveJunction {
 
     static private final boolean D = true;
     static private final String TAG = DriveJunction.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private final static String JSON_MIMETYPE = "application/json";

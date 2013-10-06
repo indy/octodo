@@ -28,6 +28,7 @@ import android.widget.EditText;
 
 import java.util.List;
 
+import io.indy.octodo.AppConfig;
 import io.indy.octodo.R;
 import io.indy.octodo.controller.MainController;
 import io.indy.octodo.model.Task;
@@ -40,7 +41,7 @@ public class TasksAdapter extends BaseAdapter {
     static private final String TAG = TasksAdapter.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private final int VIEW_TYPE_TASK = 1;

@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import io.indy.octodo.AppConfig;
 import io.indy.octodo.DriveBaseActivity;
 import io.indy.octodo.OctodoApplication;
 import io.indy.octodo.async.CurrentTaskListsAsyncTask;
@@ -37,7 +38,7 @@ public class OctodoModel {
     static private final String TAG = OctodoModel.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     public static final int NOT_LOADED = 0;

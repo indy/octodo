@@ -27,13 +27,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import io.indy.octodo.AppConfig;
+
 public class TaskList {
 
     static private final boolean D = true;
     static private final String TAG = TaskList.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private final String mName;

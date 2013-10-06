@@ -42,7 +42,7 @@ public final class TaskListFragment extends Fragment {
     static private final String TAG = TaskListFragment.class.getSimpleName();
 
     void ifd(final String message) {
-        if (D) Log.d(TAG, "[" + System.identityHashCode(this) + "] " + message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, "[" + System.identityHashCode(this) + "] " + message);
     }
 
     private TasksAdapter mTasksAdapter;

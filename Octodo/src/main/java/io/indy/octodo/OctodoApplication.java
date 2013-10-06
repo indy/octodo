@@ -31,7 +31,7 @@ public class OctodoApplication extends Application {
     static private final String TAG = OctodoApplication.class.getSimpleName();
 
     static void ifd(final String message) {
-        if (D) Log.d(TAG, message);
+        if (AppConfig.DEBUG && D) Log.d(TAG, message);
     }
 
     private int mCurrentLoadSource;
