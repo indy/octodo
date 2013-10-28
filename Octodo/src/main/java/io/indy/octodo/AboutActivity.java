@@ -88,7 +88,10 @@ public class AboutActivity extends SherlockActivity {
                 sherlock, vpi
         };
 
-        CharSequence res = "Octodo was made with the following libraries:\n\n";
+        CharSequence type = AppConfig.DEBUG ? "-D" : "-R";
+        String version = AppConfig.VERSION + " " + type;
+
+        CharSequence res = "Octodo (v." + version + ") was made with the following libraries:\n\n";
         for (Acknowledgement a : thirdParties) {
             res = TextUtils.concat(res, TextUtils.concat(a.asFormatted(), "\n"));
         }
