@@ -303,8 +303,8 @@ public class MainActivity extends DriveBaseActivity {
 
         if (mShowArchiveIcon) {
             MenuItem mi = menu.add(Menu.NONE, 0, Menu.NONE, R.string.discard_lists);
-            //mi.setIcon(R.drawable.ic_discard).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-            mi.setIcon(R.drawable.ic_action_archive).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            //mi.setIcon(R.drawable.ic_action_archive).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            mi.setIcon(R.drawable.ic_content_discard).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             mArchiveItemId = mi.getItemId();
         } else {
             menu.removeItem(mArchiveItemId);
