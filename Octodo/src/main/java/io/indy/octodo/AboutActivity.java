@@ -88,8 +88,8 @@ public class AboutActivity extends SherlockActivity {
                 sherlock, vpi
         };
 
-        CharSequence type = AppConfig.DEBUG ? "-D" : "-R";
-        String version = AppConfig.VERSION + " " + type;
+        CharSequence type = AppConfig.DEBUG ? "(debug)" : "(release)";
+        String version = AppConfig.VERSION_NAME + " " + type;
 
         CharSequence res = "Octodo (v." + version + ") was made with the following libraries:\n\n";
         for (Acknowledgement a : thirdParties) {

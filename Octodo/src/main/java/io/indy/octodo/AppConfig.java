@@ -22,7 +22,7 @@ public class AppConfig {
 
     public static final boolean DEBUG = BuildConfig.DEBUG;
 
-    public static final String VERSION = BuildConfig.VERSION;
+    public static final String VERSION_NAME = BuildConfig.VERSION_NAME;
     public static final String BUILD_CODE = BuildConfig.BUILD_TIME + "-" + BuildConfig.GIT_SHA;
 
 }

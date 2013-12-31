@@ -5,11 +5,11 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
-    compile 'de.greenrobot:eventbus:2.0.2'
-    compile 'com.google.android.gms:play-services:3.1.36'
-    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
-    compile project(':libraries:ViewPagerIndicator')
+  compile fileTree(dir: 'libs', include: '*.jar')
+  compile 'de.greenrobot:eventbus:2.0.2'
+  compile 'com.google.android.gms:play-services:3.1.36'
+  compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+  compile project(':libraries:ViewPagerIndicator')
 }
 
 // version/git/buildtime information from Jake Wharton's post:
@@ -32,20 +32,24 @@ def buildTime() {
 }
 
 android {
-    compileSdkVersion 18
-    buildToolsVersion "18.0.1"
+  compileSdkVersion 19
+  buildToolsVersion "19.0.0"
 
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 18
+  defaultConfig {
+    minSdkVersion 14
+    targetSdkVersion 19
 
-        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
-        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+    versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+    versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 
-        buildConfig """\
-          public static final String GIT_SHA = "${gitSha()}";
-          public static final String BUILD_TIME = "${buildTime()}";
-          public static final String VERSION = "${versionMajor}.${versionMinor}.${versionPatch}";
-        """
-    }
+    buildConfigField "String", "GIT_SHA", "\"${gitSha()}\""
+    buildConfigField "String", "BUILD_TIME", "\"${buildTime()}\""
+  }
+
+  // enable the diamond operator, multi-catch, 
+  // strings in switches, try with resources, etc
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_7
+    targetCompatibility JavaVersion.VERSION_1_7
+  }
 }
