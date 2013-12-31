@@ -2,6 +2,20 @@
 <resources>
 
     <string name="app_name">Octodo</string>
+    <string name="app_description">The to-do app that won\'t pester you with guilt trips</string>
+    <string name="app_license">Licensed under the Apache License, Version 2.0</string>
+    <string name="app_copyright">Copyright 2014 Inderjit Gill</string>
+    <string name="app_thanks">No thanks to the burglars who stole my HTC Desire and therefore prevented the development of Octodo for Android 2.3+</string>
+
+    <string name="about_label_thanks">thanks</string>
+    <string name="about_label_license">license</string>
+    <string name="about_label_third_party_libraries">third party libraries</string>
+    <string name="about_label_contact">contact</string>
+    <string name="about_label_email">Email</string>
+    <string name="about_label_google_plus">Google+</string>
+    <string name="about_label_twitter">Twitter</string>
+
+
     <string name="add_item">Add Item...</string>
 
     <string name="about">About</string>

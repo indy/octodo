@@ -26,7 +26,6 @@ import android.text.style.StyleSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.TextView.BufferType;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -48,11 +47,39 @@ public class AboutActivity extends SherlockActivity {
         setContentView(R.layout.activity_about);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        CharSequence content = buildContent();
+        TextView version = (TextView)findViewById(R.id.version);
+        version.setText("v" + AppConfig.VERSION_NAME + (AppConfig.DEBUG ? "d" : "r"));
 
-        TextView tv = (TextView) findViewById(R.id.about_textview);
-        tv.setText(content, BufferType.SPANNABLE);
-        tv.setMovementMethod(LinkMovementMethod.getInstance());
+        TextView source = (TextView)findViewById(R.id.source_link);
+        asLink(source, "https://github.com/indy/octodo");
+
+        CharSequence res = "";
+        Acknowledgement[] thirdParties = {
+                new Acknowledgement("ActionBarSherlock",
+                        "http://actionbarsherlock.com",
+                        "Licensed under the Apache License, Version 2.0"),
+                new Acknowledgement("ViewPagerIndicator",
+                        "http://viewpagerindicator.com",
+                        "Licensed under the Apache License, Version 2.0"),
+                new Acknowledgement("EventBus",
+                        "https://github.com/greenrobot/EventBus",
+                        "Licensed under the Apache License, Version 2.0")
+        };
+        for (Acknowledgement a : thirdParties) {
+            res = TextUtils.concat(res, TextUtils.concat(a.asFormatted(), "\n", "\n"));
+        }
+        res = res.subSequence(0, res.length() - 2);
+
+        TextView ackView = (TextView)findViewById(R.id.acknowledgements);
+        ackView.setText(res);
+        ackView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        TextView email = (TextView)findViewById(R.id.textViewEmail);
+        asLink(email, "mailto://octodo@indy.io", "octodo@indy.io");
+        TextView google = (TextView)findViewById(R.id.textViewGooglePlus);
+        asLink(google, "https://google.com/+InderjitGill", "+InderjitGill");
+        TextView twitter = (TextView)findViewById(R.id.textViewTwitter);
+        asLink(twitter, "https://twitter.com/InderjitGill", "@InderjitGill");
     }
 
     @Override
@@ -74,64 +101,44 @@ public class AboutActivity extends SherlockActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    CharSequence buildContent() {
+    private void asLink(TextView source, String url, String urlText) {
+        SpannableString ssURL = new SpannableString(urlText);
+        ssURL.setSpan(new URLSpan(url), 0, urlText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        Acknowledgement sherlock = new Acknowledgement("ActionBarSherlock",
-                "Copyright 2012 Jake Wharton", "http://actionbarsherlock.com",
-                "Licensed under the Apache License, Version 2.0");
-
-        Acknowledgement vpi = new Acknowledgement("ViewPagerIndicator",
-                "Copyright 2012 Jake Wharton", "http://viewpagerindicator.com",
-                "Licensed under the Apache License, Version 2.0");
-
-        Acknowledgement[] thirdParties = {
-                sherlock, vpi
-        };
-
-        CharSequence type = AppConfig.DEBUG ? "(debug)" : "(release)";
-        String version = AppConfig.VERSION_NAME + " " + type;
-
-        CharSequence res = "Octodo (v." + version + ") was made with the following libraries:\n\n";
-        for (Acknowledgement a : thirdParties) {
-            res = TextUtils.concat(res, TextUtils.concat(a.asFormatted(), "\n"));
-        }
-
-        res = TextUtils
-                .concat(res,
-                        "Copyright 2013 Inderjit Gill\n\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at\n\nhttp://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.");
-
-        return res;
+        source.setText(ssURL, TextView.BufferType.SPANNABLE);
+        source.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private class Acknowledgement {
+    private void asLink(TextView source, String url) {
+        SpannableString ssURL = new SpannableString(url);
+        ssURL.setSpan(new URLSpan(url), 0, url.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        source.setText(ssURL, TextView.BufferType.SPANNABLE);
+        source.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+
+    private static class Acknowledgement {
         public final String mLibraryName;
-
-        public final String mCopyright;
-
-        public final String mURL;
-
+        public final String mUrl;
         public final String mLicense;
 
-        public Acknowledgement(String libraryName, String copyright, String url, String license) {
+        public Acknowledgement(String libraryName, String url, String license) {
             mLibraryName = libraryName;
-            mCopyright = copyright;
-            mURL = url;
+            mUrl = url;
             mLicense = license;
         }
 
         CharSequence asFormatted() {
-            SpannableString ssLibraryName = new SpannableString(mLibraryName);
-            ssLibraryName.setSpan(new StyleSpan(Typeface.BOLD), 0, mLibraryName.length(), 0);
+            SpannableString libraryName = new SpannableString(mLibraryName);
+            libraryName.setSpan(new StyleSpan(Typeface.BOLD), 0, mLibraryName.length(), 0);
 
-            SpannableString ssCopyright = new SpannableString(mCopyright);
-
-            SpannableString ssURL = new SpannableString(mURL);
-            ssURL.setSpan(new URLSpan(mURL), 0, mURL.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            SpannableString url = new SpannableString(mUrl);
+            url.setSpan(new URLSpan(mUrl), 0, mUrl.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             SpannableString ssLicense = new SpannableString(mLicense);
 
-            return TextUtils.concat(ssLibraryName, "\n", ssCopyright, "\n", ssURL, "\n", ssLicense,
-                    "\n");
+            return TextUtils.concat(libraryName, "\n", url, "\n", ssLicense);
         }
     }
 }
