@@ -29,7 +29,17 @@
     <style name="Widget.Styled.ActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
         <item name="background">@color/blue</item>
         <item name="android:background">@color/blue</item>
-    </style>    
+
+        <item name="android:indeterminateProgressStyle">@style/Widget.ActionBar.ActivityIndicator</item>
+
+    </style>
+
+    <style name="Widget.ActionBar.ActivityIndicator" parent="Widget.Sherlock.Light.ProgressBar">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:maxWidth">48dp</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:maxHeight">32dp</item>
+    </style>
 
     <style name="MarginPoint">
       <item name="android:layout_width">match_parent</item>      
